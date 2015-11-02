@@ -1,6 +1,7 @@
 package info.izumin.android.droidux;
 
 import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +18,14 @@ public abstract class Store<T> extends BaseObservable {
 
     private final BehaviorSubject<T> subject;
     private final List<Middleware> middlewares;
+    private final List reducers;
     private T state;
 
-    private Store(Builder builder) {
+    protected Store(Builder builder) {
         subject = BehaviorSubject.create();
         middlewares = builder.middlewares;
+        reducers = new ArrayList<>();
+        reducers.add(builder.reducer);
         for (Middleware middleware : builder.middlewares) { middleware.onAttach(this); }
     }
 
@@ -29,15 +33,16 @@ public abstract class Store<T> extends BaseObservable {
         return subject;
     }
 
+    @Bindable
     public T getState() {
         return state;
     }
 
     public Observable<Action> dispatch(Action action) {
         Observable<Action> o = Observable.just(action);
-        ListIterator<Middleware> iterator = getMiddlewares().listIterator();
+        final ListIterator<Middleware> iterator = getMiddlewares().listIterator();
         while (iterator.hasNext()) {
-            Middleware mw = iterator.next();
+            final Middleware mw = iterator.next();
             o = o.map(mw::beforeDispatch);
         }
 
@@ -45,7 +50,7 @@ public abstract class Store<T> extends BaseObservable {
         o = o.doOnNext(this::dispatchToReducers);
 
         while (iterator.hasPrevious()) {
-            Middleware mw = iterator.previous();
+           final Middleware mw = iterator.previous();
             o = o.map(mw::afterDispatch);
         }
         return o;
@@ -57,6 +62,10 @@ public abstract class Store<T> extends BaseObservable {
         subject.onNext(state);
     }
 
+    protected List getReducers() {
+        return reducers;
+    }
+
     protected List<Middleware> getMiddlewares() {
         return middlewares;
     }
@@ -64,14 +73,16 @@ public abstract class Store<T> extends BaseObservable {
     protected abstract void dispatchToReducers(Action action);
 
     public static abstract class Builder {
+        private final Object reducer;
         private final List<Middleware> middlewares;
 
-        public Builder() {
-            middlewares = new ArrayList<>();
+        public Builder(Object reducer) {
+            this.reducer = reducer;
+            this.middlewares = new ArrayList<>();
         }
 
         public Builder apply(Middleware middleware) {
-            middlewares.add(middleware);
+            this.middlewares.add(middleware);
             return this;
         }
 
