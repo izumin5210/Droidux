@@ -1,10 +1,13 @@
 package info.izumin.android.droidux.processor;
 
-import com.google.testing.compile.JavaFileObjects;
-
 import org.junit.Test;
 
+import javax.tools.JavaFileObject;
+
+import info.izumin.android.droidux.processor.fixture.Source;
+
 import static com.google.common.truth.Truth.assert_;
+import static com.google.testing.compile.JavaFileObjects.forSourceLines;
 import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 
 /**
@@ -13,72 +16,28 @@ import static com.google.testing.compile.JavaSourceSubjectFactory.javaSource;
 public class DroiduxProcessorTest {
     public static final String TAG = DroiduxProcessorTest.class.getSimpleName();
 
-    @Test
-    public void oneActionDispatchableReducer() {
+    private static void assertJavaSource(JavaFileObject target, JavaFileObject generated) {
         assert_().about(javaSource())
-                .that(JavaFileObjects.forSourceLines("OneActionExampleReducer",
-                        "package info.izumin.android.droidux.sample;",
-                        "import info.izumin.android.droidux.annotation.Dispatchable;",
-                        "import info.izumin.android.droidux.annotation.Reducer;",
-                        "import info.izumin.android.droidux.processor.fixture.AddTodoItemAction;",
-                        "import info.izumin.android.droidux.processor.fixture.TodoList;",
-                        "@Reducer(TodoList.class)",
-                        "public class OneActionExampleReducer {",
-                        "    @Dispatchable(AddTodoItemAction.class)",
-                        "    public TodoList onAddItem(TodoList state) {",
-                        "        return state;",
-                        "    }",
-                        "}"
-                ))
+                .that(target)
                 .processedWith(new DroiduxProcessor())
                 .compilesWithoutError()
                 .and()
-                .generatesSources(JavaFileObjects.forSourceLines("DroiduxOneActionExampleStore",
-                        "package info.izumin.android.droidux.sample;",
-                        "",
-                        "import info.izumin.android.droidux.Action;",
-                        "import info.izumin.android.droidux.Store;",
-                        "import info.izumin.android.droidux.processor.fixture.AddTodoItemAction;",
-                        "import info.izumin.android.droidux.processor.fixture.TodoList;",
-                        "",
-                        "public final class DroiduxOneActionExampleStore extends Store<TodoList> {",
-                        "    private final OneActionExampleReducer oneActionExampleReducer;",
-                        "",
-                        "    protected DroiduxOneActionExampleStore(Builder builder) {",
-                        "        super(builder);",
-                        "        this.oneActionExampleReducer = builder.oneActionExampleReducer;",
-                        "    }",
-                        "",
-                        "    @Override",
-                        "    protected void dispatchToReducer(Action action) {",
-                        "        Class<? extends Action> actionClass = action.getClass();",
-                        "        TodoList result = null;",
-                        "        if (actionClass.isAssignableFrom(AddTodoItemAction.class)) {",
-                        "            result = oneActionExampleReducer.onAddItem(getState());",
-                        "        }",
-                        "        if (result != null) {",
-                        "            setState(result);",
-                        "        }",
-                        "    }",
-                        "",
-                        "    public static class Builder extends Store.Builder {",
-                        "        private OneActionExampleReducer oneActionExampleReducer;",
-                        "",
-                        "        public Builder() {",
-                        "            super();",
-                        "        }",
-                        "",
-                        "        public Builder addReducer(OneActionExampleReducer oneActionExampleReducer) {",
-                        "            this.oneActionExampleReducer = oneActionExampleReducer;",
-                        "            return this;",
-                        "        }",
-                        "",
-                        "        @Override",
-                        "        public DroiduxOneActionExampleStore build() {",
-                        "            return new DroiduxOneActionExampleStore(this);",
-                        "        }",
-                        "    }",
-                        "}"
-                ));
+                .generatesSources(generated);
+    }
+
+    @Test
+    public void oneActionDispatchableReducer() {
+        assertJavaSource(
+                forSourceLines("CounterReducer", Source.Counter.TARGET),
+                forSourceLines("DroiduxCounterStore", Source.Counter.GENERATED)
+        );
+    }
+
+    @Test
+    public void twoActionDispatchableReducer() {
+        assertJavaSource(
+                forSourceLines("TodoListReducer", Source.TodoList.TARGET),
+                forSourceLines("DroiduxTodoListStore", Source.TodoList.GENERATED)
+        );
     }
 }
