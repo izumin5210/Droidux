@@ -23,6 +23,7 @@ public final class StringUtils {
     }
 
     public static String getLowerCamelFromUpperCamel(String upperCamel) {
+        upperCamel = getClassName(getClassName(upperCamel));
         return upperCamel.substring(0, 1).toLowerCase() + upperCamel.substring(1);
     }
 }

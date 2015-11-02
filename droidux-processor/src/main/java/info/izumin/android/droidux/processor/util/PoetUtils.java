@@ -1,6 +1,7 @@
 package info.izumin.android.droidux.processor.util;
 
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 
@@ -18,6 +19,14 @@ public final class PoetUtils {
 
     private PoetUtils() {
         throw new AssertionError("constructor of the utility class should not be called");
+    }
+
+    public static ParameterSpec getParameterSpec(ClassName className, Modifier... modifiers) {
+        return ParameterSpec.builder(
+                className.box(),
+                getLowerCamelFromUpperCamel(className.simpleName()),
+                modifiers
+        ).build();
     }
 
     public static ParameterSpec getParameterSpec(Class<?> clazz, Modifier... modifiers) {
