@@ -44,7 +44,7 @@ public abstract class Store<T> extends BaseObservable {
         }
 
         o = o.flatMap(a -> a.call(this));
-        o = o.doOnNext(this::dispatchToReducers);
+        o = o.doOnNext(this::dispatchToReducer);
 
         while (iterator.hasPrevious()) {
            final Middleware mw = iterator.previous();
@@ -63,7 +63,7 @@ public abstract class Store<T> extends BaseObservable {
         return middlewares;
     }
 
-    protected abstract void dispatchToReducers(Action action);
+    protected abstract void dispatchToReducer(Action action);
 
     public static abstract class Builder {
         private final List<Middleware> middlewares;

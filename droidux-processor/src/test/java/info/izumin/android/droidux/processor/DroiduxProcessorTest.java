@@ -50,7 +50,7 @@ public class DroiduxProcessorTest {
                         "    }",
                         "",
                         "    @Override",
-                        "    protected void dispatchToReducers(Action action) {",
+                        "    protected void dispatchToReducer(Action action) {",
                         "        Class<? extends Action> actionClass = action.getClass();",
                         "        TodoList result = null;",
                         "        if (actionClass.isAssignableFrom(AddTodoItemAction.class)) {",

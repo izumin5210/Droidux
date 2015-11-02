@@ -34,7 +34,7 @@ public class StoreClassElement {
     private static final String CLASS_NAME_PREFIX = "Droidux";
     private static final String CLASS_NAME_SUFFIX = "Store";
     private static final String REDUCER_CLASS_NAME_SUFFIX = "Reducer";
-    private static final String DISPATCH_TO_REDUCERS_METHOD_NAME = "dispatchToReducers";
+    private static final String DISPATCH_TO_REDUCER_METHOD_NAME = "dispatchToReducer";
 
     private ClassName stateType;
     private final String packageName;
@@ -77,7 +77,7 @@ public class StoreClassElement {
     }
 
     private MethodSpec createMethodSpec() {
-        return MethodSpec.methodBuilder(DISPATCH_TO_REDUCERS_METHOD_NAME)
+        return MethodSpec.methodBuilder(DISPATCH_TO_REDUCER_METHOD_NAME)
                 .addAnnotation(getOverrideAnnotation())
                 .addModifiers(Modifier.PROTECTED)
                 .returns(TypeName.VOID)
