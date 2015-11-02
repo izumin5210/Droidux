@@ -18,14 +18,11 @@ public abstract class Store<T> extends BaseObservable {
 
     private final BehaviorSubject<T> subject;
     private final List<Middleware> middlewares;
-    private final List reducers;
     private T state;
 
     protected Store(Builder builder) {
         subject = BehaviorSubject.create();
         middlewares = builder.middlewares;
-        reducers = new ArrayList<>();
-        reducers.add(builder.reducer);
         for (Middleware middleware : builder.middlewares) { middleware.onAttach(this); }
     }
 
@@ -62,10 +59,6 @@ public abstract class Store<T> extends BaseObservable {
         subject.onNext(state);
     }
 
-    protected List getReducers() {
-        return reducers;
-    }
-
     protected List<Middleware> getMiddlewares() {
         return middlewares;
     }
@@ -73,11 +66,9 @@ public abstract class Store<T> extends BaseObservable {
     protected abstract void dispatchToReducers(Action action);
 
     public static abstract class Builder {
-        private final Object reducer;
         private final List<Middleware> middlewares;
 
-        public Builder(Object reducer) {
-            this.reducer = reducer;
+        public Builder() {
             this.middlewares = new ArrayList<>();
         }
 
