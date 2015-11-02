@@ -26,6 +26,7 @@ android {
 
 dependencies {
     compile 'io.reactivex:rxjava:1.0.15'
+    compile 'com.android.databinding:library:1.0-rc3'
 
     testCompile 'junit:junit:4.12'
 }
