@@ -40,4 +40,12 @@ public class DroiduxProcessorTest {
                 forSourceLines("DroiduxTodoListStore", Source.TodoList.GENERATED)
         );
     }
+
+    @Test
+    public void combinedTwoReducers() {
+        assertJavaSource(
+                forSourceLines("RootReducer", Source.CombinedTwoReducers.TARGET),
+                forSourceLines("DroiduxRootStore", Source.CombinedTwoReducers.GENERATED)
+        );
+    }
 }

@@ -15,7 +15,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
 
 import info.izumin.android.droidux.annotation.Reducer;
-import info.izumin.android.droidux.processor.element.ReducerAnnoatedElement;
+import info.izumin.android.droidux.processor.element.StoreClassElement;
+import info.izumin.android.droidux.processor.model.ReducerModel;
 
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.findClassesByAnnotation;
 
@@ -41,7 +42,7 @@ public class DroiduxProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         for (TypeElement element : findClassesByAnnotation(roundEnv, Reducer.class)) {
             try {
-                new ReducerAnnoatedElement(element).createJavaFile().writeTo(filer);
+                new StoreClassElement(new ReducerModel(element)).createJavaFile().writeTo(filer);
             } catch (IOException e) {
                 e.printStackTrace();
             }

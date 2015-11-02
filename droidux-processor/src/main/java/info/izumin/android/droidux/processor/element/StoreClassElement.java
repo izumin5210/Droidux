@@ -8,22 +8,16 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
-import java.util.List;
-
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 
 import info.izumin.android.droidux.Action;
 import info.izumin.android.droidux.Store;
-import info.izumin.android.droidux.annotation.Dispatchable;
+import info.izumin.android.droidux.processor.model.DispatchableModel;
+import info.izumin.android.droidux.processor.model.ReducerModel;
+import info.izumin.android.droidux.processor.model.StoreModel;
 
-import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassNameFromAnnotation;
 import static info.izumin.android.droidux.processor.util.PoetUtils.getOverrideAnnotation;
 import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterSpec;
-import static info.izumin.android.droidux.processor.util.StringUtils.getClassName;
-import static info.izumin.android.droidux.processor.util.StringUtils.getLowerCamelFromUpperCamel;
-import static info.izumin.android.droidux.processor.util.StringUtils.getPackageName;
-import static info.izumin.android.droidux.processor.util.StringUtils.replaceSuffix;
 
 /**
  * Created by izumin on 11/2/15.
@@ -31,48 +25,40 @@ import static info.izumin.android.droidux.processor.util.StringUtils.replaceSuff
 public class StoreClassElement {
     public static final String TAG = StoreClassElement.class.getSimpleName();
 
-    private static final String CLASS_NAME_PREFIX = "Droidux";
-    private static final String CLASS_NAME_SUFFIX = "Store";
-    private static final String REDUCER_CLASS_NAME_SUFFIX = "Reducer";
     private static final String DISPATCH_TO_REDUCER_METHOD_NAME = "dispatchToReducer";
 
-    private ClassName stateType;
-    private final String packageName;
-    private final String className;
-    private final String reducerVariableName;
-    private final String storeClassName;
-    private final List<ExecutableElement> dispatchableMethods;
+    private final ReducerModel reducerModel;
+    private final StoreModel storeModel;
 
-    public StoreClassElement(ClassName stateType, String reducerQualifiedName, List<ExecutableElement> dispatchableMethods) {
-        this.stateType = stateType;
-        this.dispatchableMethods = dispatchableMethods;
-        this.packageName = getPackageName(reducerQualifiedName);
-        this.className = getClassName(reducerQualifiedName);
-        this.reducerVariableName = getLowerCamelFromUpperCamel(className);
-        this.storeClassName = CLASS_NAME_PREFIX + replaceSuffix(className, REDUCER_CLASS_NAME_SUFFIX, CLASS_NAME_SUFFIX);
+    public StoreClassElement(ReducerModel reducerModel) {
+        this.reducerModel = reducerModel;
+        this.storeModel = reducerModel.getStoreModel();
     }
 
     public JavaFile createJavaFile() {
-        return JavaFile.builder(packageName, createTypeSpec()).skipJavaLangImports(true).build();
+        return JavaFile.builder(storeModel.getPackageName(), createTypeSpec())
+                .skipJavaLangImports(true).build();
     }
 
     private TypeSpec createTypeSpec() {
-        return TypeSpec.classBuilder(storeClassName)
+        return TypeSpec.classBuilder(storeModel.getClassName())
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .superclass(ParameterizedTypeName.get(ClassName.get(Store.class), stateType.box()))
-                .addField(ClassName.get(packageName, className), reducerVariableName, Modifier.PRIVATE, Modifier.FINAL)
+                .superclass(ParameterizedTypeName.get(ClassName.get(Store.class), storeModel.getState()))
+                .addField(reducerModel.getReducer(), reducerModel.getVariableName(), Modifier.PRIVATE, Modifier.FINAL)
                 .addMethod(createConstructor())
                 .addMethod(createMethodSpec())
-                .addType(new StoreBuilderClassElement(className, storeClassName, packageName).createBuilderTypeSpec())
+                .addType(new StoreBuilderClassElement(storeModel).createBuilderTypeSpec())
                 .build();
     }
 
     private MethodSpec createConstructor() {
         return MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PROTECTED)
-                .addParameter(getParameterSpec(ClassName.get(packageName, storeClassName).nestedClass(StoreBuilderClassElement.CLASS_NAME)))
-                .addStatement("super(builder)")
-                .addStatement("this.$N = builder.$N", reducerVariableName, reducerVariableName)
+                .addParameter(getParameterSpec(storeModel.getBuilder()))
+                .addStatement("super($N)", storeModel.getBuilderVariableName())
+                .addStatement("this.$N = $N.$N",
+                        reducerModel.getVariableName(), storeModel.getBuilderVariableName(),
+                        reducerModel.getVariableName())
                 .build();
     }
 
@@ -89,13 +75,12 @@ public class StoreClassElement {
     private CodeBlock createCodeBlock() {
         CodeBlock.Builder builder = CodeBlock.builder()
                 .addStatement("Class<? extends Action> actionClass = action.getClass()")
-                .addStatement(stateType.simpleName() + " result = null");
+                .addStatement(storeModel.getStateName() + " result = null");
 
-        for (ExecutableElement el : dispatchableMethods) {
-            ClassName name = getClassNameFromAnnotation(el, Dispatchable.class, "value");
+        for (DispatchableModel dispatchableModel : reducerModel.getDispatchableModels()) {
             builder = builder
-                    .beginControlFlow("if (actionClass.isAssignableFrom($T.class))", name)
-                    .addStatement("result = $N.$N(getState())", reducerVariableName, el.getSimpleName())
+                    .beginControlFlow("if (actionClass.isAssignableFrom($T.class))", dispatchableModel.getAction())
+                    .addStatement("result = $N.$N(getState())", reducerModel.getVariableName(), dispatchableModel.getMethodName())
                     .endControlFlow();
         }
 
