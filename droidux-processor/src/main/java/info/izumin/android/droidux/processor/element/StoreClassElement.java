@@ -15,13 +15,13 @@ import javax.lang.model.element.Modifier;
 
 import info.izumin.android.droidux.Action;
 import info.izumin.android.droidux.Store;
-import info.izumin.android.droidux.Store.Builder;
 import info.izumin.android.droidux.annotation.Dispatchable;
 
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassNameFromAnnotation;
 import static info.izumin.android.droidux.processor.util.PoetUtils.getOverrideAnnotation;
 import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterSpec;
 import static info.izumin.android.droidux.processor.util.StringUtils.getClassName;
+import static info.izumin.android.droidux.processor.util.StringUtils.getLowerCamelFromUpperCamel;
 import static info.izumin.android.droidux.processor.util.StringUtils.getPackageName;
 import static info.izumin.android.droidux.processor.util.StringUtils.replaceSuffix;
 
@@ -36,17 +36,19 @@ public class StoreClassElement {
     private static final String REDUCER_CLASS_NAME_SUFFIX = "Reducer";
     private static final String DISPATCH_TO_REDUCERS_METHOD_NAME = "dispatchToReducers";
 
-    private ClassName reducerType;
+    private ClassName stateType;
     private final String packageName;
     private final String className;
+    private final String reducerVariableName;
     private final String storeClassName;
     private final List<ExecutableElement> dispatchableMethods;
 
-    public StoreClassElement(ClassName reducerType, String reducerQualifiedName, List<ExecutableElement> dispatchableMethods) {
-        this.reducerType = reducerType;
+    public StoreClassElement(ClassName stateType, String reducerQualifiedName, List<ExecutableElement> dispatchableMethods) {
+        this.stateType = stateType;
         this.dispatchableMethods = dispatchableMethods;
         this.packageName = getPackageName(reducerQualifiedName);
         this.className = getClassName(reducerQualifiedName);
+        this.reducerVariableName = getLowerCamelFromUpperCamel(className);
         this.storeClassName = CLASS_NAME_PREFIX + replaceSuffix(className, REDUCER_CLASS_NAME_SUFFIX, CLASS_NAME_SUFFIX);
     }
 
@@ -57,18 +59,20 @@ public class StoreClassElement {
     private TypeSpec createTypeSpec() {
         return TypeSpec.classBuilder(storeClassName)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .superclass(ParameterizedTypeName.get(ClassName.get(Store.class), reducerType.box()))
+                .superclass(ParameterizedTypeName.get(ClassName.get(Store.class), stateType.box()))
+                .addField(ClassName.get(packageName, className), reducerVariableName, Modifier.PRIVATE, Modifier.FINAL)
                 .addMethod(createConstructor())
                 .addMethod(createMethodSpec())
-                .addType(new StoreBuilderClassElement(storeClassName, packageName).createBuilderTypeSpec())
+                .addType(new StoreBuilderClassElement(className, storeClassName, packageName).createBuilderTypeSpec())
                 .build();
     }
 
     private MethodSpec createConstructor() {
         return MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PROTECTED)
-                .addParameter(getParameterSpec(Builder.class))
-                .addCode("super(builder);\n")
+                .addParameter(getParameterSpec(ClassName.get(packageName, storeClassName).nestedClass(StoreBuilderClassElement.CLASS_NAME)))
+                .addStatement("super(builder)")
+                .addStatement("this.$N = builder.$N", reducerVariableName, reducerVariableName)
                 .build();
     }
 
@@ -85,23 +89,17 @@ public class StoreClassElement {
     private CodeBlock createCodeBlock() {
         CodeBlock.Builder builder = CodeBlock.builder()
                 .addStatement("Class<? extends Action> actionClass = action.getClass()")
-                .addStatement(reducerType.simpleName() + " result = null")
-                .beginControlFlow("for (Object reducer : getReducers())")
-                .beginControlFlow("if (reducer instanceof " + className + ")")
-                .addStatement(className + " r = (" + className + ") reducer");
+                .addStatement(stateType.simpleName() + " result = null");
 
         for (ExecutableElement el : dispatchableMethods) {
-            // FIXME: 決め打ちになってて良くない
             ClassName name = getClassNameFromAnnotation(el, Dispatchable.class, "value");
             builder = builder
                     .beginControlFlow("if (actionClass.isAssignableFrom($T.class))", name)
-                    .addStatement("result = r." + el.getSimpleName() + "(getState())")
+                    .addStatement("result = $N.$N(getState())", reducerVariableName, el.getSimpleName())
                     .endControlFlow();
         }
 
         return builder
-                .endControlFlow()
-                .endControlFlow()
                 .beginControlFlow("if (result != null)")
                 .addStatement("setState(result)")
                 .endControlFlow()
