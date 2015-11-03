@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Created by izumin on 11/2/15.
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface Dispatchable {
     Class<?> value();
