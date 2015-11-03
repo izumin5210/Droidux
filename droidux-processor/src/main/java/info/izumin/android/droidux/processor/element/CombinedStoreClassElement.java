@@ -70,8 +70,18 @@ public class CombinedStoreClassElement {
 
         for (ReducerModel reducer : storeModel.getReducerModels()) {
             builder = builder.addStatement("this.$N = builder.$N", reducer.getVariableName(), reducer.getVariableName())
-                    .addStatement("this.$N = new $N.Builder().addReducer($N).build()",
-                            reducer.getStoreModel().getVariableName(), reducer.getStoreModel().getClassName(), reducer.getVariableName());
+                    .addStatement("this.$N = new $N.$N().$N($N).$N($N.$N).$N()",
+                            reducer.getStoreModel().getVariableName(),
+                            reducer.getStoreModel().getClassName(),
+                            reducer.getStoreModel().getBuilderName(),
+                            StoreBuilderClassElement.ADD_REDUCER_METHOD_NAME,
+                            reducer.getVariableName(),
+                            StoreBuilderClassElement.ADD_INITIAL_STATE_METHOD_NAME,
+                            reducer.getStoreModel().getBuilderVariableName(),
+                            reducer.getStoreModel().getStateVariableName(),
+                            StoreBuilderClassElement.BUILD_METHOD_NAME
+
+                    );
         }
 
         return builder.build();

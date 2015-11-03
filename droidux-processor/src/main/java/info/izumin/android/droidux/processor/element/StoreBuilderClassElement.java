@@ -23,8 +23,9 @@ import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterS
 public class StoreBuilderClassElement {
     public static final String TAG = StoreBuilderClassElement.class.getSimpleName();
 
-    private static final String ADD_REDUCER_METHOD_NAME = "addReducer";
-    private static final String BUILD_METHOD_NAME = "build";
+    static final String ADD_REDUCER_METHOD_NAME = "addReducer";
+    static final String ADD_INITIAL_STATE_METHOD_NAME = "addInitialState";
+    static final String BUILD_METHOD_NAME = "build";
 
     private final StoreModel storeModel;
     private final List<ReducerModel> reducerModels;
@@ -57,6 +58,9 @@ public class StoreBuilderClassElement {
             specs.add(FieldSpec.builder(
                     reducerModel.getReducer(), reducerModel.getVariableName(), Modifier.PRIVATE
             ).build());
+            specs.add(FieldSpec.builder(
+                    reducerModel.getState(), reducerModel.getStateVariableName(), Modifier.PRIVATE
+            ).build());
         }
         return specs;
     }
@@ -77,6 +81,15 @@ public class StoreBuilderClassElement {
                             .returns(storeModel.getBuilder())
                             .addParameter(getParameterSpec(reducerModel.getReducer()))
                             .addStatement("this.$N = $N", reducerModel.getVariableName(), reducerModel.getVariableName())
+                            .addStatement("return this")
+                            .build()
+            );
+            specs.add(
+                    MethodSpec.methodBuilder(ADD_INITIAL_STATE_METHOD_NAME)
+                            .addModifiers(Modifier.PUBLIC)
+                            .returns(storeModel.getBuilder())
+                            .addParameter(getParameterSpec(reducerModel.getState()))
+                            .addStatement("this.$N = $N", reducerModel.getStateVariableName(), reducerModel.getStateVariableName())
                             .addStatement("return this")
                             .build()
             );

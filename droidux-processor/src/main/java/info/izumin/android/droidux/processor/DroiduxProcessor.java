@@ -13,6 +13,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 import info.izumin.android.droidux.annotation.CombinedReducer;
 import info.izumin.android.droidux.annotation.Reducer;
@@ -28,6 +29,7 @@ public class DroiduxProcessor extends AbstractProcessor {
 
     private Filer filer;
     private Messager messager;
+    private Elements elements;
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
@@ -39,6 +41,7 @@ public class DroiduxProcessor extends AbstractProcessor {
         super.init(processingEnv);
         this.filer = processingEnv.getFiler();
         this.messager = processingEnv.getMessager();
+        this.elements = processingEnv.getElementUtils();
     }
 
     @Override
@@ -52,7 +55,7 @@ public class DroiduxProcessor extends AbstractProcessor {
         }
         for (TypeElement element : findClassesByAnnotation(roundEnv, CombinedReducer.class)) {
             try {
-                new CombinedStoreClassElement(new CombinedReducerModel(element))
+                new CombinedStoreClassElement(new CombinedReducerModel(element, elements))
                         .createJavaFile().writeTo(filer);
             } catch (IOException e) {
                 e.printStackTrace();

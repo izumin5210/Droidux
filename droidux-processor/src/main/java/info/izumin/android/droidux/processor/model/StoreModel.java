@@ -25,6 +25,7 @@ public class StoreModel {
     private final String className;
     private final String variableName;
     private final String stateName;
+    private final String stateVariableName;
     private final String builderName;
     private final String builderVariableName;
 
@@ -39,6 +40,7 @@ public class StoreModel {
         this.className = CLASS_NAME_PREFIX + storeName;
         this.variableName = getLowerCamelFromUpperCamel(storeName);
         this.stateName = reducerModel.getStateName();
+        this.stateVariableName = reducerModel.getStateVariableName();
         this.store = ClassName.get(packageName, className);
         this.builderName = BUILDER_CLASS_NAME;
         this.builder = store.nestedClass(builderName);
@@ -75,6 +77,10 @@ public class StoreModel {
 
     public String getStateName() {
         return stateName;
+    }
+
+    public String getStateVariableName() {
+        return stateVariableName;
     }
 
     public String getBuilderName() {

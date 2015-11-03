@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 
 import info.izumin.android.droidux.annotation.CombinedReducer;
 
@@ -19,11 +20,11 @@ public class CombinedReducerModel extends ReducerModel {
 
     private final CombinedStoreModel combinedStoreModel;
 
-    public CombinedReducerModel(TypeElement element) {
+    public CombinedReducerModel(TypeElement element, Elements elements) {
         super(element);
         List<ReducerModel> reducerModels = new ArrayList<>();
         for (ClassName reducer : getClassNamesFromAnnotation(element, CombinedReducer.class, "value")) {
-            reducerModels.add(new ReducerModel(reducer));
+            reducerModels.add(new ReducerModel(elements.getTypeElement(reducer.packageName() + "." + reducer.simpleName())));
         }
         this.combinedStoreModel = new CombinedStoreModel(this, reducerModels);
     }

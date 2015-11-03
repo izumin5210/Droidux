@@ -59,6 +59,8 @@ public class StoreClassElement {
                 .addStatement("this.$N = $N.$N",
                         reducerModel.getVariableName(), storeModel.getBuilderVariableName(),
                         reducerModel.getVariableName())
+                .addStatement("setState($N.$N)",
+                        storeModel.getBuilderVariableName(), storeModel.getStateVariableName())
                 .build();
     }
 
