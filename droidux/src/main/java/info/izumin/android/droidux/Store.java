@@ -62,9 +62,9 @@ public abstract class Store<T> extends BaseObservable {
     protected Observable<Action> applyMiddlewaresBeforeDispatch(Action action) {
         Observable<Action> o = Observable.just(action);
         for (final Middleware mw : getMiddlewares()) {
-            o = o.map(new Func1<Action, Action>() {
+            o = o.flatMap(new Func1<Action, Observable<Action>>() {
                 @Override
-                public Action call(Action a) {
+                public Observable<Action> call(Action a) {
                     return mw.beforeDispatch(a);
                 }
             });
@@ -77,9 +77,9 @@ public abstract class Store<T> extends BaseObservable {
         ListIterator<Middleware> iterator = getMiddlewares().listIterator(getMiddlewares().size());
         while(iterator.hasPrevious()) {
             final Middleware mw = iterator.previous();
-            o = o.map(new Func1<Action, Action>() {
+            o = o.flatMap(new Func1<Action, Observable<Action>>() {
                 @Override
-                public Action call(Action a) {
+                public Observable<Action> call(Action a) {
                     return mw.afterDispatch(a);
                 }
             });
