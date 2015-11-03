@@ -80,8 +80,8 @@ public class CombinedStoreClassElement {
                             reducer.getStoreModel().getBuilderVariableName(),
                             reducer.getStoreModel().getStateVariableName(),
                             StoreBuilderClassElement.BUILD_METHOD_NAME
-
-                    );
+                    )
+                    .addStatement("addStore($N)", reducer.getStoreModel().getVariableName());
         }
 
         return builder.build();

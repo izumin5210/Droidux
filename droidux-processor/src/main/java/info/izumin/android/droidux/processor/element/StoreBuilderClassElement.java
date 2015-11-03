@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.lang.model.element.Modifier;
 
+import info.izumin.android.droidux.Middleware;
 import info.izumin.android.droidux.Store;
 import info.izumin.android.droidux.processor.model.ReducerModel;
 import info.izumin.android.droidux.processor.model.StoreModel;
@@ -25,6 +26,7 @@ public class StoreBuilderClassElement {
 
     static final String ADD_REDUCER_METHOD_NAME = "addReducer";
     static final String ADD_INITIAL_STATE_METHOD_NAME = "addInitialState";
+    static final String ADD_MIDDLEWARE_METHOD_NAME = "addMiddleware";
     static final String BUILD_METHOD_NAME = "build";
 
     private final StoreModel storeModel;
@@ -46,6 +48,7 @@ public class StoreBuilderClassElement {
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .superclass(ClassName.get(Store.class).nestedClass(storeModel.getBuilderName()))
                 .addFields(createFieldSpecs())
+                .addMethod(createAddMiddlewareMethodSpec())
                 .addMethod(createBuilderConstructor())
                 .addMethods(createAddReducerMethodSpecs())
                 .addMethod(createBuildMethodSpec())
@@ -69,6 +72,16 @@ public class StoreBuilderClassElement {
         return MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addStatement("super()")
+                .build();
+    }
+
+    private MethodSpec createAddMiddlewareMethodSpec() {
+        return MethodSpec.methodBuilder(ADD_MIDDLEWARE_METHOD_NAME)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(storeModel.getBuilder())
+                .addParameter(getParameterSpec(Middleware.class))
+                .addStatement("getMiddlewares().add(middleware)")
+                .addStatement("return this")
                 .build();
     }
 

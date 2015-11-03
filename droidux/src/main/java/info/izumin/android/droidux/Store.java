@@ -93,9 +93,8 @@ public abstract class Store<T> extends BaseObservable {
             this.middlewares = new ArrayList<>();
         }
 
-        public Builder apply(Middleware middleware) {
-            this.middlewares.add(middleware);
-            return this;
+        protected List<Middleware> getMiddlewares() {
+            return middlewares;
         }
 
         public abstract Store build();
