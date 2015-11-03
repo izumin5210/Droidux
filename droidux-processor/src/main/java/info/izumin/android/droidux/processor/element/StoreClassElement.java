@@ -80,7 +80,9 @@ public class StoreClassElement {
         for (DispatchableModel dispatchableModel : reducerModel.getDispatchableModels()) {
             builder = builder
                     .beginControlFlow("if (actionClass.isAssignableFrom($T.class))", dispatchableModel.getAction())
-                    .addStatement("result = $N.$N(getState())", reducerModel.getVariableName(), dispatchableModel.getMethodName())
+//                    .addStatement("result = $N.$N(getState())", reducerModel.getVariableName(), dispatchableModel.getMethodName())
+                    .addStatement("result = $N.$N(getState(), ($T) action)",
+                            reducerModel.getVariableName(), dispatchableModel.getMethodName(), dispatchableModel.getAction())
                     .endControlFlow();
         }
 

@@ -9,11 +9,11 @@ import info.izumin.android.droidux.annotation.Reducer;
 @Reducer(TodoList.class)
 public class TodoListReducer {
     @Dispatchable(AddTodoItemAction.class)
-    public TodoList onAddItem(TodoList state) {
+    public TodoList onAddItem(TodoList state, AddTodoItemAction action) {
         return state;
     }
     @Dispatchable(CompleteTodoItemAction.class)
-    public TodoList onCompleteItem(TodoList state) {
+    public TodoList onCompleteItem(TodoList state, CompleteTodoItemAction action) {
         return state;
     }
 }

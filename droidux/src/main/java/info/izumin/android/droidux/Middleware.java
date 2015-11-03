@@ -16,11 +16,6 @@ public abstract class Middleware {
         return store;
     }
 
-    public Action beforeDispatch(Action action) {
-        return action;
-    }
-
-    public Action afterDispatch(Action action) {
-        return action;
-    }
+    public abstract <A extends Action, B extends Action> B beforeDispatch(A action);
+    public abstract <A extends Action, B extends Action> B afterDispatch(A action);
 }

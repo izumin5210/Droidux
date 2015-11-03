@@ -68,11 +68,6 @@ public final class AnnotationUtils {
                 names.add(av.getValue().toString());
             }
             for (String name : names) {
-                try {
-                    System.out.println(Class.forName(name));
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
                 list.add(ClassName.get(getPackageName(name), getClassName(name)));
             }
         } else {

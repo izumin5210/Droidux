@@ -9,7 +9,7 @@ import info.izumin.android.droidux.annotation.Reducer;
 @Reducer(Counter.class)
 public class CounterReducer {
     @Dispatchable(IncrementCountAction.class)
-    public Counter onIncrement(Counter state) {
+    public Counter onIncrement(Counter state, IncrementCountAction action) {
         return state;
     }
 }
