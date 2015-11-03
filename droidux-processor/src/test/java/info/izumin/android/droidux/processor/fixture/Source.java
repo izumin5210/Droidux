@@ -144,4 +144,67 @@ public final class Source {
                 "}"
         };
     }
+
+    public static class CombinedTwoReducers {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.processor.fixture;",
+                "import info.izumin.android.droidux.annotation.CombinedReducer;",
+                "@CombinedReducer({CounterReducer.class, TodoListReducer.class})",
+                "public class RootReducer {",
+                "}"
+        };
+
+        public static final String[] GENERATED = {
+                "package info.izumin.android.droidux.processor.fixture;",
+                "",
+                "import info.izumin.android.droidux.CombinedStore;",
+                "",
+                "public final class DroiduxRootStore extends CombinedStore {",
+                "    private final CounterReducer counterReducer;",
+                "    private final DroiduxCounterStore counterStore;",
+                "    private final TodoListReducer todoListReducer;",
+                "    private final DroiduxTodoListStore todoListStore;",
+                "",
+                "    protected DroiduxRootStore(Builder builder) {",
+                "        super(builder);",
+                "        this.counterReducer = builder.counterReducer;",
+                "        this.counterStore = new DroiduxCounterStore.Builder().addReducer(counterReducer).build();",
+                "        this.todoListReducer = builder.todoListReducer;",
+                "        this.todoListStore = new DroiduxTodoListStore.Builder().addReducer(todoListReducer).build();",
+                "    }",
+                "",
+                "    public DroiduxCounterStore getCounterStore() {",
+                "        return counterStore;",
+                "    }",
+                "",
+                "    public DroiduxTodoListStore getTodoListStore() {",
+                "        return todoListStore;",
+                "    }",
+                "",
+                "    public static class Builder extends info.izumin.android.droidux.Store.Builder {",
+                "        private CounterReducer counterReducer;",
+                "        private TodoListReducer todoListReducer;",
+                "",
+                "        public Builder() {",
+                "            super();",
+                "        }",
+                "",
+                "        public Builder addReducer(CounterReducer counterReducer) {",
+                "            this.counterReducer = counterReducer;",
+                "            return this;",
+                "        }",
+                "",
+                "        public Builder addReducer(TodoListReducer todoListReducer) {",
+                "            this.todoListReducer = todoListReducer;",
+                "            return this;",
+                "        }",
+                "",
+                "        @Override",
+                "        public DroiduxRootStore build() {",
+                "            return new DroiduxRootStore(this);",
+                "        }",
+                "    }",
+                "}"
+        };
+    }
 }
