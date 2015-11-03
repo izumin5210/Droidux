@@ -38,32 +38,45 @@ public abstract class Store<T> extends BaseObservable {
     }
 
     public Observable<Action> dispatch(Action action) {
+        return Observable.just(action)
+                .flatMap(new Func1<Action, Observable<Action>>() {
+                    @Override
+                    public Observable<Action> call(Action a) {
+                        return applyMiddlewaresBeforeDispatch(a);
+                    }
+                })
+                .doOnNext(new Action1<Action>() {
+                    @Override
+                    public void call(Action a) {
+                        dispatchToReducer(a);
+                    }
+                })
+                .flatMap(new Func1<Action, Observable<Action>>() {
+                    @Override
+                    public Observable<Action> call(Action a) {
+                        return applyMiddlewaresAfterDispatch(a);
+                    }
+                });
+    }
+
+    protected Observable<Action> applyMiddlewaresBeforeDispatch(Action action) {
         Observable<Action> o = Observable.just(action);
-        final ListIterator<Middleware> iterator = getMiddlewares().listIterator();
-        while (iterator.hasNext()) {
-            final Middleware mw = iterator.next();
+        for (final Middleware mw : getMiddlewares()) {
             o = o.map(new Func1<Action, Action>() {
                 @Override
-                public Action call(Action action) {
-                    return mw.beforeDispatch(action);
+                public Action call(Action a) {
+                    return mw.beforeDispatch(a);
                 }
             });
         }
+        return o;
+    }
 
-        o = o.flatMap(new Func1<Action, Observable<Action>>() {
-            @Override
-            public Observable<Action> call(Action a) {
-                return a.call(Store.this);
-            }
-        }).doOnNext(new Action1<Action>() {
-            @Override
-            public void call(Action a) {
-                dispatchToReducer(a);
-            }
-        });
-
-        while (iterator.hasPrevious()) {
-           final Middleware mw = iterator.previous();
+    protected Observable<Action> applyMiddlewaresAfterDispatch(Action action) {
+        Observable<Action> o = Observable.just(action);
+        ListIterator<Middleware> iterator = getMiddlewares().listIterator(getMiddlewares().size());
+        while(iterator.hasPrevious()) {
+            final Middleware mw = iterator.previous();
             o = o.map(new Func1<Action, Action>() {
                 @Override
                 public Action call(Action a) {
