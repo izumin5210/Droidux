@@ -29,7 +29,7 @@ public class StoreBuilderClassElement {
     private final StoreModel storeModel;
     private final List<ReducerModel> reducerModels;
 
-    public StoreBuilderClassElement(StoreModel storeModel) {
+    public StoreBuilderClassElement(final StoreModel storeModel) {
         this(storeModel, new ArrayList<ReducerModel>() {{
             add(storeModel.getReducerModel());
         }});

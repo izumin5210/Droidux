@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.subjects.BehaviorSubject;
 
 /**
@@ -40,15 +42,34 @@ public abstract class Store<T> extends BaseObservable {
         final ListIterator<Middleware> iterator = getMiddlewares().listIterator();
         while (iterator.hasNext()) {
             final Middleware mw = iterator.next();
-            o = o.map(mw::beforeDispatch);
+            o = o.map(new Func1<Action, Action>() {
+                @Override
+                public Action call(Action action) {
+                    return mw.beforeDispatch(action);
+                }
+            });
         }
 
-        o = o.flatMap(a -> a.call(this));
-        o = o.doOnNext(this::dispatchToReducer);
+        o = o.flatMap(new Func1<Action, Observable<Action>>() {
+            @Override
+            public Observable<Action> call(Action a) {
+                return a.call(Store.this);
+            }
+        }).doOnNext(new Action1<Action>() {
+            @Override
+            public void call(Action a) {
+                dispatchToReducer(a);
+            }
+        });
 
         while (iterator.hasPrevious()) {
            final Middleware mw = iterator.previous();
-            o = o.map(mw::afterDispatch);
+            o = o.map(new Func1<Action, Action>() {
+                @Override
+                public Action call(Action a) {
+                    return mw.afterDispatch(a);
+                }
+            });
         }
         return o;
     }
