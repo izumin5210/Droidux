@@ -51,14 +51,34 @@ public final class AnnotationUtils {
     }
 
     public static ClassName getClassNameFromAnnotation(Element element, Class<? extends Annotation> annotationClass, String argName) {
+        return getClassNamesFromAnnotation(element, annotationClass, argName).get(0);
+    }
+
+    public static List<ClassName> getClassNamesFromAnnotation(Element element, Class<? extends Annotation> annotationClass, String argName) {
         AnnotationMirror am = getAnnotationMirror(element, annotationClass);
         AnnotationValue av = getAnnotationValue(am, argName);
+        List<ClassName> list = new ArrayList<>();
         if (av != null) {
-            String name = av.getValue().toString();
-            return ClassName.get(getPackageName(name), getClassName(name));
+            List<String> names = new ArrayList<>();
+            if (av.getValue() instanceof Iterable) {
+                for (Object value : (List) av.getValue()) {
+                    names.add(value.toString().replaceAll("\\.class$", ""));
+                }
+            } else {
+                names.add(av.getValue().toString());
+            }
+            for (String name : names) {
+                try {
+                    System.out.println(Class.forName(name));
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                list.add(ClassName.get(getPackageName(name), getClassName(name)));
+            }
         } else {
-            return null;
+            list.add(null);
         }
+        return list;
     }
 
     public static AnnotationMirror getAnnotationMirror(Element element, Class<? extends Annotation> annotationClass) {

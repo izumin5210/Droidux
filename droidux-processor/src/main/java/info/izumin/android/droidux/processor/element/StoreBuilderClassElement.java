@@ -5,6 +5,9 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.lang.model.element.Modifier;
 
 import info.izumin.android.droidux.Store;
@@ -24,22 +27,38 @@ public class StoreBuilderClassElement {
     private static final String BUILD_METHOD_NAME = "build";
 
     private final StoreModel storeModel;
-    private final ReducerModel reducerModel;
+    private final List<ReducerModel> reducerModels;
 
     public StoreBuilderClassElement(StoreModel storeModel) {
+        this(storeModel, new ArrayList<ReducerModel>() {{
+            add(storeModel.getReducerModel());
+        }});
+    }
+
+    public StoreBuilderClassElement(StoreModel storeModel, List<ReducerModel> reducerModels) {
         this.storeModel = storeModel;
-        this.reducerModel = storeModel.getReducerModel();
+        this.reducerModels = reducerModels;
     }
 
     public TypeSpec createBuilderTypeSpec() {
         return TypeSpec.classBuilder(storeModel.getBuilderName())
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .superclass(ClassName.get(Store.class).nestedClass(storeModel.getBuilderName()))
-                .addField(FieldSpec.builder(reducerModel.getReducer(), reducerModel.getVariableName(), Modifier.PRIVATE).build())
+                .addFields(createFieldSpecs())
                 .addMethod(createBuilderConstructor())
-                .addMethod(createAddReducerMethodSpec())
+                .addMethods(createAddReducerMethodSpecs())
                 .addMethod(createBuildMethodSpec())
                 .build();
+    }
+
+    private List<FieldSpec> createFieldSpecs() {
+        List<FieldSpec> specs = new ArrayList<>();
+        for (ReducerModel reducerModel : reducerModels) {
+            specs.add(FieldSpec.builder(
+                    reducerModel.getReducer(), reducerModel.getVariableName(), Modifier.PRIVATE
+            ).build());
+        }
+        return specs;
     }
 
     private MethodSpec createBuilderConstructor() {
@@ -49,14 +68,20 @@ public class StoreBuilderClassElement {
                 .build();
     }
 
-    private MethodSpec createAddReducerMethodSpec() {
-        return MethodSpec.methodBuilder(ADD_REDUCER_METHOD_NAME)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(storeModel.getBuilder())
-                .addParameter(getParameterSpec(reducerModel.getReducer()))
-                .addStatement("this.$N = $N", reducerModel.getVariableName(), reducerModel.getVariableName())
-                .addStatement("return this")
-                .build();
+    private List<MethodSpec> createAddReducerMethodSpecs() {
+        List<MethodSpec> specs = new ArrayList<>();
+        for (ReducerModel reducerModel : reducerModels) {
+            specs.add(
+                    MethodSpec.methodBuilder(ADD_REDUCER_METHOD_NAME)
+                            .addModifiers(Modifier.PUBLIC)
+                            .returns(storeModel.getBuilder())
+                            .addParameter(getParameterSpec(reducerModel.getReducer()))
+                            .addStatement("this.$N = $N", reducerModel.getVariableName(), reducerModel.getVariableName())
+                            .addStatement("return this")
+                            .build()
+            );
+        }
+        return specs;
     }
 
     private MethodSpec createBuildMethodSpec() {

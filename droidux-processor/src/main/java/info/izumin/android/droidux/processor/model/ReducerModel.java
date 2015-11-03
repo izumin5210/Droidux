@@ -21,18 +21,18 @@ import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClas
 public class ReducerModel {
     public static final String TAG = ReducerModel.class.getSimpleName();
 
-    private final TypeElement element;
-    private final ClassName state;
+    private TypeElement element;
+    private ClassName state;
     private final ClassName reducer;
 
-    private final String qualifiedName;
+    private String qualifiedName;
     private final String packageName;
     private final String className;
     private final String variableName;
-    private final String stateName;
+    private String stateName;
 
-    private final StoreModel storeModel;
-    private final List<DispatchableModel> dispatchableModels;
+    private StoreModel storeModel;
+    private List<DispatchableModel> dispatchableModels;
 
     public ReducerModel(TypeElement element) {
         this.element = element;
@@ -44,8 +44,6 @@ public class ReducerModel {
         this.variableName = StringUtils.getLowerCamelFromUpperCamel(className);
         if (state != null) {
             this.stateName = state.simpleName();
-        } else {
-            throw new IllegalArgumentException();
         }
 
         this.reducer = ClassName.get(packageName, className);
@@ -54,6 +52,14 @@ public class ReducerModel {
         for (ExecutableElement el : findMethodsByAnnotation(element, Dispatchable.class)) {
             dispatchableModels.add(new DispatchableModel(el));
         }
+    }
+
+    public ReducerModel(ClassName reducer) {
+        this.reducer = reducer;
+        this.packageName = reducer.packageName();
+        this.className = reducer.simpleName();
+        this.variableName = StringUtils.getLowerCamelFromUpperCamel(className);
+        this.storeModel = new StoreModel(this);
     }
 
     public TypeElement getElement() {

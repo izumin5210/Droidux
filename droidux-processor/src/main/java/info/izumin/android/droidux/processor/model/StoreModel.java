@@ -21,6 +21,7 @@ public class StoreModel {
     private final ClassName builder;
 
     private final String packageName;
+    private final String storeName;
     private final String className;
     private final String variableName;
     private final String stateName;
@@ -33,7 +34,7 @@ public class StoreModel {
         this.reducerModel = reducerModel;
         this.state = reducerModel.getState();
         this.packageName = reducerModel.getPackageName();
-        String storeName =
+        this.storeName =
                 replaceSuffix(reducerModel.getClassName(), REDUCER_CLASS_NAME_SUFFIX, CLASS_NAME_SUFFIX);
         this.className = CLASS_NAME_PREFIX + storeName;
         this.variableName = getLowerCamelFromUpperCamel(storeName);
@@ -58,6 +59,10 @@ public class StoreModel {
 
     public String getPackageName() {
         return packageName;
+    }
+
+    public String getStoreName() {
+        return storeName;
     }
 
     public String getClassName() {
