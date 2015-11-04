@@ -14,10 +14,7 @@ import java.util.ArrayList;
 
 import info.izumin.android.droidux.sample.action.AddTodoAction;
 import info.izumin.android.droidux.sample.databinding.ActivityMainBinding;
-import info.izumin.android.droidux.sample.entity.TodoList;
-import info.izumin.android.droidux.sample.middleware.Logger;
 import info.izumin.android.droidux.sample.reducer.DroiduxRootStore;
-import info.izumin.android.droidux.sample.reducer.TodoListReducer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 
@@ -33,12 +30,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-
-        store = new DroiduxRootStore.Builder()
-                .addMiddleware(new Logger())
-                .addReducer(new TodoListReducer())
-                .addInitialState(new TodoList(new ArrayList<>()))
-                .build();
+        store = ((App) getApplication()).getStore();
 
         binding.setTasks(store.getTodoListStore().getState());
         editNewTodo = (EditText) findViewById(R.id.edit_new_todo);
