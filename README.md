@@ -1,4 +1,5 @@
 # Droidux
+[![Build Status](https://travis-ci.org/izumin5210/Droidux.svg)](//travis-ci.org/izumin5210/Droidux)
 [![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](//github.com/izumin5210/Droidux/blob/master/LICENSE.md)
 
 Droidux is "predictable state container" implementation, inspired by **[Redux][redux]**.
