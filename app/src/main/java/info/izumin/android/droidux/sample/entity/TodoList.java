@@ -1,5 +1,7 @@
 package info.izumin.android.droidux.sample.entity;
 
+import com.google.gson.Gson;
+
 import java.util.List;
 
 /**
@@ -16,6 +18,11 @@ public class TodoList {
 
     public List<Todo> getTodoList() {
         return todoList;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 
     public static class Todo {
@@ -39,6 +46,11 @@ public class TodoList {
 
         public String getText() {
             return text;
+        }
+
+        @Override
+        public String toString() {
+            return new Gson().toJson(this);
         }
     }
 }

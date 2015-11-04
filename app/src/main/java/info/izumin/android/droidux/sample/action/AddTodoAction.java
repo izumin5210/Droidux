@@ -1,5 +1,7 @@
 package info.izumin.android.droidux.sample.action;
 
+import com.google.gson.Gson;
+
 import info.izumin.android.droidux.Action;
 
 /**
@@ -16,5 +18,10 @@ public class AddTodoAction extends Action {
 
     public String getText() {
         return text;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }
