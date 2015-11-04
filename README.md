@@ -1,11 +1,27 @@
 # Droidux
-[![Build Status](https://travis-ci.org/izumin5210/Droidux.svg)](//travis-ci.org/izumin5210/Droidux)
-[![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](//github.com/izumin5210/Droidux/blob/master/LICENSE.md)
+[![Build Status](https://travis-ci.org/izumin5210/Droidux.svg)](https://travis-ci.org/izumin5210/Droidux)
+[![Download](https://api.bintray.com/packages/izumin5210/maven/droidux/images/download.svg) ](https://bintray.com/izumin5210/maven/droidux/_latestVersion)
+[![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/izumin5210/Droidux/blob/master/LICENSE.md)
 
 Droidux is "predictable state container" implementation, inspired by **[Redux][redux]**.
 
-## Download
+## Installation
+Add to your project build.gradle file:
 
+```groovy
+buildscript {
+  dependencies {
+    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+  }
+}
+
+apply plugin: 'com.neenbedankt.android-apt'
+
+dependencies {
+  compile 'info.izumin.android:droidux:0.1.0'
+  apt 'info.izumin.android:droidux:0.1.0'
+}
+```
 
 ## Usage
 ### Quick example
@@ -130,6 +146,26 @@ store.dispatch(new ClearCountAction());
 // [prev counter]: 2
 // [action]: ClearCountAction
 // [next counter]: 0
+```
+
+### Async action
+
+```java
+class FetchTodoListAction extends Action {
+    public Observable<FetchTodoListAction> fetch() {
+        return client.fetch()
+                .map(todoList -> {
+                    this.todoList = todoList;
+                    return this;
+                });
+    }
+    
+    public TodoList getTodoList() {
+        return todoList;
+    }
+}
+
+new FetchTodoAction().fetch().flatMap(store::dispatch)
 ```
 
 ## License
