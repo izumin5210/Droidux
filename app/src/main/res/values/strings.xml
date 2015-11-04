@@ -6,4 +6,6 @@
     <string name="edit_new_todo_hint">new task</string>
 
     <string name="toast_add_todo">Added new task !</string>
+
+    <string name="menu_clear_completed_todo">Clear completed tasks</string>
 </resources>

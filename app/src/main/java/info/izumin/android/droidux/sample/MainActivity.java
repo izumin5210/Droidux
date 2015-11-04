@@ -3,6 +3,8 @@ package info.izumin.android.droidux.sample;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -45,5 +47,11 @@ public class MainActivity extends AppCompatActivity {
                         }
                 );
         listTodo.setAdapter(new TodoListAdapter(this));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_manu, menu);
+        return true;
     }
 }
