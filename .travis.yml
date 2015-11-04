@@ -1,7 +1,5 @@
 language: android
-jdk:
-  - oraclejdk7
-  - oraclejdk8
+jdk: oraclejdk8
 android:
   components:
     - tools
@@ -19,10 +17,6 @@ cache:
     - $HOME/.gradle/wrapper/
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-before_install:
-  - export JAVA7_HOME=/usr/lib/jvm/java-7-oracle
-  - export JAVA8_HOME=/usr/lib/jvm/java-8-oracle
-  - export JAVA_HOME=$JAVA7_HOME
 script:
   - ./gradlew --full-stacktrace -q test
 
