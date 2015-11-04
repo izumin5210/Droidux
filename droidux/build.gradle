@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.android.databinding'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 23
@@ -30,4 +31,13 @@ dependencies {
     compile 'io.reactivex:rxjava:1.0.15'
 
     testCompile 'junit:junit:4.12'
+}
+
+publish {
+    userOrg = 'izumin5210'
+    groupId = 'info.izumin.android'
+    artifactId = 'droidux'
+    version = VERSION
+    description = '"Predictable state container" implementation, inspired by Redux for JS.'
+    website = 'https://github.com/izumin5210/Droidux'
 }

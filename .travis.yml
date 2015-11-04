@@ -25,3 +25,15 @@ before_install:
   - export JAVA_HOME=$JAVA7_HOME
 script:
   - ./gradlew --full-stacktrace -q test
+
+env:
+  global:
+    - secure: "REN5gNrNwP+M8AaOihgp/mQ6uMQwaAJ6Y4uFDdPqCJHTijyAHG+dTUCjVtloAd2uo2x9yPI4bDPB1eTBlbMgN1Kw4ziGeEB03IV4opzSH+5mq9Wyiw9X54qu/IT9xbeq+F45jujtOfk8enISCQmy1wAKqMtondsrgfRnBNiqk1FNwoqM0EXAAlgyNhjfI9sH20wydPxLajJ7vjTmcWmERW4Ur5aG8LomDek4JrWgvsmLVOkiTi1A4L64CKqvOXnduwHDNbycx5bzkA7wLGUuGMkiQJxR6tyxoAWiY7y/PT7gKKZ53TuEErNFXAGbWeGnbvH/nS+dzOPXpas4yQZ0kGPlaVK8kDWh+I4UOxnuNVhASCWOuPJlXiJ5xLHKhuCER5sTW/hxwXxvxwgy8esJ0B7AfOzuxOtmwZym3ER3hihnRudnQw2f6R3luVqPp1AaUROTwayu/+1Z/PfnZh+jMUF2XT1RFW3ZRSjSiiOfKre9JHnl4F2n6OwuiO4RY46wmUCSrXcqP8ZEbM+FYpMph5WlhD1Anwto+NlOFygX3i4sb8FkH3wOxAqsFZ6523uKjqWzLxZmrI+R8dWunwuLRSRwZago7uV4ny+D5gScpHxAIxiarjhO06gULrYAJThEpELp3HFOB+aESuy64e4wOhgsaiF7ulqTqpi+vZHZO0M="
+
+deploy:
+  provider: script
+  script:
+    - ./gradlew build
+    - ./gradlew bintrayUpload -PbintrayUser=$BINTRAY_USER -PbintrayKey=$BINTRAY_API_KEY -PdryRun=false
+  on:
+    branch: master

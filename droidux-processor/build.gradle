@@ -1,6 +1,7 @@
 import org.gradle.internal.jvm.Jvm
 
 apply plugin: 'java'
+apply plugin: 'com.novoda.bintray-release'
 
 targetCompatibility = JavaVersion.VERSION_1_7
 sourceCompatibility = JavaVersion.VERSION_1_7
@@ -27,3 +28,13 @@ dependencies {
     compile 'com.android.databinding:baseLibrary:1.0-rc3'
     compile fileTree(dir: './libs', includes: ['*.jar'])
 }
+
+publish {
+    userOrg = 'izumin5210'
+    groupId = 'info.izumin.android'
+    artifactId = 'droidux-processor'
+    version = VERSION
+    description = 'Code generator for info.izumin.android.droidux'
+    website = 'https://github.com/izumin5210/Droidux'
+}
+
