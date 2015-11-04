@@ -4,6 +4,7 @@ import java.util.List;
 
 import info.izumin.android.droidux.annotation.Dispatchable;
 import info.izumin.android.droidux.annotation.Reducer;
+import info.izumin.android.droidux.sample.action.ClearCompletedTodoAction;
 import info.izumin.android.droidux.sample.action.AddTodoAction;
 import info.izumin.android.droidux.sample.action.CompleteTodoAction;
 import info.izumin.android.droidux.sample.entity.TodoList;
@@ -29,15 +30,21 @@ public class TodoListReducer {
 
     @Dispatchable(CompleteTodoAction.class)
     public TodoList onCompletedTodo(TodoList state, CompleteTodoAction action) {
-        return new TodoList(
-                Observable.from(state.getTodoList())
-                        .map(todo -> {
-                            if (todo.getId() == action.getId()) {
-                                return new TodoList.Todo(todo.getId(), todo.getText(), action.isCompleted());
-                            }
-                            return todo;
-                        })
-                        .toList().toBlocking().single()
+        return new TodoList(Observable.from(state.getTodoList())
+                .map(todo -> {
+                    if (todo.getId() == action.getId()) {
+                        return new TodoList.Todo(todo.getId(), todo.getText(), action.isCompleted());
+                    }
+                    return todo;
+                })
+                .toList().toBlocking().single()
+        );
+    }
+
+    @Dispatchable(ClearCompletedTodoAction.class)
+    public TodoList onClearCompletedTodo(TodoList state, ClearCompletedTodoAction action) {
+        return new TodoList(Observable.from(state.getTodoList())
+                .filter(todo -> !todo.isCompleted()).toList().toBlocking().single()
         );
     }
 }

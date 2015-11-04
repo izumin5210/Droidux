@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import info.izumin.android.droidux.sample.action.AddTodoAction;
+import info.izumin.android.droidux.sample.action.ClearCompletedTodoAction;
 import info.izumin.android.droidux.sample.databinding.ActivityMainBinding;
 import info.izumin.android.droidux.sample.reducer.DroiduxRootStore;
 import rx.android.schedulers.AndroidSchedulers;
@@ -53,5 +54,16 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_manu, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_clear_completed_todo:
+                store.dispatch(new ClearCompletedTodoAction()).subscribe();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
