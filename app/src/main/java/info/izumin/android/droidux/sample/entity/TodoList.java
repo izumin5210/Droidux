@@ -26,14 +26,20 @@ public class TodoList {
     }
 
     public static class Todo {
-        private int id;
-        private boolean completed;
-        private String text;
+        private final int id;
+        private final boolean completed;
+        private final String text;
 
         public Todo(int id, String text) {
             this.id = id;
             this.text = text;
             this.completed = false;
+        }
+
+        public Todo(int id, String text, boolean isCompleted) {
+            this.id = id;
+            this.text = text;
+            this.completed = isCompleted;
         }
 
         public int getId() {
