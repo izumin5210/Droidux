@@ -1,16 +1,12 @@
 package info.izumin.android.droidux.sample;
 
-import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import java.util.ArrayList;
 
 import info.izumin.android.droidux.sample.action.AddTodoAction;
 import info.izumin.android.droidux.sample.databinding.ActivityMainBinding;
@@ -23,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText editNewTodo;
     private Button btnAddTodo;
+    private ListView listTodo;
 
     private DroiduxRootStore store;
 
@@ -32,9 +29,9 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         store = ((App) getApplication()).getStore();
 
-        binding.setTasks(store.getTodoListStore().getState());
         editNewTodo = (EditText) findViewById(R.id.edit_new_todo);
         btnAddTodo = (Button) findViewById(R.id.btn_add_todo);
+        listTodo = (ListView) findViewById(R.id.list_todo);
 
         PublishSubject<String> subject = PublishSubject.create();
         btnAddTodo.setOnClickListener(v -> subject.onNext(editNewTodo.getText().toString()));
@@ -44,17 +41,9 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(
                         action -> {
                             editNewTodo.setText("");
-                            Log.d(TAG, String.valueOf(store.getTodoListStore().getState().getTodoList().size()));
                             Toast.makeText(MainActivity.this, R.string.toast_add_todo, Toast.LENGTH_LONG).show();
-                        },
-                        throwable -> {
-                            Log.d(TAG, throwable.getMessage());
                         }
                 );
-    }
-
-    @BindingAdapter("items")
-    public static void setItem(ListView listView, TodoList tasks) {
-        listView.setAdapter(new TodoListAdapter(listView.getContext(), tasks));
+        listTodo.setAdapter(new TodoListAdapter(this));
     }
 }

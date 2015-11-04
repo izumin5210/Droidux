@@ -3,8 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
-        <import type="info.izumin.android.droidux.sample.entity.TodoList" />
-        <variable name="tasks" type="TodoList" />
     </data>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -22,8 +20,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:layout_above="@+id/btn_add_todo"
-            app:items="@{tasks}" />
+            android:layout_above="@+id/btn_add_todo" />
 
         <EditText
             android:id="@+id/edit_new_todo"
