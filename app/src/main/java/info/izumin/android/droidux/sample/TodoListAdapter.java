@@ -7,11 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import info.izumin.android.droidux.sample.action.CompleteTodoAction;
 import info.izumin.android.droidux.sample.databinding.ListItemTodoBinding;
 import info.izumin.android.droidux.sample.entity.TodoList;
 import info.izumin.android.droidux.sample.reducer.DroiduxRootStore;
-import rx.subjects.PublishSubject;
 
 /**
  * Created by izumin on 11/4/15.
@@ -57,16 +55,7 @@ public class TodoListAdapter extends BaseAdapter {
             binding = (ListItemTodoBinding) convertView.getTag();
         }
 
-        binding.checkboxTodo.setOnCheckedChangeListener(null);
-
-        TodoList.Todo todo = getItem(position);
-        binding.setTodo(todo);
-
-        PublishSubject<Boolean> checkBoxSubject = PublishSubject.create();
-        binding.checkboxTodo.setOnCheckedChangeListener((v, isChecked) -> checkBoxSubject.onNext(isChecked));
-        checkBoxSubject
-                .flatMap(isCompleted -> store.dispatch(new CompleteTodoAction(todo.getId(), isCompleted)))
-                .subscribe();
+        binding.setTodo(getItem(position));
 
         return convertView;
     }

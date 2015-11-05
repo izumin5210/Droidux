@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import info.izumin.android.droidux.sample.action.AddTodoAction;
 import info.izumin.android.droidux.sample.action.ClearCompletedTodoAction;
+import info.izumin.android.droidux.sample.action.ToggleCompletedTodoAction;
 import info.izumin.android.droidux.sample.databinding.ActivityMainBinding;
 import info.izumin.android.droidux.sample.reducer.DroiduxRootStore;
 import rx.android.schedulers.AndroidSchedulers;
@@ -36,17 +37,22 @@ public class MainActivity extends AppCompatActivity {
         btnAddTodo = (Button) findViewById(R.id.btn_add_todo);
         listTodo = (ListView) findViewById(R.id.list_todo);
 
-        PublishSubject<String> subject = PublishSubject.create();
-        btnAddTodo.setOnClickListener(v -> subject.onNext(editNewTodo.getText().toString()));
-        subject.filter(s -> !s.isEmpty())
+        PublishSubject<String> btnAddTodoSubject = PublishSubject.create();
+        btnAddTodo.setOnClickListener(v -> btnAddTodoSubject.onNext(editNewTodo.getText().toString()));
+        btnAddTodoSubject.filter(s -> !s.isEmpty())
                 .flatMap(s -> store.dispatch(new AddTodoAction(s)))
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        action -> {
-                            editNewTodo.setText("");
-                            Toast.makeText(MainActivity.this, R.string.toast_add_todo, Toast.LENGTH_LONG).show();
-                        }
-                );
+                .subscribe(action -> {
+                    editNewTodo.setText("");
+                    Toast.makeText(MainActivity.this, R.string.toast_add_todo, Toast.LENGTH_LONG).show();
+                });
+
+        PublishSubject<Long> listTodoItemClickSubject = PublishSubject.create();
+        listTodo.setOnItemClickListener((parent, view, position, id) -> listTodoItemClickSubject.onNext(id));
+        listTodoItemClickSubject
+                .flatMap(id -> store.dispatch(new ToggleCompletedTodoAction(id.intValue())))
+                .subscribe();
+
         listTodo.setAdapter(new TodoListAdapter(this));
     }
 

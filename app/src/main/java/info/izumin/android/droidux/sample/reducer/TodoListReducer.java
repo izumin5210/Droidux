@@ -4,9 +4,9 @@ import java.util.List;
 
 import info.izumin.android.droidux.annotation.Dispatchable;
 import info.izumin.android.droidux.annotation.Reducer;
-import info.izumin.android.droidux.sample.action.ClearCompletedTodoAction;
 import info.izumin.android.droidux.sample.action.AddTodoAction;
-import info.izumin.android.droidux.sample.action.CompleteTodoAction;
+import info.izumin.android.droidux.sample.action.ClearCompletedTodoAction;
+import info.izumin.android.droidux.sample.action.ToggleCompletedTodoAction;
 import info.izumin.android.droidux.sample.entity.TodoList;
 import rx.Observable;
 
@@ -28,12 +28,12 @@ public class TodoListReducer {
         return new TodoList(list);
     }
 
-    @Dispatchable(CompleteTodoAction.class)
-    public TodoList onCompletedTodo(TodoList state, CompleteTodoAction action) {
+    @Dispatchable(ToggleCompletedTodoAction.class)
+    public TodoList onCompletedTodo(TodoList state, ToggleCompletedTodoAction action) {
         return new TodoList(Observable.from(state.getTodoList())
                 .map(todo -> {
                     if (todo.getId() == action.getId()) {
-                        return new TodoList.Todo(todo.getId(), todo.getText(), action.isCompleted());
+                        return new TodoList.Todo(todo.getId(), todo.getText(), !todo.isCompleted());
                     }
                     return todo;
                 })
