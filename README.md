@@ -69,15 +69,15 @@ public class ClearCountAction extends Action {}
 DroiduxCounterStore store = new DroiduxCounterStore.Builder()
         .addReducer(new CounterReducer())
         .addInitialState(new Counter(0))
-        .build();                           // Counter: 0
+        .build();                                       // Counter: 0
 
-store.dispatch(new IncrementCountAction()); // Counter: 1
-store.dispatch(new IncrementCountAction()); // Counter: 2
-store.dispatch(new IncrementCountAction()); // Counter: 3
+store.dispatch(new IncrementCountAction()).subscribe(); // Counter: 1
+store.dispatch(new IncrementCountAction()).subscribe(); // Counter: 2
+store.dispatch(new IncrementCountAction()).subscribe(); // Counter: 3
 
-store.dispatch(new DecrementCountAction()); // Counter: 2
+store.dispatch(new DecrementCountAction()).subscribe(); // Counter: 2
 
-store.dispatch(new ClearCountAction());     // Counter: 0
+store.dispatch(new ClearCountAction()).subscribe();     // Counter: 0
 ```
 
 ### Combined reducer/store
@@ -96,8 +96,8 @@ DroiduxRootStore store = new DroiduxRootStore.Builder()
         .addMiddleware(new Logger())
         .build();
 
-store.dispatch(new IncrementCountAction());     // Counter: 1, Todo: 0
-store.dispatch(new AddTodoAction("new task"));  // Counter: 1, Todo: 1
+store.dispatch(new IncrementCountAction()).subscribe();     // Counter: 1, Todo: 0
+store.dispatch(new AddTodoAction("new task")).subscribe();  // Counter: 1, Todo: 1
 ```
 
 ### Middleware
@@ -129,19 +129,19 @@ DroiduxCounterStore store = new DroiduxCounterStore.Builder()
         .addMiddleware(new Logger())        // apply logger middleware
         .build();                           // Counter: 0
 
-store.dispatch(new IncrementCountAction());
+store.dispatch(new IncrementCountAction()).subscribe();
 // logcat:
 // [prev counter]: 0
 // [action]: IncrementCountAction
 // [next counter]: 1
 
-store.dispatch(new IncrementCountAction());
+store.dispatch(new IncrementCountAction()).subscribe();
 // logcat:
 // [prev counter]: 1
 // [action]: IncrementCountAction
 // [next counter]: 2
 
-store.dispatch(new ClearCountAction());
+store.dispatch(new ClearCountAction()).subscribe();
 // logcat:
 // [prev counter]: 2
 // [action]: ClearCountAction
@@ -165,7 +165,7 @@ class FetchTodoListAction extends Action {
     }
 }
 
-new FetchTodoAction().fetch().flatMap(store::dispatch)
+new FetchTodoAction().fetch().flatMap(store::dispatch).subscribe();
 ```
 
 ## License
