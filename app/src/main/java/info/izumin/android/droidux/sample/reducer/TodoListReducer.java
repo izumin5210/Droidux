@@ -6,6 +6,7 @@ import info.izumin.android.droidux.annotation.Dispatchable;
 import info.izumin.android.droidux.annotation.Reducer;
 import info.izumin.android.droidux.sample.action.AddTodoAction;
 import info.izumin.android.droidux.sample.action.ClearCompletedTodoAction;
+import info.izumin.android.droidux.sample.action.DeleteTodoAction;
 import info.izumin.android.droidux.sample.action.ToggleCompletedTodoAction;
 import info.izumin.android.droidux.sample.entity.TodoList;
 import rx.Observable;
@@ -45,6 +46,13 @@ public class TodoListReducer {
     public TodoList onClearCompletedTodo(TodoList state, ClearCompletedTodoAction action) {
         return new TodoList(Observable.from(state.getTodoList())
                 .filter(todo -> !todo.isCompleted()).toList().toBlocking().single()
+        );
+    }
+
+    @Dispatchable(DeleteTodoAction.class)
+    public TodoList onDeletedTodo(TodoList state, DeleteTodoAction action) {
+        return new TodoList(Observable.from(state.getTodoList())
+                .filter(todo -> todo.getId() != action.getId()).toList().toBlocking().single()
         );
     }
 }

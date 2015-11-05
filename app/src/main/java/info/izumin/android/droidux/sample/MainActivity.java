@@ -2,6 +2,7 @@ package info.izumin.android.droidux.sample;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import info.izumin.android.droidux.sample.action.AddTodoAction;
 import info.izumin.android.droidux.sample.action.ClearCompletedTodoAction;
+import info.izumin.android.droidux.sample.action.DeleteTodoAction;
 import info.izumin.android.droidux.sample.action.ToggleCompletedTodoAction;
 import info.izumin.android.droidux.sample.databinding.ActivityMainBinding;
 import info.izumin.android.droidux.sample.reducer.DroiduxRootStore;
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(action -> {
                     editNewTodo.setText("");
-                    Toast.makeText(MainActivity.this, R.string.toast_add_todo, Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, R.string.toast_add_todo, Toast.LENGTH_SHORT).show();
                 });
 
         PublishSubject<Long> listTodoItemClickSubject = PublishSubject.create();
@@ -52,6 +54,28 @@ public class MainActivity extends AppCompatActivity {
         listTodoItemClickSubject
                 .flatMap(id -> store.dispatch(new ToggleCompletedTodoAction(id.intValue())))
                 .subscribe();
+
+        PublishSubject<Long> listTodoItemLongClickSubject = PublishSubject.create();
+        listTodo.setOnItemLongClickListener((parent, view, position, id) -> {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.dialog_delete_todo_title)
+                    .setMessage(getString(R.string.dialog_delete_todo_message,
+                            store.getTodoListStore().getState().getTodoById((int) id).getText()))
+                    .setPositiveButton(R.string.dialog_delete_todo_btn_positive, (dialog, which) -> {
+                        listTodoItemLongClickSubject.onNext(id);
+                    })
+                    .setNeutralButton(R.string.dialog_delete_todo_btn_neutral, (dialog, which) -> {
+                        dialog.dismiss();
+                    })
+                    .show();
+            return true;
+        });
+        listTodoItemLongClickSubject
+                .flatMap(id -> store.dispatch(new DeleteTodoAction(id)))
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(action -> {
+                    Toast.makeText(this, R.string.toast_delete_todo, Toast.LENGTH_SHORT).show();
+                });
 
         listTodo.setAdapter(new TodoListAdapter(this));
     }
