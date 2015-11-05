@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import rx.Observable;
+
 /**
  * Created by izumin on 11/4/15.
  */
@@ -18,6 +20,11 @@ public class TodoList {
 
     public List<Todo> getTodoList() {
         return todoList;
+    }
+
+    public Todo getTodoById(int id) {
+        return Observable.from(getTodoList())
+                .filter(todo -> id == todo.getId()).toBlocking().first();
     }
 
     @Override
