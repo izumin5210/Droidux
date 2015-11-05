@@ -11,10 +11,12 @@ Add to your project build.gradle file:
 ```groovy
 buildscript {
   dependencies {
+    classpath "com.android.databinding:dataBinder:1.0-rc3"
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
   }
 }
 
+apply plugin: 'com.android.databinding'
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
