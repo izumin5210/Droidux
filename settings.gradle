@@ -1,1 +1,1 @@
-include ':app', ':droidux', ':droidux-processor'
+include ':droidux', ':droidux-processor', ':examples:todomvc'
