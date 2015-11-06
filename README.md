@@ -11,10 +11,12 @@ Add to your project build.gradle file:
 ```groovy
 buildscript {
   dependencies {
+    classpath "com.android.databinding:dataBinder:1.0-rc3"
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
   }
 }
 
+apply plugin: 'com.android.databinding'
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
@@ -27,7 +29,10 @@ dependencies {
 ### Quick example
 
 ```java
-// Implementation of state class
+/**
+ * This is a state class.
+ * It can be as simple as possible implementation, like POJO, or immutable object. 
+ */
 public class Counter {
     private final int count;
 
@@ -41,8 +46,23 @@ public class Counter {
 }
 
 // Implementation of reducer
+/**
+ * This is a reducer class.
+ * It should be applied @Reducer annotation is given a state class as an argument.
+ * It describe whether the reducer should handle which actions.
+ */
 @Reducer(Count.class)
 public class CountReducer {
+
+    /**
+     * This is a method to handle actions.
+     * It should be applied @Dispatchable annotation is given an action class as ano argument.
+     * It describe how to transform the state into the next state when dispatched actions.
+     * It should return the next state instance, and it is preferred instantiate the new state.
+     *
+     * This example handle IncrementCountAction,
+     + and it returns new counter instance that state is incremented.
+     */
     @Dispatchable(IncrementCountAction.class)
     public Counter onIncrement(Counter state, IncrementCountAction action) {
         return new Counter(state.getCount() + 1);
@@ -59,18 +79,33 @@ public class CountReducer {
     }
 }
 
-// Implementation of actions
+/**
+ * They are action classes. They should extend Action class.
+ */
 public class IncrementCountAction extends Action {}
 public class DecrementCountAction extends Action {}
 public class ClearCountAction extends Action {}
 
 
-// Instantiate store class 
+// Instantiate a Droidux store holding the state of your app.
+// Its class is generated automatically from Reducer class.
+// 
+// The instantiating should use Builder class,
+// and it should register a reducer instance and an initial state.
+// 
+// Its APIs in this example are following:
+// - rx.Observable<Action> dispatch(Action action)
+// - rx.Observable<Counter> observe()
+// - Counter getState()
 DroiduxCounterStore store = new DroiduxCounterStore.Builder()
         .addReducer(new CounterReducer())
         .addInitialState(new Counter(0))
         .build();                                       // Counter: 0
 
+// You can observe to the updates using RxJava interface. 
+store.observe((counter) -> Log.d(TAG, counter.toString()));
+
+// The only way to mutate the internal state is to dispatch an action.
 store.dispatch(new IncrementCountAction()).subscribe(); // Counter: 1
 store.dispatch(new IncrementCountAction()).subscribe(); // Counter: 2
 store.dispatch(new IncrementCountAction()).subscribe(); // Counter: 3
