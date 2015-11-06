@@ -52,7 +52,7 @@ public class ReducerModel {
         this.storeModel = new StoreModel(this);
         this.dispatchableModels = new ArrayList<>();
         for (ExecutableElement el : findMethodsByAnnotation(element, Dispatchable.class)) {
-            dispatchableModels.add(new DispatchableModel(el));
+            dispatchableModels.add(new DispatchableModel(el, this));
         }
     }
 
