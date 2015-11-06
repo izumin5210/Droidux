@@ -63,7 +63,6 @@ public class Counter {
     }
 }
 
-// Implementation of reducer
 /**
  * This is a reducer class.
  * It should be applied @Reducer annotation is given a state class as an argument.
