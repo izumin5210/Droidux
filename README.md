@@ -5,6 +5,24 @@
 
 Droidux is "predictable state container" implementation, inspired by **[Redux][redux]**.
 
+## Features
+Droidux is influenced by [Three principles][three-principles] of Redux.
+
+> * Single source of truth
+>     - The state of your whole application is stored in an object tree inside a single store.
+> * State is read-only
+>     - The only way to mutate the state is to emit an action, an object describing what happened.
+> * Mutations are written as pure functions
+>     - To specify how the state tree is transformed by actions, you write pure reducers.
+>
+> - [Three Principles | Redux][three-principles]
+
+Features of Droidux are following:
+
+* All mutations can be observed via rx.Observable from [RxJava][rxjava]
+* All mutations are automatically notified to views via [Data Binding][databindng]
+
+
 ## Installation
 Add to your project build.gradle file:
 
@@ -203,6 +221,10 @@ class FetchTodoListAction extends Action {
 new FetchTodoAction().fetch().flatMap(store::dispatch).subscribe();
 ```
 
+## Examples
+
+* [TodoMVC](https://github.com/izumin5210/Droidux/tree/master/examples/todomvc)
+
 ## License
 
 ```
@@ -222,3 +244,6 @@ limitations under the License.
 ```
 
 [redux]: https://github.com/rackt/redux
+[rxjava]: https://github.com/ReactiveX/RxJava
+[three-principles]: http://rackt.org/redux/docs/introduction/ThreePrinciples.html
+[databinding]: http://developer.android.com/tools/data-binding/guide.html
