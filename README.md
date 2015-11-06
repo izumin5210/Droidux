@@ -15,12 +15,12 @@ Droidux is influenced by [Three principles][three-principles] of Redux.
 > * Mutations are written as pure functions
 >     - To specify how the state tree is transformed by actions, you write pure reducers.
 >
-> - [Three Principles | Redux][three-principles]
+> [Three Principles | Redux][three-principles]
 
 Features of Droidux are following:
 
 * All mutations can be observed via rx.Observable from [RxJava][rxjava]
-* All mutations are automatically notified to views via [Data Binding][databindng]
+* All mutations are automatically notified to views via [Data Binding][databinding]
 
 
 ## Installation
