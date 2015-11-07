@@ -12,6 +12,7 @@ import javax.lang.model.element.Modifier;
 
 import info.izumin.android.droidux.Middleware;
 import info.izumin.android.droidux.Store;
+import info.izumin.android.droidux.exception.NotInitializedException;
 import info.izumin.android.droidux.processor.model.ReducerModel;
 import info.izumin.android.droidux.processor.model.StoreModel;
 
@@ -28,6 +29,7 @@ public class StoreBuilderClassElement {
     static final String ADD_INITIAL_STATE_METHOD_NAME = "addInitialState";
     static final String ADD_MIDDLEWARE_METHOD_NAME = "addMiddleware";
     static final String BUILD_METHOD_NAME = "build";
+    static final String ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION = "$N has not been initialized.";
 
     private final StoreModel storeModel;
     private final List<ReducerModel> reducerModels;
@@ -111,10 +113,24 @@ public class StoreBuilderClassElement {
     }
 
     private MethodSpec createBuildMethodSpec() {
-        return MethodSpec.methodBuilder(BUILD_METHOD_NAME)
+        MethodSpec.Builder builder = MethodSpec.methodBuilder(BUILD_METHOD_NAME)
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(getOverrideAnnotation())
-                .returns(storeModel.getStore())
+                .returns(storeModel.getStore());
+
+        for (ReducerModel reducerModel : reducerModels) {
+            builder = builder
+                    .beginControlFlow("if ($N == null)", reducerModel.getVariableName())
+                    .addStatement("throw new $T(\"" + ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION + "\")",
+                            NotInitializedException.class, reducerModel.getClassName())
+                    .endControlFlow()
+                    .beginControlFlow("if ($N == null)", reducerModel.getStateVariableName())
+                    .addStatement("throw new $T(\"" + ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION + "\")",
+                            NotInitializedException.class, reducerModel.getStateName())
+                    .endControlFlow();
+        }
+
+        return builder
                 .addStatement("return new $N(this)", storeModel.getClassName())
                 .build();
     }
