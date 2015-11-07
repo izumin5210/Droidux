@@ -401,4 +401,21 @@ public final class Source {
                 "}"
         };
     }
+
+    public static class ReducerWithoutSuffix {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.annotation.Dispatchable;",
+                "import info.izumin.android.droidux.annotation.Reducer;",
+                "import info.izumin.android.droidux.processor.fixture.IncrementCountAction;",
+                "import info.izumin.android.droidux.processor.fixture.Counter;",
+                "@Reducer(Counter.class)",
+                "public class CounterReduce {",
+                "    @Dispatchable(IncrementCountAction.class)",
+                "    public Counter onIncrement(Counter state, IncrementCountAction action, String extra) {",
+                "        return state;",
+                "    }",
+                "}"
+        };
+    }
 }

@@ -101,4 +101,14 @@ public class DroiduxProcessorTest {
                 forSourceLines("DroiduxTodoListReducer", Source.EMPTY)
         );
     }
+
+    @Test
+    public void reducerWithoutSuffix() {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage("Class name of annotated class with @Reducer must be end with \"Reducer\".");
+        assertJavaSource(
+                forSourceLines("CounterReduce", Source.ReducerWithoutSuffix.TARGET),
+                forSourceLines("DroiduxTodoListReduce", Source.EMPTY)
+        );
+    }
 }
