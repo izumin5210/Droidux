@@ -5,7 +5,7 @@ import com.squareup.javapoet.ClassName;
 import javax.lang.model.element.ExecutableElement;
 
 import info.izumin.android.droidux.annotation.Dispatchable;
-import info.izumin.android.droidux.processor.exceptions.InvalidMethodArgumentsException;
+import info.izumin.android.droidux.processor.exception.InvalidMethodArgumentsException;
 
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassNameFromAnnotation;
 

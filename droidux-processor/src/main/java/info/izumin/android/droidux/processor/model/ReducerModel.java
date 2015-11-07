@@ -10,7 +10,7 @@ import javax.lang.model.element.TypeElement;
 
 import info.izumin.android.droidux.annotation.Dispatchable;
 import info.izumin.android.droidux.annotation.Reducer;
-import info.izumin.android.droidux.processor.exceptions.InvalidClassNameException;
+import info.izumin.android.droidux.processor.exception.InvalidClassNameException;
 import info.izumin.android.droidux.processor.util.StringUtils;
 
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.findMethodsByAnnotation;
