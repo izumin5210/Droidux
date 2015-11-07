@@ -6,6 +6,8 @@ package info.izumin.android.droidux.processor.fixture;
 public final class Source {
     public static final String TAG = Source.class.getSimpleName();
 
+    public static final String[] EMPTY = {};
+
     public static class Counter {
         public static final String[] TARGET = {
                 "package info.izumin.android.droidux.sample;",
@@ -28,6 +30,7 @@ public final class Source {
                 "import info.izumin.android.droidux.Action;",
                 "import info.izumin.android.droidux.Middleware;",
                 "import info.izumin.android.droidux.Store;",
+                "import info.izumin.android.droidux.exception.NotInitializedException;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "import info.izumin.android.droidux.processor.fixture.IncrementCountAction;",
                 "",
@@ -77,6 +80,12 @@ public final class Source {
                 "",
                 "        @Override",
                 "        public DroiduxCounterStore build() {",
+                "            if (counterReducer == null) {",
+                "                throw new NotInitializedException(\"CounterReducer has not been initialized.\");",
+                "            }",
+                "            if (counter == null) {",
+                "                throw new NotInitializedException(\"Counter has not been initialized.\");",
+                "            }",
                 "            return new DroiduxCounterStore(this);",
                 "        }",
                 "    }",
@@ -84,6 +93,90 @@ public final class Source {
         };
     }
 
+    public static class CounterTakesOnlyStateArgument {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.annotation.Dispatchable;",
+                "import info.izumin.android.droidux.annotation.Reducer;",
+                "import info.izumin.android.droidux.processor.fixture.IncrementCountAction;",
+                "import info.izumin.android.droidux.processor.fixture.Counter;",
+                "@Reducer(Counter.class)",
+                "public class CounterReducer {",
+                "    @Dispatchable(IncrementCountAction.class)",
+                "    public Counter onIncrement(Counter state) {",
+                "        return state;",
+                "    }",
+                "}"
+        };
+
+        public static final String[] GENERATED = {
+                "package info.izumin.android.droidux.sample;",
+                "",
+                "import info.izumin.android.droidux.Action;",
+                "import info.izumin.android.droidux.Middleware;",
+                "import info.izumin.android.droidux.Store;",
+                "import info.izumin.android.droidux.exception.NotInitializedException;",
+                "import info.izumin.android.droidux.processor.fixture.Counter;",
+                "import info.izumin.android.droidux.processor.fixture.IncrementCountAction;",
+                "",
+                "public final class DroiduxCounterStore extends Store<Counter> {",
+                "    private final CounterReducer counterReducer;",
+                "",
+                "    protected DroiduxCounterStore(Builder builder) {",
+                "        super(builder);",
+                "        this.counterReducer = builder.counterReducer;",
+                "        setState(builder.counter);",
+                "    }",
+                "",
+                "    @Override",
+                "    protected void dispatchToReducer(Action action) {",
+                "        Class<? extends Action> actionClass = action.getClass();",
+                "        Counter result = null;",
+                "        if (actionClass.isAssignableFrom(IncrementCountAction.class)) {",
+                "            result = counterReducer.onIncrement(getState());",
+                "        }",
+                "        if (result != null) {",
+                "            setState(result);",
+                "        }",
+                "    }",
+                "",
+                "    public static class Builder extends info.izumin.android.droidux.Store.Builder {",
+                "        private CounterReducer counterReducer;",
+                "        private Counter counter;",
+                "",
+                "        public Builder() {",
+                "            super();",
+                "        }",
+                "",
+                "        public Builder addMiddleware(Middleware middleware) {",
+                "            getMiddlewares().add(middleware);",
+                "            return this;",
+                "        }",
+                "",
+                "        public Builder addReducer(CounterReducer counterReducer) {",
+                "            this.counterReducer = counterReducer;",
+                "            return this;",
+                "        }",
+                "",
+                "        public Builder addInitialState(Counter counter) {",
+                "            this.counter = counter;",
+                "            return this;",
+                "        }",
+                "",
+                "        @Override",
+                "        public DroiduxCounterStore build() {",
+                "            if (counterReducer == null) {",
+                "                throw new NotInitializedException(\"CounterReducer has not been initialized.\");",
+                "            }",
+                "            if (counter == null) {",
+                "                throw new NotInitializedException(\"Counter has not been initialized.\");",
+                "            }",
+                "            return new DroiduxCounterStore(this);",
+                "        }",
+                "    }",
+                "}"
+        };
+    }
     public static class TodoList {
         public static final String[] TARGET = {
                 "package info.izumin.android.droidux.sample;",
@@ -111,6 +204,7 @@ public final class Source {
                 "import info.izumin.android.droidux.Action;",
                 "import info.izumin.android.droidux.Middleware;",
                 "import info.izumin.android.droidux.Store;",
+                "import info.izumin.android.droidux.exception.NotInitializedException;",
                 "import info.izumin.android.droidux.processor.fixture.AddTodoItemAction;",
                 "import info.izumin.android.droidux.processor.fixture.CompleteTodoItemAction;",
                 "import info.izumin.android.droidux.processor.fixture.TodoList;",
@@ -164,6 +258,12 @@ public final class Source {
                 "",
                 "        @Override",
                 "        public DroiduxTodoListStore build() {",
+                "            if (todoListReducer == null) {",
+                "                throw new NotInitializedException(\"TodoListReducer has not been initialized.\");",
+                "            }",
+                "            if (todoList == null) {",
+                "                throw new NotInitializedException(\"TodoList has not been initialized.\");",
+                "            }",
                 "            return new DroiduxTodoListStore(this);",
                 "        }",
                 "    }",
@@ -185,6 +285,7 @@ public final class Source {
                 "",
                 "import info.izumin.android.droidux.CombinedStore;",
                 "import info.izumin.android.droidux.Middleware;",
+                "import info.izumin.android.droidux.exception.NotInitializedException;",
                 "",
                 "public final class DroiduxRootStore extends CombinedStore {",
                 "    private final CounterReducer counterReducer;",
@@ -247,8 +348,106 @@ public final class Source {
                 "",
                 "        @Override",
                 "        public DroiduxRootStore build() {",
+                "            if (counterReducer == null) {",
+                "                throw new NotInitializedException(\"CounterReducer has not been initialized.\");",
+                "            }",
+                "            if (counter == null) {",
+                "                throw new NotInitializedException(\"Counter has not been initialized.\");",
+                "            }",
+                "            if (todoListReducer == null) {",
+                "                throw new NotInitializedException(\"TodoListReducer has not been initialized.\");",
+                "            }",
+                "            if (todoList == null) {",
+                "                throw new NotInitializedException(\"TodoList has not been initialized.\");",
+                "            }",
                 "            return new DroiduxRootStore(this);",
                 "        }",
+                "    }",
+                "}"
+        };
+    }
+
+    public static class DispatchableTakesWrongStateType {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.annotation.Dispatchable;",
+                "import info.izumin.android.droidux.annotation.Reducer;",
+                "import info.izumin.android.droidux.processor.fixture.IncrementCountAction;",
+                "import info.izumin.android.droidux.processor.fixture.Counter;",
+                "@Reducer(Counter.class)",
+                "public class CounterReducer {",
+                "    @Dispatchable(IncrementCountAction.class)",
+                "    public Counter onIncrement(Object state, IncrementCountAction action) {",
+                "        return state;",
+                "    }",
+                "}"
+        };
+    }
+
+    public static class DispatchableTakesWrongActionType {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.annotation.Dispatchable;",
+                "import info.izumin.android.droidux.annotation.Reducer;",
+                "import info.izumin.android.droidux.processor.fixture.AddTodoItemAction;",
+                "import info.izumin.android.droidux.processor.fixture.CompleteTodoItemAction;",
+                "import info.izumin.android.droidux.processor.fixture.TodoList;",
+                "@Reducer(TodoList.class)",
+                "public class TodoListReducer {",
+                "    @Dispatchable(AddTodoItemAction.class)",
+                "    public TodoList onAddItem(TodoList state, CompleteTodoItemAction action) {",
+                "        return state;",
+                "    }",
+                "}"
+        };
+    }
+
+    public static class DispatchableTakesNoArguments {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.annotation.Dispatchable;",
+                "import info.izumin.android.droidux.annotation.Reducer;",
+                "import info.izumin.android.droidux.processor.fixture.IncrementCountAction;",
+                "import info.izumin.android.droidux.processor.fixture.Counter;",
+                "@Reducer(Counter.class)",
+                "public class CounterReducer {",
+                "    @Dispatchable(IncrementCountAction.class)",
+                "    public Counter onIncrement() {",
+                "        return state;",
+                "    }",
+                "}"
+        };
+    }
+
+    public static class DispatchableTakesExtraArguments {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.annotation.Dispatchable;",
+                "import info.izumin.android.droidux.annotation.Reducer;",
+                "import info.izumin.android.droidux.processor.fixture.IncrementCountAction;",
+                "import info.izumin.android.droidux.processor.fixture.Counter;",
+                "@Reducer(Counter.class)",
+                "public class CounterReducer {",
+                "    @Dispatchable(IncrementCountAction.class)",
+                "    public Counter onIncrement(Counter state, IncrementCountAction action, String extra) {",
+                "        return state;",
+                "    }",
+                "}"
+        };
+    }
+
+    public static class ReducerWithoutSuffix {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.annotation.Dispatchable;",
+                "import info.izumin.android.droidux.annotation.Reducer;",
+                "import info.izumin.android.droidux.processor.fixture.IncrementCountAction;",
+                "import info.izumin.android.droidux.processor.fixture.Counter;",
+                "@Reducer(Counter.class)",
+                "public class CounterReduce {",
+                "    @Dispatchable(IncrementCountAction.class)",
+                "    public Counter onIncrement(Counter state, IncrementCountAction action, String extra) {",
+                "        return state;",
                 "    }",
                 "}"
         };

@@ -10,6 +10,7 @@ import javax.lang.model.element.TypeElement;
 
 import info.izumin.android.droidux.annotation.Dispatchable;
 import info.izumin.android.droidux.annotation.Reducer;
+import info.izumin.android.droidux.processor.exception.InvalidClassNameException;
 import info.izumin.android.droidux.processor.util.StringUtils;
 
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.findMethodsByAnnotation;
@@ -20,6 +21,8 @@ import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClas
  */
 public class ReducerModel {
     public static final String TAG = ReducerModel.class.getSimpleName();
+
+    private static final String CLASS_NAME_SUFFIX = "Reducer";
 
     private final TypeElement element;
     private final ClassName state;
@@ -48,11 +51,15 @@ public class ReducerModel {
             this.stateVariableName = StringUtils.getLowerCamelFromUpperCamel(stateName);
         }
 
+        if (!className.endsWith(CLASS_NAME_SUFFIX)) {
+            throw new InvalidClassNameException("Class name of annotated class with @Reducer must be end with \"Reducer\".");
+        }
+
         this.reducer = ClassName.get(packageName, className);
         this.storeModel = new StoreModel(this);
         this.dispatchableModels = new ArrayList<>();
         for (ExecutableElement el : findMethodsByAnnotation(element, Dispatchable.class)) {
-            dispatchableModels.add(new DispatchableModel(el));
+            dispatchableModels.add(new DispatchableModel(el, this));
         }
     }
 
