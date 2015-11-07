@@ -7,7 +7,7 @@ import javax.lang.model.element.ExecutableElement;
 import info.izumin.android.droidux.annotation.Dispatchable;
 import info.izumin.android.droidux.processor.exception.InvalidMethodArgumentsException;
 
-import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassNameFromAnnotation;
+import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassFromAnnotation;
 
 /**
  * Created by izumin on 11/3/15.
@@ -21,7 +21,7 @@ public class DispatchableModel {
 
     public DispatchableModel(ExecutableElement element, ReducerModel reducerModel) {
         this.element = element;
-        this.action = getClassNameFromAnnotation(element, Dispatchable.class, "value");
+        this.action = ClassName.get(getClassFromAnnotation(element, Dispatchable.class, "value"));
         this.methodName = element.getSimpleName().toString();
 
         String displayName = reducerModel.getClassName() + "#" + element.getSimpleName() + "()";
@@ -29,7 +29,6 @@ public class DispatchableModel {
         if (element.getParameters().size() < 1 || element.getParameters().size() > 2) {
             throw new InvalidMethodArgumentsException(displayName + " must take 2 arguments.");
         }
-
 
         if (!ClassName.get(element.getParameters().get(0).asType()).equals(reducerModel.getState())) {
             throw new InvalidMethodArgumentsException("1st argument of " + displayName + " does not match the @Reducer value.");

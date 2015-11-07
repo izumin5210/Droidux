@@ -14,7 +14,7 @@ import info.izumin.android.droidux.processor.exception.InvalidClassNameException
 import info.izumin.android.droidux.processor.util.StringUtils;
 
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.findMethodsByAnnotation;
-import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassNameFromAnnotation;
+import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassFromAnnotation;
 
 /**
  * Created by izumin on 11/3/15.
@@ -40,7 +40,7 @@ public class ReducerModel {
 
     public ReducerModel(TypeElement element) {
         this.element = element;
-        this.state = getClassNameFromAnnotation(element, Reducer.class, "value");
+        this.state = ClassName.get(getClassFromAnnotation(element, Reducer.class, "value"));
 
         this.qualifiedName = element.getQualifiedName().toString();
         this.packageName = StringUtils.getPackageName(qualifiedName);
