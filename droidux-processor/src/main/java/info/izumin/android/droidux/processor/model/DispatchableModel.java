@@ -21,8 +21,8 @@ public class DispatchableModel {
 
     public DispatchableModel(ExecutableElement element, ReducerModel reducerModel) {
         this.element = element;
-        this.action = ClassName.get(getClassFromAnnotation(element, Dispatchable.class, "value"));
         this.methodName = element.getSimpleName().toString();
+        this.action = getClassFromAnnotation(element, Dispatchable.class, "value");
 
         String displayName = reducerModel.getClassName() + "#" + element.getSimpleName() + "()";
 

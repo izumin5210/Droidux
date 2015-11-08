@@ -3,6 +3,7 @@ package info.izumin.android.droidux.processor;
 import com.google.auto.common.BasicAnnotationProcessor;
 import com.google.auto.service.AutoService;
 import com.google.common.collect.SetMultimap;
+import com.squareup.javapoet.ClassName;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -67,15 +68,15 @@ public class DroiduxProcessor extends BasicAnnotationProcessor {
     private final ProcessingStep combinedReducerProcessingStep = new ProcessingStep() {
         @Override
         public Set<? extends Class<? extends Annotation>> annotations() {
-            return new HashSet<Class<? extends Annotation>>() {{ add(Reducer.class); add(CombinedReducer.class); }};
+            return new HashSet<Class<? extends Annotation>>() {{ add(CombinedReducer.class); }};
         }
 
         @Override
         public Set<Element> process(SetMultimap<Class<? extends Annotation>, Element> elementsByAnnotation) {
             for (Element element : elementsByAnnotation.get(CombinedReducer.class)) {
                 List<TypeElement> reducers = new ArrayList<>();
-                for (Class reducerClass : getClassesFromAnnotation(element, CombinedReducer.class, "value")) {
-                    reducers.add(getElements().getTypeElement(reducerClass.getCanonicalName()));
+                for (ClassName reducerClass : getClassesFromAnnotation(element, CombinedReducer.class, "value")) {
+                    reducers.add(getElements().getTypeElement(reducerClass.toString()));
                 }
                 try {
                     new CombinedStoreClassElement(new CombinedReducerModel((TypeElement) element, reducers))

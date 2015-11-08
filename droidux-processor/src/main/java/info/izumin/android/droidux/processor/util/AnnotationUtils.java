@@ -1,5 +1,7 @@
 package info.izumin.android.droidux.processor.util;
 
+import com.squareup.javapoet.ClassName;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +12,10 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 
-import static com.google.auto.common.AnnotationMirrors.getAnnotatedAnnotations;
 import static com.google.auto.common.AnnotationMirrors.getAnnotationElementAndValue;
+import static com.google.auto.common.MoreElements.getAnnotationMirror;
+import static info.izumin.android.droidux.processor.util.StringUtils.getClassName;
+import static info.izumin.android.droidux.processor.util.StringUtils.getPackageName;
 
 /**
  * Created by izumin on 11/2/15.
@@ -34,25 +38,25 @@ public final class AnnotationUtils {
         return list;
     }
 
-    public static Class getClassFromAnnotation(Element element, Class<? extends Annotation> annotationClass, String argName) {
+    public static ClassName getClassFromAnnotation(Element element, Class<? extends Annotation> annotationClass, String argName) {
         return getClassesFromAnnotation(element, annotationClass, argName).get(0);
     }
 
-    public static List<Class> getClassesFromAnnotation(Element element, Class<? extends Annotation> annotationType, String argName) {
-        List<Class> classes = new ArrayList<>();
-        for (AnnotationMirror mirror : getAnnotatedAnnotations(element, annotationType)) {
-            Map.Entry<ExecutableElement, AnnotationValue> entry = getAnnotationElementAndValue(mirror, argName);
-            if (entry.getValue().getValue() instanceof Iterable) {
-                for (Object value : (List) entry.getValue().getValue()) {
-                    try {
-                        classes.add(Class.forName(value.toString().replaceAll("\\.class$", "")));
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else if (entry.getValue().getValue() instanceof Class) {
-                classes.add((Class) entry.getValue().getValue());
+    public static List<ClassName> getClassesFromAnnotation(Element element, Class<? extends Annotation> annotationType, String argName) {
+        AnnotationMirror mirror = getAnnotationMirror(element, annotationType).orNull();
+        if (mirror == null) { return new ArrayList<>(); }
+        Map.Entry<ExecutableElement, AnnotationValue> entry = getAnnotationElementAndValue(mirror, argName);
+        List<String> names = new ArrayList<>();
+        if (entry.getValue().getValue() instanceof Iterable) {
+            for (Object value : (List) entry.getValue().getValue()) {
+                names.add(value.toString().replaceAll("\\.class$", ""));
             }
+        } else {
+                names.add(entry.getValue().getValue().toString().replaceAll("\\.class$", ""));
+        }
+        List<ClassName> classes = new ArrayList<>();
+        for (String name : names) {
+            classes.add(ClassName.get(getPackageName(name), getClassName(name)));
         }
         return classes;
     }

@@ -1,6 +1,6 @@
 package info.izumin.android.droidux.processor.model;
 
-import com.google.auto.common.MoreTypes;
+import com.squareup.javapoet.ClassName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +22,9 @@ public class CombinedReducerModel extends ReducerModel {
     public CombinedReducerModel(TypeElement element, List<TypeElement> reducerElements) {
         super(element);
         List<ReducerModel> reducerModels = new ArrayList<>();
-        for (Class reducer : getClassesFromAnnotation(element, CombinedReducer.class, "value")) {
+        for (ClassName reducer : getClassesFromAnnotation(element, CombinedReducer.class, "value")) {
             for (TypeElement reducerElement : reducerElements) {
-                if (MoreTypes.isTypeOf(reducer, reducerElement.asType())) {
+                if (reducer.toString().equals(reducerElement.toString())) {
                     reducerModels.add(new ReducerModel(reducerElement));
                 }
             }
