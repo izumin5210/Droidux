@@ -15,13 +15,17 @@ Droidux is influenced by [Three principles][three-principles] of Redux.
 > * Mutations are written as pure functions
 >     - To specify how the state tree is transformed by actions, you write pure reducers.
 >
-> - [Three Principles | Redux][three-principles]
+> [Three Principles | Redux][three-principles]
 
 Features of Droidux are following:
 
 * All mutations can be observed via rx.Observable from [RxJava][rxjava]
-* All mutations are automatically notified to views via [Data Binding][databindng]
+* All mutations are automatically notified to views via [Data Binding][databinding]
 
+### Data flow
+![Droidux data flow](droidux.png)
+
+see also: [Introduction to Redux // Speaker Deck](https://speakerdeck.com/axross/introduction-to-redux) (in Japanese)
 
 ## Installation
 Add to your project build.gradle file:
@@ -63,7 +67,6 @@ public class Counter {
     }
 }
 
-// Implementation of reducer
 /**
  * This is a reducer class.
  * It should be applied @Reducer annotation is given a state class as an argument.
