@@ -22,6 +22,10 @@ Features of Droidux are following:
 * All mutations can be observed via rx.Observable from [RxJava][rxjava]
 * All mutations are automatically notified to views via [Data Binding][databinding]
 
+### Data flow
+![Droidux data flow](droidux.png)
+
+see also: [Introduction to Redux // Speaker Deck](https://speakerdeck.com/axross/introduction-to-redux) (in Japanese)
 
 ## Installation
 Add to your project build.gradle file:
