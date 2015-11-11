@@ -1,17 +1,20 @@
 package info.izumin.android.droidux.processor;
 
+import com.google.auto.common.BasicAnnotationProcessor;
 import com.google.auto.service.AutoService;
+import com.google.common.collect.SetMultimap;
+import com.squareup.javapoet.ClassName;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
-import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
@@ -22,45 +25,67 @@ import info.izumin.android.droidux.processor.element.StoreClassElement;
 import info.izumin.android.droidux.processor.model.CombinedReducerModel;
 import info.izumin.android.droidux.processor.model.ReducerModel;
 
-import static info.izumin.android.droidux.processor.util.AnnotationUtils.findClassesByAnnotation;
+import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassesFromAnnotation;
 
 @AutoService(Processor.class)
-public class DroiduxProcessor extends AbstractProcessor {
-
-    private Filer filer;
-    private Messager messager;
-    private Elements elements;
+public class DroiduxProcessor extends BasicAnnotationProcessor {
 
     @Override
-    public Set<String> getSupportedAnnotationTypes() {
-        return new LinkedHashSet<String>() {{ add(Reducer.class.getName()); add(CombinedReducer.class.getName()); }};
+    protected Iterable<? extends ProcessingStep> initSteps() {
+        return new ArrayList<ProcessingStep>() {{
+            add(reducerProcessingStep);
+            add(combinedReducerProcessingStep);
+        }};
     }
 
-    @Override
-    public synchronized void init(ProcessingEnvironment processingEnv) {
-        super.init(processingEnv);
-        this.filer = processingEnv.getFiler();
-        this.messager = processingEnv.getMessager();
-        this.elements = processingEnv.getElementUtils();
+    private Filer getFiler() {
+        return super.processingEnv.getFiler();
     }
 
-    @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        for (TypeElement element : findClassesByAnnotation(roundEnv, Reducer.class)) {
-            try {
-                new StoreClassElement(new ReducerModel(element)).createJavaFile().writeTo(filer);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    private Elements getElements() {
+        return super.processingEnv.getElementUtils();
+    }
+
+    private final ProcessingStep reducerProcessingStep = new ProcessingStep() {
+        @Override
+        public Set<? extends Class<? extends Annotation>> annotations() {
+            return new HashSet<Class<? extends Annotation>>() {{ add(Reducer.class); }};
         }
-        for (TypeElement element : findClassesByAnnotation(roundEnv, CombinedReducer.class)) {
-            try {
-                new CombinedStoreClassElement(new CombinedReducerModel(element, elements))
-                        .createJavaFile().writeTo(filer);
-            } catch (IOException e) {
-                e.printStackTrace();
+
+        @Override
+        public Set<Element> process(SetMultimap<Class<? extends Annotation>, Element> elementsByAnnotation) {
+            for (Element element : elementsByAnnotation.get(Reducer.class)) {
+                try {
+                    new StoreClassElement(new ReducerModel((TypeElement) element)).createJavaFile().writeTo(getFiler());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+            return new HashSet<>();
         }
-        return true;
-    }
+    };
+
+    private final ProcessingStep combinedReducerProcessingStep = new ProcessingStep() {
+        @Override
+        public Set<? extends Class<? extends Annotation>> annotations() {
+            return new HashSet<Class<? extends Annotation>>() {{ add(CombinedReducer.class); }};
+        }
+
+        @Override
+        public Set<Element> process(SetMultimap<Class<? extends Annotation>, Element> elementsByAnnotation) {
+            for (Element element : elementsByAnnotation.get(CombinedReducer.class)) {
+                List<TypeElement> reducers = new ArrayList<>();
+                for (ClassName reducerClass : getClassesFromAnnotation(element, CombinedReducer.class, "value")) {
+                    reducers.add(getElements().getTypeElement(reducerClass.toString()));
+                }
+                try {
+                    new CombinedStoreClassElement(new CombinedReducerModel((TypeElement) element, reducers))
+                            .createJavaFile().writeTo(getFiler());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return new HashSet<>();
+        }
+    };
 }

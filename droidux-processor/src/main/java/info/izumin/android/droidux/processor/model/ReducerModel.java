@@ -14,7 +14,7 @@ import info.izumin.android.droidux.processor.exception.InvalidClassNameException
 import info.izumin.android.droidux.processor.util.StringUtils;
 
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.findMethodsByAnnotation;
-import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassNameFromAnnotation;
+import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassFromAnnotation;
 
 /**
  * Created by izumin on 11/3/15.
@@ -25,7 +25,7 @@ public class ReducerModel {
     private static final String CLASS_NAME_SUFFIX = "Reducer";
 
     private final TypeElement element;
-    private final ClassName state;
+    private ClassName state;
     private final ClassName reducer;
 
     private final String qualifiedName;
@@ -40,16 +40,16 @@ public class ReducerModel {
 
     public ReducerModel(TypeElement element) {
         this.element = element;
-        this.state = getClassNameFromAnnotation(element, Reducer.class, "value");
+        if (element.getAnnotation(Reducer.class) != null) {
+            this.state = getClassFromAnnotation(element, Reducer.class, "value");
+            this.stateName = state.simpleName();
+            this.stateVariableName = StringUtils.getLowerCamelFromUpperCamel(stateName);
+        }
 
         this.qualifiedName = element.getQualifiedName().toString();
         this.packageName = StringUtils.getPackageName(qualifiedName);
         this.className = StringUtils.getClassName(qualifiedName);
         this.variableName = StringUtils.getLowerCamelFromUpperCamel(className);
-        if (state != null) {
-            this.stateName = state.simpleName();
-            this.stateVariableName = StringUtils.getLowerCamelFromUpperCamel(stateName);
-        }
 
         if (!className.endsWith(CLASS_NAME_SUFFIX)) {
             throw new InvalidClassNameException("Class name of annotated class with @Reducer must be end with \"Reducer\".");
