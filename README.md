@@ -42,8 +42,8 @@ apply plugin: 'com.android.databinding'
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  compile 'info.izumin.android:droidux:0.1.0'
-  apt 'info.izumin.android:droidux:0.1.0'
+  compile 'info.izumin.android:droidux:0.2.0'
+  apt 'info.izumin.android:droidux:0.2.0'
 }
 ```
 
