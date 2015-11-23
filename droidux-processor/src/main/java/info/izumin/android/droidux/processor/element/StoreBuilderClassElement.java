@@ -26,7 +26,7 @@ public class StoreBuilderClassElement {
     public static final String TAG = StoreBuilderClassElement.class.getSimpleName();
 
     static final String REDUCER_SETTER_METHOD_NAME = "setReducer";
-    static final String ADD_INITIAL_STATE_METHOD_NAME = "addInitialState";
+    static final String INITIAL_STATE_SETTER_METHOD_NAME = "setInitialState";
     static final String ADD_MIDDLEWARE_METHOD_NAME = "addMiddleware";
     static final String BUILD_METHOD_NAME = "build";
     static final String ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION = "$N has not been initialized.";
@@ -101,7 +101,7 @@ public class StoreBuilderClassElement {
                             .build()
             );
             specs.add(
-                    MethodSpec.methodBuilder(ADD_INITIAL_STATE_METHOD_NAME)
+                    MethodSpec.methodBuilder(INITIAL_STATE_SETTER_METHOD_NAME)
                             .addModifiers(Modifier.PUBLIC)
                             .returns(storeModel.getBuilder())
                             .addParameter(getParameterSpec(reducerModel.getState()))

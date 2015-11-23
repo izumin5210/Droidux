@@ -76,7 +76,7 @@ public class CombinedStoreClassElement {
                             reducer.getStoreModel().getBuilderName(),
                             StoreBuilderClassElement.REDUCER_SETTER_METHOD_NAME,
                             reducer.getVariableName(),
-                            StoreBuilderClassElement.ADD_INITIAL_STATE_METHOD_NAME,
+                            StoreBuilderClassElement.INITIAL_STATE_SETTER_METHOD_NAME,
                             reducer.getStoreModel().getBuilderVariableName(),
                             reducer.getStoreModel().getStateVariableName(),
                             StoreBuilderClassElement.BUILD_METHOD_NAME
