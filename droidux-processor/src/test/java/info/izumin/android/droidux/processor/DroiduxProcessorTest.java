@@ -63,6 +63,14 @@ public class DroiduxProcessorTest {
     }
 
     @Test
+    public void undoableReducer() {
+        assertJavaSource(
+                forSourceLines("UndoableTodoListReducer", Source.UndoableTodoList.TARGET),
+                forSourceLines("DroiduxUndoableTodoListStore", Source.UndoableTodoList.GENERATED)
+        );
+    }
+
+    @Test
     public void dispatchableMethodTakesWrongStateType() {
         expectedException.expect(RuntimeException.class);
         expectedException.expectMessage("1st argument of CounterReducer#onIncrement() does not match the @Reducer value.");
