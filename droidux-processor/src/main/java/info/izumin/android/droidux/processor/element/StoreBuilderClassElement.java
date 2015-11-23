@@ -25,8 +25,8 @@ import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterS
 public class StoreBuilderClassElement {
     public static final String TAG = StoreBuilderClassElement.class.getSimpleName();
 
-    static final String ADD_REDUCER_METHOD_NAME = "addReducer";
-    static final String ADD_INITIAL_STATE_METHOD_NAME = "addInitialState";
+    static final String REDUCER_SETTER_METHOD_NAME = "setReducer";
+    static final String INITIAL_STATE_SETTER_METHOD_NAME = "setInitialState";
     static final String ADD_MIDDLEWARE_METHOD_NAME = "addMiddleware";
     static final String BUILD_METHOD_NAME = "build";
     static final String ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION = "$N has not been initialized.";
@@ -80,9 +80,10 @@ public class StoreBuilderClassElement {
     private MethodSpec createAddMiddlewareMethodSpec() {
         return MethodSpec.methodBuilder(ADD_MIDDLEWARE_METHOD_NAME)
                 .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(getOverrideAnnotation())
                 .returns(storeModel.getBuilder())
                 .addParameter(getParameterSpec(Middleware.class))
-                .addStatement("getMiddlewares().add(middleware)")
+                .addStatement("super.addMiddleware(middleware)")
                 .addStatement("return this")
                 .build();
     }
@@ -91,7 +92,7 @@ public class StoreBuilderClassElement {
         List<MethodSpec> specs = new ArrayList<>();
         for (ReducerModel reducerModel : reducerModels) {
             specs.add(
-                    MethodSpec.methodBuilder(ADD_REDUCER_METHOD_NAME)
+                    MethodSpec.methodBuilder(REDUCER_SETTER_METHOD_NAME)
                             .addModifiers(Modifier.PUBLIC)
                             .returns(storeModel.getBuilder())
                             .addParameter(getParameterSpec(reducerModel.getReducer()))
@@ -100,7 +101,7 @@ public class StoreBuilderClassElement {
                             .build()
             );
             specs.add(
-                    MethodSpec.methodBuilder(ADD_INITIAL_STATE_METHOD_NAME)
+                    MethodSpec.methodBuilder(INITIAL_STATE_SETTER_METHOD_NAME)
                             .addModifiers(Modifier.PUBLIC)
                             .returns(storeModel.getBuilder())
                             .addParameter(getParameterSpec(reducerModel.getState()))
