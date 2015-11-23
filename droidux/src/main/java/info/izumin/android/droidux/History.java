@@ -6,7 +6,7 @@ import java.util.Deque;
 /**
  * Created by izumin on 11/23/15.
  */
-public class History<T> {
+public class History<T extends UndoableState<T>> {
     public static final String TAG = History.class.getSimpleName();
 
     private static final int DEFAULT_LIMIT = 100;

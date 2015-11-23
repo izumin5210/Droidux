@@ -1,6 +1,7 @@
 package info.izumin.android.droidux.action;
 
 import info.izumin.android.droidux.Action;
+import info.izumin.android.droidux.UndoableState;
 import info.izumin.android.droidux.History;
 import info.izumin.android.droidux.Store;
 
@@ -13,18 +14,18 @@ public class HistoryAction extends Action {
     enum Kind {
         UNDO {
             @Override
-            <T> T handle(History<T> history) {
+            <T extends UndoableState<T>> T handle(History<T> history) {
                 return history.undo();
             }
         },
         REDO {
             @Override
-            <T> T handle(History<T> history) {
+            <T extends UndoableState<T>> T handle(History<T> history) {
                 return history.redo();
             }
         };
 
-        abstract <T> T handle(History<T> history);
+        abstract <T extends UndoableState<T>> T handle(History<T> history);
     }
 
     private final Kind kind;
@@ -39,7 +40,7 @@ public class HistoryAction extends Action {
         return target.isAssignableFrom(store.getClass());
     }
 
-    public <T> T handle(History<T> history) {
+    public <T extends UndoableState<T>> T handle(History<T> history) {
         return kind.handle(history);
     }
 }
