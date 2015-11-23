@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">Todos with undo</string>
+    <string name="title_activity_main">Todos with undo</string>
+
+    <string name="btn_add_todo">Add</string>
+    <string name="edit_new_todo_hint">new task</string>
+
+    <string name="dialog_delete_todo_title">Delete todo</string>
+    <string name="dialog_delete_todo_message">Are you sure you want to delete "%s"?</string>
+    <string name="dialog_delete_todo_btn_positive">OK</string>
+    <string name="dialog_delete_todo_btn_neutral">Cancel</string>
+
+    <string name="toast_add_todo">Added new task !</string>
+    <string name="toast_delete_todo">Deleted task $d !</string>
+
+    <string name="menu_clear_completed_todo">Clear completed tasks</string>
+    <string name="menu_undo_todo">Undo</string>
+    <string name="menu_redo_todo">Redo</string>
 </resources>
