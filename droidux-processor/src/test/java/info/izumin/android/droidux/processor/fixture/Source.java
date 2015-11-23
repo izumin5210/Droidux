@@ -585,4 +585,23 @@ public final class Source {
                 "}"
         };
     }
+
+    public static class UndoableReducerWithoutUndoableState {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.annotation.Dispatchable;",
+                "import info.izumin.android.droidux.annotation.Reducer;",
+                "import info.izumin.android.droidux.annotation.Undoable;",
+                "import info.izumin.android.droidux.processor.fixture.IncrementCountAction;",
+                "import info.izumin.android.droidux.processor.fixture.Counter;",
+                "@Undoable",
+                "@Reducer(Counter.class)",
+                "public class CounterReduce {",
+                "    @Dispatchable(IncrementCountAction.class)",
+                "    public Counter onIncrement(Counter state, IncrementCountAction action, String extra) {",
+                "        return state;",
+                "    }",
+                "}"
+        };
+    }
 }

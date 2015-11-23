@@ -119,4 +119,14 @@ public class DroiduxProcessorTest {
                 forSourceLines("DroiduxTodoListReduce", Source.EMPTY)
         );
     }
+
+    @Test
+    public void undoableReducerWithoutUndoableState() {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage("State class for undoable reducer must implement \"UndoableState<T>\".");
+        assertJavaSource(
+                forSourceLines("CounterReduce", Source.UndoableReducerWithoutUndoableState.TARGET),
+                forSourceLines("DroiduxTodoListReduce", Source.EMPTY)
+        );
+    }
 }

@@ -8,10 +8,12 @@ import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
+import info.izumin.android.droidux.UndoableState;
 import info.izumin.android.droidux.annotation.Dispatchable;
 import info.izumin.android.droidux.annotation.Reducer;
 import info.izumin.android.droidux.annotation.Undoable;
 import info.izumin.android.droidux.processor.exception.InvalidClassNameException;
+import info.izumin.android.droidux.processor.exception.InvalidStateClassException;
 import info.izumin.android.droidux.processor.util.StringUtils;
 
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.findMethodsByAnnotation;
@@ -50,6 +52,16 @@ public class ReducerModel {
         }
 
         isUndoable = element.getAnnotation(Undoable.class) != null;
+
+        if (isUndoable) {
+            try {
+                if (!UndoableState.class.isAssignableFrom(Class.forName(state.packageName() + "." + state.simpleName()))) {
+                    throw new InvalidStateClassException("State class for undoable reducer must implement \"UndoableState<T>\".");
+                }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
 
         this.qualifiedName = element.getQualifiedName().toString();
         this.packageName = StringUtils.getPackageName(qualifiedName);
