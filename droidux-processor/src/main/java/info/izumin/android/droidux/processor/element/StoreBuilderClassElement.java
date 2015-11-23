@@ -80,9 +80,10 @@ public class StoreBuilderClassElement {
     private MethodSpec createAddMiddlewareMethodSpec() {
         return MethodSpec.methodBuilder(ADD_MIDDLEWARE_METHOD_NAME)
                 .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(getOverrideAnnotation())
                 .returns(storeModel.getBuilder())
                 .addParameter(getParameterSpec(Middleware.class))
-                .addStatement("getMiddlewares().add(middleware)")
+                .addStatement("super.addMiddleware(middleware)")
                 .addStatement("return this")
                 .build();
     }
