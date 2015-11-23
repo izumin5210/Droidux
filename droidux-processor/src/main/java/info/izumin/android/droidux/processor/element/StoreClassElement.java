@@ -1,5 +1,7 @@
 package info.izumin.android.droidux.processor.element;
 
+import android.databinding.Bindable;
+
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
@@ -30,6 +32,9 @@ public class StoreClassElement {
     private static final String DISPATCH_TO_REDUCER_METHOD_NAME = "dispatchToReducer";
     private static final String HISTORY_VARIABLE_NAME = "history";
     private static final String HISTORY_SIZE_SETTER_METHOD_NAME = "setHistorySize";
+    private static final String STATE_GETTER_METHOD_NAME = "getState";
+    private static final String IS_UNDOABLE_METHOD_NAME = "isUndoable";
+    private static final String IS_REDOABLE_METHOD_NAME = "isRedoable";
 
     private final ReducerModel reducerModel;
     private final StoreModel storeModel;
@@ -59,7 +64,11 @@ public class StoreClassElement {
                 .addMethod(createMethodSpec());
 
         if (storeModel.isUndoable()) {
-            builder = builder.addMethod(createHistorySizeSetterMethodSpec());
+            builder = builder
+                    .addMethod(createUndoableStateGetterMethodSpec())
+                    .addMethod(createIsUndoableMethodSpec())
+                    .addMethod(createIsRedoableMethodSpec())
+                    .addMethod(createHistorySizeSetterMethodSpec());
         }
 
         return builder.addType(new StoreBuilderClassElement(storeModel).createBuilderTypeSpec())
@@ -78,11 +87,10 @@ public class StoreClassElement {
         if (storeModel.isUndoable()) {
             builder = builder.addStatement("this.$N = new $T<>($N.$N)",
                     HISTORY_VARIABLE_NAME, History.class,
-                    storeModel.getBuilderVariableName(), storeModel.getStateVariableName())
-                    .addStatement("setState($N.getPresent())", HISTORY_VARIABLE_NAME);
+                    storeModel.getBuilderVariableName(), storeModel.getStateVariableName());
         } else {
             builder = builder.addStatement("setState($N.$N)",
-                            storeModel.getBuilderVariableName(), storeModel.getStateVariableName());
+                    storeModel.getBuilderVariableName(), storeModel.getStateVariableName());
         }
 
         return builder.build();
@@ -105,11 +113,14 @@ public class StoreClassElement {
 
         for (DispatchableModel dispatchableModel : reducerModel.getDispatchableModels()) {
             builder = builder.beginControlFlow("if (actionClass.isAssignableFrom($T.class))", dispatchableModel.getAction());
+
+            String stateGetter = storeModel.isUndoable() ? "getState().clone()" : "getState()";
+
             if (dispatchableModel.argumentCount() == 2) {
-                builder = builder.addStatement("result = $N.$N(getState(), ($T) action)",
+                builder = builder.addStatement("result = $N.$N(" + stateGetter + ", ($T) action)",
                         reducerModel.getVariableName(), dispatchableModel.getMethodName(), dispatchableModel.getAction());
             } else {
-                builder = builder.addStatement("result = $N.$N(getState())",
+                builder = builder.addStatement("result = $N.$N(" + stateGetter + ")",
                         reducerModel.getVariableName(), dispatchableModel.getMethodName());
             }
             if (storeModel.isUndoable()) {
@@ -119,7 +130,7 @@ public class StoreClassElement {
         }
 
         if (storeModel.isUndoable()) {
-            builder = builder.beginControlFlow("if (actionClass.isAssignableFrom($T.class))", HistoryAction.class)
+            builder = builder.beginControlFlow("if ($T.class.isAssignableFrom(actionClass))", HistoryAction.class)
                     .addStatement("$T historyAction = ($T) action", HistoryAction.class, HistoryAction.class)
                     .beginControlFlow("if (historyAction.isAssignableTo(this))")
                     .addStatement("result = historyAction.handle(history)")
@@ -131,6 +142,33 @@ public class StoreClassElement {
                 .beginControlFlow("if (result != null)")
                 .addStatement("setState(result)")
                 .endControlFlow()
+                .build();
+    }
+
+    private MethodSpec createUndoableStateGetterMethodSpec() {
+        return MethodSpec.methodBuilder(STATE_GETTER_METHOD_NAME)
+                .addAnnotation(getOverrideAnnotation())
+                .addModifiers(Modifier.PUBLIC)
+                .returns(storeModel.getState())
+                .addStatement("return $N.getPresent()", HISTORY_VARIABLE_NAME)
+                .build();
+    }
+
+    private MethodSpec createIsUndoableMethodSpec() {
+        return MethodSpec.methodBuilder(IS_UNDOABLE_METHOD_NAME)
+                .addAnnotation(Bindable.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.BOOLEAN)
+                .addStatement("return $N.isUndoable()", HISTORY_VARIABLE_NAME)
+                .build();
+    }
+
+    private MethodSpec createIsRedoableMethodSpec() {
+        return MethodSpec.methodBuilder(IS_REDOABLE_METHOD_NAME)
+                .addAnnotation(Bindable.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.BOOLEAN)
+                .addStatement("return $N.isRedoable()", HISTORY_VARIABLE_NAME)
                 .build();
     }
 

@@ -3,10 +3,12 @@ package info.izumin.android.droidux.processor.fixture;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.izumin.android.droidux.UndoableState;
+
 /**
  * Created by izumin on 11/2/15.
  */
-public class TodoList {
+public class TodoList implements UndoableState<TodoList> {
 
     private List<Item> items;
 
@@ -16,6 +18,16 @@ public class TodoList {
 
     public List<Item> getItems() {
         return items;
+    }
+
+    @Override
+    public TodoList clone() {
+        try {
+            return (TodoList) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static class Item {
