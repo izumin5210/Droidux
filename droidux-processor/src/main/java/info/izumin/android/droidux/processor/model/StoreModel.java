@@ -29,6 +29,8 @@ public class StoreModel {
     private final String builderName;
     private final String builderVariableName;
 
+    private final boolean isUndoable;
+
     private final ReducerModel reducerModel;
 
     public StoreModel(ReducerModel reducerModel) {
@@ -45,6 +47,7 @@ public class StoreModel {
         this.builderName = BUILDER_CLASS_NAME;
         this.builder = store.nestedClass(builderName);
         this.builderVariableName = getLowerCamelFromUpperCamel(builderName);
+        this.isUndoable = reducerModel.isUndoable();
     }
 
     public ClassName getState() {
@@ -93,5 +96,9 @@ public class StoreModel {
 
     public ReducerModel getReducerModel() {
         return reducerModel;
+    }
+
+    public boolean isUndoable() {
+        return isUndoable;
     }
 }

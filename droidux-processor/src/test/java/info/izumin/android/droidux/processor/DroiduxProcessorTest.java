@@ -63,6 +63,14 @@ public class DroiduxProcessorTest {
     }
 
     @Test
+    public void undoableReducer() {
+        assertJavaSource(
+                forSourceLines("UndoableTodoListReducer", Source.UndoableTodoList.TARGET),
+                forSourceLines("DroiduxUndoableTodoListStore", Source.UndoableTodoList.GENERATED)
+        );
+    }
+
+    @Test
     public void dispatchableMethodTakesWrongStateType() {
         expectedException.expect(RuntimeException.class);
         expectedException.expectMessage("1st argument of CounterReducer#onIncrement() does not match the @Reducer value.");
@@ -108,6 +116,16 @@ public class DroiduxProcessorTest {
         expectedException.expectMessage("Class name of annotated class with @Reducer must be end with \"Reducer\".");
         assertJavaSource(
                 forSourceLines("CounterReduce", Source.ReducerWithoutSuffix.TARGET),
+                forSourceLines("DroiduxTodoListReduce", Source.EMPTY)
+        );
+    }
+
+    @Test
+    public void undoableReducerWithoutUndoableState() {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage("State class for undoable reducer must implement \"UndoableState<T>\".");
+        assertJavaSource(
+                forSourceLines("CounterReduce", Source.UndoableReducerWithoutUndoableState.TARGET),
                 forSourceLines("DroiduxTodoListReduce", Source.EMPTY)
         );
     }

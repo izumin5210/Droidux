@@ -8,7 +8,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "info.izumin.android.droidux.sample"
+        applicationId "info.izumin.android.droidux.example.todomvc"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
