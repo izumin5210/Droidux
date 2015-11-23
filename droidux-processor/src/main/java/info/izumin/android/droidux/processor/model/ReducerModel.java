@@ -10,6 +10,7 @@ import javax.lang.model.element.TypeElement;
 
 import info.izumin.android.droidux.annotation.Dispatchable;
 import info.izumin.android.droidux.annotation.Reducer;
+import info.izumin.android.droidux.annotation.Undoable;
 import info.izumin.android.droidux.processor.exception.InvalidClassNameException;
 import info.izumin.android.droidux.processor.util.StringUtils;
 
@@ -35,6 +36,8 @@ public class ReducerModel {
     private String stateName;
     private String stateVariableName;
 
+    private final boolean isUndoable;
+
     private StoreModel storeModel;
     private List<DispatchableModel> dispatchableModels;
 
@@ -45,6 +48,8 @@ public class ReducerModel {
             this.stateName = state.simpleName();
             this.stateVariableName = StringUtils.getLowerCamelFromUpperCamel(stateName);
         }
+
+        isUndoable = element.getAnnotation(Undoable.class) != null;
 
         this.qualifiedName = element.getQualifiedName().toString();
         this.packageName = StringUtils.getPackageName(qualifiedName);
@@ -105,5 +110,9 @@ public class ReducerModel {
 
     public List<DispatchableModel> getDispatchableModels() {
         return dispatchableModels;
+    }
+
+    public boolean isUndoable() {
+        return isUndoable;
     }
 }
