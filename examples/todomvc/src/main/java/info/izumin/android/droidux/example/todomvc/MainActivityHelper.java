@@ -1,4 +1,4 @@
-package info.izumin.android.droidux.sample;
+package info.izumin.android.droidux.example.todomvc;
 
 import android.support.v7.app.AlertDialog;
 import android.view.MenuItem;
@@ -7,11 +7,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import info.izumin.android.droidux.sample.action.AddTodoAction;
-import info.izumin.android.droidux.sample.action.ClearCompletedTodoAction;
-import info.izumin.android.droidux.sample.action.DeleteTodoAction;
-import info.izumin.android.droidux.sample.action.ToggleCompletedTodoAction;
-import info.izumin.android.droidux.sample.reducer.DroiduxRootStore;
+import info.izumin.android.droidux.example.todomvc.action.AddTodoAction;
+import info.izumin.android.droidux.example.todomvc.action.ClearCompletedTodoAction;
+import info.izumin.android.droidux.example.todomvc.action.DeleteTodoAction;
+import info.izumin.android.droidux.example.todomvc.action.ToggleCompletedTodoAction;
+import info.izumin.android.droidux.example.todomvc.reducer.DroiduxRootStore;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;

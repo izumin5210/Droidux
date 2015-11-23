@@ -1,4 +1,4 @@
-package info.izumin.android.droidux.sample;
+package info.izumin.android.droidux.example.todomvc;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -7,9 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import info.izumin.android.droidux.sample.databinding.ListItemTodoBinding;
-import info.izumin.android.droidux.sample.entity.TodoList;
-import info.izumin.android.droidux.sample.reducer.DroiduxRootStore;
+import info.izumin.android.droidux.example.todomvc.databinding.ListItemTodoBinding;
+import info.izumin.android.droidux.example.todomvc.entity.TodoList;
+import info.izumin.android.droidux.example.todomvc.reducer.DroiduxRootStore;
 
 /**
  * Created by izumin on 11/4/15.

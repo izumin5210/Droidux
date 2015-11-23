@@ -1,4 +1,4 @@
-package info.izumin.android.droidux.sample.reducer;
+package info.izumin.android.droidux.example.todomvc.reducer;
 
 import info.izumin.android.droidux.annotation.CombinedReducer;
 

@@ -1,4 +1,4 @@
-package info.izumin.android.droidux.sample;
+package info.izumin.android.droidux.example.todomvc;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import info.izumin.android.droidux.sample.reducer.DroiduxRootStore;
+import info.izumin.android.droidux.example.todomvc.reducer.DroiduxRootStore;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = MainActivity.class.getSimpleName();

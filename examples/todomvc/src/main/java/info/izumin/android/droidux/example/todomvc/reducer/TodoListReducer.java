@@ -1,14 +1,14 @@
-package info.izumin.android.droidux.sample.reducer;
+package info.izumin.android.droidux.example.todomvc.reducer;
 
 import java.util.List;
 
 import info.izumin.android.droidux.annotation.Dispatchable;
 import info.izumin.android.droidux.annotation.Reducer;
-import info.izumin.android.droidux.sample.action.AddTodoAction;
-import info.izumin.android.droidux.sample.action.ClearCompletedTodoAction;
-import info.izumin.android.droidux.sample.action.DeleteTodoAction;
-import info.izumin.android.droidux.sample.action.ToggleCompletedTodoAction;
-import info.izumin.android.droidux.sample.entity.TodoList;
+import info.izumin.android.droidux.example.todomvc.action.AddTodoAction;
+import info.izumin.android.droidux.example.todomvc.action.ClearCompletedTodoAction;
+import info.izumin.android.droidux.example.todomvc.action.DeleteTodoAction;
+import info.izumin.android.droidux.example.todomvc.action.ToggleCompletedTodoAction;
+import info.izumin.android.droidux.example.todomvc.entity.TodoList;
 import rx.Observable;
 
 /**

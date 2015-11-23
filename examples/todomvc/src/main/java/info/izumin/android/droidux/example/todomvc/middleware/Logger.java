@@ -1,11 +1,11 @@
-package info.izumin.android.droidux.sample.middleware;
+package info.izumin.android.droidux.example.todomvc.middleware;
 
 import android.util.Log;
 
 import info.izumin.android.droidux.Action;
 import info.izumin.android.droidux.Middleware;
-import info.izumin.android.droidux.sample.entity.TodoList;
-import info.izumin.android.droidux.sample.reducer.DroiduxRootStore;
+import info.izumin.android.droidux.example.todomvc.entity.TodoList;
+import info.izumin.android.droidux.example.todomvc.reducer.DroiduxRootStore;
 import rx.Observable;
 
 /**

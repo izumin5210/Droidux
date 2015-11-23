@@ -1,4 +1,4 @@
-package info.izumin.android.droidux.sample.action;
+package info.izumin.android.droidux.example.todomvc.action;
 
 import info.izumin.android.droidux.Action;
 

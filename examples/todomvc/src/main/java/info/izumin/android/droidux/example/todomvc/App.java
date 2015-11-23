@@ -1,13 +1,13 @@
-package info.izumin.android.droidux.sample;
+package info.izumin.android.droidux.example.todomvc;
 
 import android.app.Application;
 
 import java.util.ArrayList;
 
-import info.izumin.android.droidux.sample.entity.TodoList;
-import info.izumin.android.droidux.sample.middleware.Logger;
-import info.izumin.android.droidux.sample.reducer.DroiduxRootStore;
-import info.izumin.android.droidux.sample.reducer.TodoListReducer;
+import info.izumin.android.droidux.example.todomvc.entity.TodoList;
+import info.izumin.android.droidux.example.todomvc.middleware.Logger;
+import info.izumin.android.droidux.example.todomvc.reducer.DroiduxRootStore;
+import info.izumin.android.droidux.example.todomvc.reducer.TodoListReducer;
 
 /**
  * Created by izumin on 11/4/15.
