@@ -62,5 +62,7 @@ public class History<T extends UndoableState<T>> {
 
     public void setLimit(int limit) {
         this.limit = limit;
+        while (past.size() > limit) { past.removeLast(); }
+        while (future.size() > limit) { future.removeLast(); }
     }
 }

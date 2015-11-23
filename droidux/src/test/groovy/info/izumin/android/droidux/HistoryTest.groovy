@@ -145,5 +145,19 @@ class HistoryTest extends Specification {
         history.undo() == new Counter(2)
         history.undo() == new Counter(1)
         history.undo() == new Counter(1)
+
+        when:
+        history.insert(new Counter(7))
+        history.insert(new Counter(8))
+        history.insert(new Counter(6))
+        history.insert(new Counter(5))
+
+        then:
+        past.size() == 3
+        history.setLimit(2)
+        past.size() == 2
+        history.undo() == new Counter(6)
+        history.undo() == new Counter(8)
+        history.undo() == new Counter(8)
     }
 }
