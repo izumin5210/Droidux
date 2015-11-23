@@ -112,7 +112,7 @@ public class StoreClassElement {
                 .addStatement(storeModel.getStateName() + " result = null");
 
         for (DispatchableModel dispatchableModel : reducerModel.getDispatchableModels()) {
-            builder = builder.beginControlFlow("if (actionClass.isAssignableFrom($T.class))", dispatchableModel.getAction());
+            builder = builder.beginControlFlow("if ($T.class.isAssignableFrom(actionClass))", dispatchableModel.getAction());
 
             String stateGetter = storeModel.isUndoable() ? "getState().clone()" : "getState()";
 
