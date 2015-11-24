@@ -74,8 +74,8 @@ public class Counter {
  * It should be applied @Reducer annotation is given a state class as an argument.
  * It describe whether the reducer should handle which actions.
  */
-@Reducer(Count.class)
-public class CountReducer {
+@Reducer(Counter.class)
+public class CounterReducer {
 
     /**
      * This is a method to handle actions.
@@ -87,17 +87,17 @@ public class CountReducer {
      + and it returns new counter instance that state is incremented.
      */
     @Dispatchable(IncrementCountAction.class)
-    public Counter onIncrement(Counter state, IncrementCountAction action) {
+    public Counter increment(Counter state, IncrementCountAction action) {
         return new Counter(state.getCount() + 1);
     }
 
     @Dispatchable(DecrementCountAction.class)
-    public Counter onDecrement(Counter state, DecrementCountAction action) {
+    public Counter decrement(Counter state, DecrementCountAction action) {
         return new Counter(state.getCount() - 1);
     }
 
     @Dispatchable(ClearCountAction.class)
-    public Counter onClear(Counter state, ClearCountAction action) {
+    public Counter clear(Counter state, ClearCountAction action) {
         return new Counter(0);
     }
 }
@@ -121,8 +121,8 @@ public class ClearCountAction extends Action {}
 // - rx.Observable<Counter> observe()
 // - Counter getState()
 DroiduxCounterStore store = new DroiduxCounterStore.Builder()
-        .addReducer(new CounterReducer())
-        .addInitialState(new Counter(0))
+        .setReducer(new CounterReducer())
+        .setInitialState(new Counter(0))
         .build();                                       // Counter: 0
 
 // You can observe to the updates using RxJava interface. 
@@ -147,10 +147,10 @@ class RootReducer {
 
 
 DroiduxRootStore store = new DroiduxRootStore.Builder()
-        .addReducer(new CounterReducer())
-        .addInitialState(new Counter(0))
-        .addReducer(new TodoListReducer())
-        .addInitialState(new TodoList())
+        .setReducer(new CounterReducer())
+        .setInitialState(new Counter(0))
+        .setReducer(new TodoListReducer())
+        .setInitialState(new TodoList())
         .addMiddleware(new Logger())
         .build();
 
@@ -182,8 +182,8 @@ class Logger extends Middleware {
 
 // Instantiate store class 
 DroiduxCounterStore store = new DroiduxCounterStore.Builder()
-        .addReducer(new CounterReducer())
-        .addInitialState(new Counter(0))
+        .setReducer(new CounterReducer())
+        .setInitialState(new Counter(0))
         .addMiddleware(new Logger())        // apply logger middleware
         .build();                           // Counter: 0
 
@@ -244,8 +244,8 @@ class CompleteTodoAction extends Action{
 
 
 DroiduxTodoListStore store = new DroiduxTodoListStore.Builder()
-        .addReducer(new TodoListReducer())
-        .addInitialState(new TodoList())
+        .setReducer(new TodoListReducer())
+        .setInitialState(new TodoList())
         .build();
 
 store.dispatch(new AddTodoAction("item 1")).subscribe();        // ["item 1"]
