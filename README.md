@@ -41,8 +41,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  compile 'info.izumin.android:droidux:0.2.0'
-  apt 'info.izumin.android:droidux:0.2.0'
+  compile 'info.izumin.android:droidux:0.3.0'
+  apt 'info.izumin.android:droidux:0.3.0'
 }
 ```
 
