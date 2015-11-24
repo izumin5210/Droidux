@@ -223,7 +223,7 @@ class TodoListReducer {
     }
 }
 
-class TodoList extends ArrayList<TodoList.Todo> implements UndoableStore {
+class TodoList extends ArrayList<TodoList.Todo> implements UndoableStore<TodoList> {
     @Override
     public TodoList clone() {
         // ...
@@ -234,11 +234,11 @@ class TodoList extends ArrayList<TodoList.Todo> implements UndoableStore {
     }
 }
 
-class AddTodoAction extends Action{
+class AddTodoAction extends Action {
     // ...
 }
 
-class CompleteTodoAction extends Action{
+class CompleteTodoAction extends Action {
     // ...
 }
 
