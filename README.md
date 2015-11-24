@@ -284,7 +284,7 @@ class FetchTodoListAction extends Action {
 new FetchTodoAction().fetch().flatMap(store::dispatch).subscribe();
 ```
 
-#### Bindable methods
+### Bindable methods
 
 * `Store#getState()`
 * `Store#isUndoalble()`     // when the reducer is annotated with `@Undoable`
