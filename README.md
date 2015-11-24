@@ -33,12 +33,11 @@ Add to your project build.gradle file:
 ```groovy
 buildscript {
   dependencies {
-    classpath "com.android.databinding:dataBinder:1.0-rc3"
     classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
   }
 }
 
-apply plugin: 'com.android.databinding'
+apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
@@ -46,6 +45,9 @@ dependencies {
   apt 'info.izumin.android:droidux:0.2.0'
 }
 ```
+
+And also you need to setup [Data Binding][databinding].
+
 
 ## Usage
 ### Quick example
@@ -204,6 +206,64 @@ store.dispatch(new ClearCountAction()).subscribe();
 // [next counter]: 0
 ```
 
+### Undo / Redo
+
+```java
+@Undoable
+@Reducer(TodoList.class)
+class TodoListReducer {
+    @Dispatchable(AddTodoAction.class)
+    public TodoList addTodo(TodoList state, AddTodoAction action) {
+        // ...
+    }
+
+    @Dispatchable(CompleteTodoAction.class)
+    public TodoList completeTodo(TodoList state, CompleteTodoAction action) {
+        // ...
+    }
+}
+
+class TodoList extends ArrayList<TodoList.Todo> implements UndoableStore {
+    @Override
+    public TodoList clone() {
+        // ...
+    }
+
+    public static Todo {
+        // ...
+    }
+}
+
+class AddTodoAction extends Action{
+    // ...
+}
+
+class CompleteTodoAction extends Action{
+    // ...
+}
+
+
+DroiduxTodoListStore store = new DroiduxTodoListStore.Builder()
+        .addReducer(new TodoListReducer())
+        .addInitialState(new TodoList())
+        .build();
+
+store.dispatch(new AddTodoAction("item 1")).subscribe();        // ["item 1"]
+store.dispatch(new AddTodoAction("item 2")).subscribe();        // ["item 1", "item 2"]
+store.dispatch(new AddTodoAction("item 3")).subscribe();        // ["item 1", "item 2", "item 3"]
+store.dispatch(new CompleteTodoAction("item 2")).subscribe();   // ["item 1", "item 3"]
+store.dispatch(new AddTodoAction("item 4")).subscribe();        // ["item 1", "item 3", "item 4"]
+
+store.dispatch(new UndoAction(DroiduxTodoListStore.class)).subscribe();
+// => ["item 1", "item 3"]
+
+store.dispatch(new UndoAction(DroiduxTodoListStore.class)).subscribe();
+// => ["item 1", "item 2", "item 3"]
+
+store.dispatch(new RedoAction(DroiduxTodoListStore.class)).subscribe();
+// => ["item 1", "item 3"]
+```
+
 ### Async action
 
 ```java
@@ -224,9 +284,18 @@ class FetchTodoListAction extends Action {
 new FetchTodoAction().fetch().flatMap(store::dispatch).subscribe();
 ```
 
+#### Bindable methods
+
+* `Store#getState()`
+* `Store#isUndoalble()`     // when the reducer is annotated with `@Undoable`
+* `Store#isRedoalble()`     // when the reducer is annotated with `@Undoable`
+
+
 ## Examples
 
 * [TodoMVC](https://github.com/izumin5210/Droidux/tree/master/examples/todomvc)
+* [Todos with Undo](https://github.com/izumin5210/Droidux/tree/master/examples/todos-with-undo)
+
 
 ## License
 
