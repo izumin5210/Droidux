@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">Droidux sample</string>
-    <string name="title_activity_main">Droidux sample</string>
+    <string name="app_name">TodoMVC</string>
+    <string name="title_activity_main">TodoMVC</string>
 
     <string name="btn_add_todo">Add</string>
     <string name="edit_new_todo_hint">new task</string>
