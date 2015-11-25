@@ -1,11 +1,11 @@
 package info.izumin.android.droidux.processor.util;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -29,15 +29,21 @@ public final class AnnotationUtils {
         throw new AssertionError("constructor of the utility class should not be called");
     }
 
-    public static List<ExecutableElement> findMethodsByAnnotation(Element element, Class<? extends Annotation> clazz) {
-        List<ExecutableElement> list = new ArrayList<>();
-        for (Element el : element.getEnclosedElements()) {
-            Annotation annotation = el.getAnnotation(clazz);
-            if (annotation != null) {
-                list.add((ExecutableElement) el);
-            }
-        }
-        return list;
+    public static List<ExecutableElement> findMethodsByAnnotation(Element element, final Class<? extends Annotation> clazz) {
+        return FluentIterable.from(element.getEnclosedElements())
+                .filter(new Predicate<Element>() {
+                    @Override
+                    public boolean apply(Element input) {
+                        return input.getAnnotation(clazz) != null;
+                    }
+                })
+                .transform(new Function<Element, ExecutableElement>() {
+                    @Override
+                    public ExecutableElement apply(Element input) {
+                        return (ExecutableElement) input;
+                    }
+                })
+                .toList();
     }
 
     public static TypeMirror getTypeFromAnnotation(Element element, Class<? extends Annotation> annotationType, String argName) {
