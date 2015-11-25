@@ -26,7 +26,7 @@ import info.izumin.android.droidux.processor.model.CombinedReducerModel;
 import info.izumin.android.droidux.processor.model.ReducerModel;
 
 import static com.google.auto.common.MoreTypes.asTypeElement;
-import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassesFromAnnotation;
+import static info.izumin.android.droidux.processor.util.AnnotationUtils.getTypesFromAnnotation;
 
 @AutoService(Processor.class)
 public class DroiduxProcessor extends BasicAnnotationProcessor {
@@ -76,7 +76,7 @@ public class DroiduxProcessor extends BasicAnnotationProcessor {
         public Set<Element> process(SetMultimap<Class<? extends Annotation>, Element> elementsByAnnotation) {
             for (Element element : elementsByAnnotation.get(CombinedReducer.class)) {
                 List<TypeElement> reducers = new ArrayList<>();
-                for (TypeMirror mirror : getClassesFromAnnotation(element, CombinedReducer.class, "value")) {
+                for (TypeMirror mirror : getTypesFromAnnotation(element, CombinedReducer.class, "value")) {
                     reducers.add(asTypeElement(mirror));
                 }
                 try {

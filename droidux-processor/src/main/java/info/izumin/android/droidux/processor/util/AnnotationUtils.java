@@ -40,13 +40,13 @@ public final class AnnotationUtils {
         return list;
     }
 
-    public static TypeMirror getClassFromAnnotation(Element element, Class<? extends Annotation> annotationType, String argName) {
+    public static TypeMirror getTypeFromAnnotation(Element element, Class<? extends Annotation> annotationType, String argName) {
         AnnotationMirror am = getAnnotationMirror(element, annotationType).get();
         AnnotationValue av = getAnnotationValue(am, argName);
         return TO_TYPE.visit(av);
     }
 
-    public static List<TypeMirror> getClassesFromAnnotation(Element element, Class<? extends Annotation> annotationType, String argName) {
+    public static List<TypeMirror> getTypesFromAnnotation(Element element, Class<? extends Annotation> annotationType, String argName) {
         AnnotationMirror am = getAnnotationMirror(element, annotationType).get();
         AnnotationValue av = getAnnotationValue(am, argName);
         return TO_LIST_OF_TYPE.visit(av);
