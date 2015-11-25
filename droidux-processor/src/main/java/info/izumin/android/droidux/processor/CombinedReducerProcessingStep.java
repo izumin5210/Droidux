@@ -12,7 +12,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import info.izumin.android.droidux.annotation.CombinedReducer;
-import info.izumin.android.droidux.processor.element.CombinedStoreClassElement;
+import info.izumin.android.droidux.processor.generator.CombinedStoreClassGenerator;
 import info.izumin.android.droidux.processor.model.CombinedReducerModel;
 
 /**
@@ -33,7 +33,7 @@ public class CombinedReducerProcessingStep extends AbstractProcessingStep {
     @Override
     public Set<Element> process(SetMultimap<Class<? extends Annotation>, Element> elementsByAnnotation) {
         for (Element element : elementsByAnnotation.get(CombinedReducer.class)) {
-            write(new CombinedStoreClassElement(new CombinedReducerModel((TypeElement) element)).createJavaFile());
+            write(new CombinedStoreClassGenerator(new CombinedReducerModel((TypeElement) element)).createJavaFile());
         }
         return new HashSet<>();
     }

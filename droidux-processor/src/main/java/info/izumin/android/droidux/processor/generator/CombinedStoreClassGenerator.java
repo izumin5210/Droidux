@@ -1,4 +1,4 @@
-package info.izumin.android.droidux.processor.element;
+package info.izumin.android.droidux.processor.generator;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -22,13 +22,13 @@ import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterS
 /**
  * Created by izumin on 11/3/15.
  */
-public class CombinedStoreClassElement {
-    public static final String TAG = CombinedStoreClassElement.class.getSimpleName();
+public class CombinedStoreClassGenerator {
+    public static final String TAG = CombinedStoreClassGenerator.class.getSimpleName();
 
     private final CombinedReducerModel reducerModel;
     private final CombinedStoreModel storeModel;
 
-    public CombinedStoreClassElement(CombinedReducerModel reducerModel) {
+    public CombinedStoreClassGenerator(CombinedReducerModel reducerModel) {
         this.reducerModel = reducerModel;
         this.storeModel = reducerModel.getCombinedStoreModel();
     }
@@ -45,7 +45,7 @@ public class CombinedStoreClassElement {
                 .addFields(createFieldSpecs())
                 .addMethod(createConstructor())
                 .addMethods(createGetterMethodSpecs())
-                .addType(new StoreBuilderClassElement(storeModel, storeModel.getReducerModels()).createBuilderTypeSpec())
+                .addType(new StoreBuilderClassGenerator(storeModel, storeModel.getReducerModels()).createBuilderTypeSpec())
                 .build();
     }
 
@@ -74,12 +74,12 @@ public class CombinedStoreClassElement {
                             reducer.getStoreModel().getVariableName(),
                             reducer.getStoreModel().getClassName(),
                             reducer.getStoreModel().getBuilderName(),
-                            StoreBuilderClassElement.REDUCER_SETTER_METHOD_NAME,
+                            StoreBuilderClassGenerator.REDUCER_SETTER_METHOD_NAME,
                             reducer.getVariableName(),
-                            StoreBuilderClassElement.INITIAL_STATE_SETTER_METHOD_NAME,
+                            StoreBuilderClassGenerator.INITIAL_STATE_SETTER_METHOD_NAME,
                             reducer.getStoreModel().getBuilderVariableName(),
                             reducer.getStoreModel().getStateVariableName(),
-                            StoreBuilderClassElement.BUILD_METHOD_NAME
+                            StoreBuilderClassGenerator.BUILD_METHOD_NAME
                     )
                     .addStatement("addStore($N)", reducer.getStoreModel().getVariableName());
         }

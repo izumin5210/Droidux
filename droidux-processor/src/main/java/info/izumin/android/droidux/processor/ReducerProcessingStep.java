@@ -12,7 +12,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import info.izumin.android.droidux.annotation.Reducer;
-import info.izumin.android.droidux.processor.element.StoreClassElement;
+import info.izumin.android.droidux.processor.generator.StoreClassGenerator;
 import info.izumin.android.droidux.processor.model.ReducerModel;
 
 /**
@@ -33,7 +33,7 @@ public class ReducerProcessingStep extends AbstractProcessingStep {
     @Override
     public Set<Element> process(SetMultimap<Class<? extends Annotation>, Element> elementsByAnnotation) {
         for (Element element : elementsByAnnotation.get(Reducer.class)) {
-            write(new StoreClassElement(new ReducerModel((TypeElement) element)).createJavaFile());
+            write(new StoreClassGenerator(new ReducerModel((TypeElement) element)).createJavaFile());
         }
         return new HashSet<>();
     }
