@@ -3,7 +3,6 @@ package info.izumin.android.droidux.processor;
 import com.google.auto.common.BasicAnnotationProcessor;
 import com.google.auto.service.AutoService;
 import com.google.common.collect.SetMultimap;
-import com.squareup.javapoet.ClassName;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -16,6 +15,7 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.Processor;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
 import info.izumin.android.droidux.annotation.CombinedReducer;
@@ -25,6 +25,7 @@ import info.izumin.android.droidux.processor.element.StoreClassElement;
 import info.izumin.android.droidux.processor.model.CombinedReducerModel;
 import info.izumin.android.droidux.processor.model.ReducerModel;
 
+import static com.google.auto.common.MoreTypes.asTypeElement;
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassesFromAnnotation;
 
 @AutoService(Processor.class)
@@ -75,11 +76,11 @@ public class DroiduxProcessor extends BasicAnnotationProcessor {
         public Set<Element> process(SetMultimap<Class<? extends Annotation>, Element> elementsByAnnotation) {
             for (Element element : elementsByAnnotation.get(CombinedReducer.class)) {
                 List<TypeElement> reducers = new ArrayList<>();
-                for (ClassName reducerClass : getClassesFromAnnotation(element, CombinedReducer.class, "value")) {
-                    reducers.add(getElements().getTypeElement(reducerClass.toString()));
+                for (TypeMirror mirror : getClassesFromAnnotation(element, CombinedReducer.class, "value")) {
+                    reducers.add(asTypeElement(mirror));
                 }
                 try {
-                    new CombinedStoreClassElement(new CombinedReducerModel((TypeElement) element, reducers))
+                    new CombinedStoreClassElement(new CombinedReducerModel((TypeElement) element))
                             .createJavaFile().writeTo(getFiler());
                 } catch (IOException e) {
                     e.printStackTrace();

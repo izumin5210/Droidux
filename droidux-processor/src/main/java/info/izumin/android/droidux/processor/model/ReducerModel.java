@@ -16,6 +16,7 @@ import info.izumin.android.droidux.processor.exception.InvalidClassNameException
 import info.izumin.android.droidux.processor.exception.InvalidStateClassException;
 import info.izumin.android.droidux.processor.util.StringUtils;
 
+import static com.google.auto.common.MoreTypes.asTypeElement;
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.findMethodsByAnnotation;
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassFromAnnotation;
 
@@ -46,7 +47,7 @@ public class ReducerModel {
     public ReducerModel(TypeElement element) {
         this.element = element;
         if (element.getAnnotation(Reducer.class) != null) {
-            this.state = getClassFromAnnotation(element, Reducer.class, "value");
+            this.state = ClassName.get(asTypeElement(getClassFromAnnotation(element, Reducer.class, "value")));
             this.stateName = state.simpleName();
             this.stateVariableName = StringUtils.getLowerCamelFromUpperCamel(stateName);
         }

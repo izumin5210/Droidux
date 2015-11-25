@@ -1,14 +1,14 @@
 package info.izumin.android.droidux.processor.model;
 
-import com.squareup.javapoet.ClassName;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 
 import info.izumin.android.droidux.annotation.CombinedReducer;
 
+import static com.google.auto.common.MoreTypes.asTypeElement;
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassesFromAnnotation;
 
 /**
@@ -19,15 +19,12 @@ public class CombinedReducerModel extends ReducerModel {
 
     private final CombinedStoreModel combinedStoreModel;
 
-    public CombinedReducerModel(TypeElement element, List<TypeElement> reducerElements) {
+    public CombinedReducerModel(TypeElement element) {
         super(element);
         List<ReducerModel> reducerModels = new ArrayList<>();
-        for (ClassName reducer : getClassesFromAnnotation(element, CombinedReducer.class, "value")) {
-            for (TypeElement reducerElement : reducerElements) {
-                if (reducer.toString().equals(reducerElement.toString())) {
-                    reducerModels.add(new ReducerModel(reducerElement));
-                }
-            }
+        for (TypeMirror type : getClassesFromAnnotation(element, CombinedReducer.class, "value")) {
+            TypeElement reducerElement = asTypeElement(type);
+            reducerModels.add(new ReducerModel(reducerElement));
         }
         this.combinedStoreModel = new CombinedStoreModel(this, reducerModels);
     }

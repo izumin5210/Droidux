@@ -7,6 +7,7 @@ import javax.lang.model.element.ExecutableElement;
 import info.izumin.android.droidux.annotation.Dispatchable;
 import info.izumin.android.droidux.processor.exception.InvalidMethodArgumentsException;
 
+import static com.google.auto.common.MoreTypes.asTypeElement;
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.getClassFromAnnotation;
 
 /**
@@ -22,7 +23,7 @@ public class DispatchableModel {
     public DispatchableModel(ExecutableElement element, ReducerModel reducerModel) {
         this.element = element;
         this.methodName = element.getSimpleName().toString();
-        this.action = getClassFromAnnotation(element, Dispatchable.class, "value");
+        this.action = ClassName.get(asTypeElement(getClassFromAnnotation(element, Dispatchable.class, "value")));
 
         String displayName = reducerModel.getClassName() + "#" + element.getSimpleName() + "()";
 

@@ -1,21 +1,23 @@
 package info.izumin.android.droidux.processor.util;
 
-import com.squareup.javapoet.ClassName;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.AnnotationValueVisitor;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleAnnotationValueVisitor6;
 
-import static com.google.auto.common.AnnotationMirrors.getAnnotationElementAndValue;
+import static com.google.auto.common.AnnotationMirrors.getAnnotationValue;
 import static com.google.auto.common.MoreElements.getAnnotationMirror;
-import static info.izumin.android.droidux.processor.util.StringUtils.getClassName;
-import static info.izumin.android.droidux.processor.util.StringUtils.getPackageName;
 
 /**
  * Created by izumin on 11/2/15.
@@ -38,26 +40,34 @@ public final class AnnotationUtils {
         return list;
     }
 
-    public static ClassName getClassFromAnnotation(Element element, Class<? extends Annotation> annotationClass, String argName) {
-        return getClassesFromAnnotation(element, annotationClass, argName).get(0);
+    public static TypeMirror getClassFromAnnotation(Element element, Class<? extends Annotation> annotationType, String argName) {
+        AnnotationMirror am = getAnnotationMirror(element, annotationType).get();
+        AnnotationValue av = getAnnotationValue(am, argName);
+        return TO_TYPE.visit(av);
     }
 
-    public static List<ClassName> getClassesFromAnnotation(Element element, Class<? extends Annotation> annotationType, String argName) {
-        AnnotationMirror mirror = getAnnotationMirror(element, annotationType).orNull();
-        if (mirror == null) { return new ArrayList<>(); }
-        Map.Entry<ExecutableElement, AnnotationValue> entry = getAnnotationElementAndValue(mirror, argName);
-        List<String> names = new ArrayList<>();
-        if (entry.getValue().getValue() instanceof Iterable) {
-            for (Object value : (List) entry.getValue().getValue()) {
-                names.add(value.toString().replaceAll("\\.class$", ""));
-            }
-        } else {
-                names.add(entry.getValue().getValue().toString().replaceAll("\\.class$", ""));
-        }
-        List<ClassName> classes = new ArrayList<>();
-        for (String name : names) {
-            classes.add(ClassName.get(getPackageName(name), getClassName(name)));
-        }
-        return classes;
+    public static List<TypeMirror> getClassesFromAnnotation(Element element, Class<? extends Annotation> annotationType, String argName) {
+        AnnotationMirror am = getAnnotationMirror(element, annotationType).get();
+        AnnotationValue av = getAnnotationValue(am, argName);
+        return TO_LIST_OF_TYPE.visit(av);
     }
+
+    private static final AnnotationValueVisitor<ImmutableList<TypeMirror>, Void> TO_LIST_OF_TYPE = new SimpleAnnotationValueVisitor6<ImmutableList<TypeMirror>, Void>() {
+        @Override
+        public ImmutableList<TypeMirror> visitArray(List<? extends AnnotationValue> vals, Void aVoid) {
+            return FluentIterable.from(vals).transform(new Function<AnnotationValue, TypeMirror>() {
+                @Override
+                public TypeMirror apply(AnnotationValue input) {
+                    return TO_TYPE.visit(input);
+                }
+            }).toList();
+        }
+    };
+
+    private static final AnnotationValueVisitor<TypeMirror, Void> TO_TYPE = new SimpleAnnotationValueVisitor6<TypeMirror, Void>() {
+        @Override
+        public TypeMirror visitType(TypeMirror t, Void aVoid) {
+            return t;
+        }
+    };
 }
