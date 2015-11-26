@@ -1,4 +1,4 @@
-package info.izumin.android.droidux.processor.element;
+package info.izumin.android.droidux.processor.generator;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -22,8 +22,8 @@ import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterS
 /**
  * Created by izumin on 11/2/15.
  */
-public class StoreBuilderClassElement {
-    public static final String TAG = StoreBuilderClassElement.class.getSimpleName();
+public class StoreBuilderClassGenerator {
+    public static final String TAG = StoreBuilderClassGenerator.class.getSimpleName();
 
     static final String REDUCER_SETTER_METHOD_NAME = "setReducer";
     static final String INITIAL_STATE_SETTER_METHOD_NAME = "setInitialState";
@@ -34,13 +34,13 @@ public class StoreBuilderClassElement {
     private final StoreModel storeModel;
     private final List<ReducerModel> reducerModels;
 
-    public StoreBuilderClassElement(final StoreModel storeModel) {
+    public StoreBuilderClassGenerator(final StoreModel storeModel) {
         this(storeModel, new ArrayList<ReducerModel>() {{
             add(storeModel.getReducerModel());
         }});
     }
 
-    public StoreBuilderClassElement(StoreModel storeModel, List<ReducerModel> reducerModels) {
+    public StoreBuilderClassGenerator(StoreModel storeModel, List<ReducerModel> reducerModels) {
         this.storeModel = storeModel;
         this.reducerModels = reducerModels;
     }
