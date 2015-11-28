@@ -419,4 +419,16 @@ public final class Source {
                 "}"
         };
     }
+
+    public static class StoreHasInvalidValue {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.annotation.Store;",
+                "@Store(CounterStore.CounterReducer.class)",
+                "public interface CounterStore {",
+                "    public static class CounterReducer {",
+                "    }",
+                "}"
+        };
+    }
 }

@@ -11,6 +11,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 import info.izumin.android.droidux.annotation.Store;
+import info.izumin.android.droidux.processor.validator.StoreValidator;
 
 import static com.google.auto.common.MoreTypes.asTypeElement;
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.getTypesFromAnnotation;
@@ -38,6 +39,9 @@ public class StoreModel {
         this.element = element;
         this.interfaceName = ClassName.get(element);
         this.className = ClassName.get(interfaceName.packageName(), CLASS_NAME_PREFIX + interfaceName.simpleName());
+
+        StoreValidator.validate(this);
+
         reducerModels = FluentIterable.from(getTypesFromAnnotation(element, Store.class, "value"))
                 .transform(new Function<TypeMirror, ReducerModel>() {
                     @Override
@@ -64,7 +68,10 @@ public class StoreModel {
                 }).toList();
 
         this.builderModel = new BuilderModel(this);
+    }
 
+    public TypeElement getElement() {
+        return element;
     }
 
     public ClassName getInterfaceName() {

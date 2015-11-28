@@ -132,4 +132,18 @@ public class DroiduxProcessorTest {
                 forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
+
+    @Test
+    public void storeHasClassThatIsNotAnnotatedWithReducer() {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(
+                "Values of @Store annotation must have only classes annotated with \"@Reducer\"."
+                        + "But CounterStore has invalid value."
+        );
+        assertJavaSource(
+                forSourceLines("CounterStore", Source.StoreHasInvalidValue.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
+        );
+    }
 }
