@@ -14,7 +14,7 @@ public class DroiduxProcessor extends BasicAnnotationProcessor {
     protected Iterable<? extends ProcessingStep> initSteps() {
         return ImmutableList.<ProcessingStep>of(
                 new ReducerProcessingStep(getFiler()),
-                new CombinedReducerProcessingStep(getFiler())
+                new StoreProcessingStep(getFiler())
         );
     }
 
