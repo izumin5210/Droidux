@@ -404,11 +404,9 @@ public final class Source {
     public static class UndoableReducerWithoutUndoableState {
         public static final String[] TARGET = {
                 "package info.izumin.android.droidux.sample;",
-                "import info.izumin.android.droidux.annotation.Dispatchable;",
                 "import info.izumin.android.droidux.annotation.Reducer;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "import info.izumin.android.droidux.annotation.Undoable;",
-                "import info.izumin.android.droidux.processor.fixture.action.IncrementCountAction;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "@Store(CounterStore.CounterReducer.class)",
                 "public interface CounterStore {",
