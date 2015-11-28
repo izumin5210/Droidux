@@ -21,36 +21,21 @@ public class DroiduxProcessorTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    private static void assertJavaSource(JavaFileObject target, JavaFileObject generated) {
+    private static void assertJavaSource(JavaFileObject target, JavaFileObject generated, JavaFileObject... rest) {
         assert_().about(javaSource())
                 .that(target)
                 .processedWith(new DroiduxProcessor())
                 .compilesWithoutError()
                 .and()
-                .generatesSources(generated);
+                .generatesSources(generated, rest);
     }
 
     @Test
-    public void oneActionDispatchableReducer() {
+    public void singleReducer() {
         assertJavaSource(
-                forSourceLines("CounterReducer", Source.Counter.TARGET),
-                forSourceLines("DroiduxCounterStore", Source.Counter.GENERATED)
-        );
-    }
-
-    @Test
-    public void dispatchableMethdoTakesOnlyStateArgument() {
-        assertJavaSource(
-                forSourceLines("CounterReducer", Source.CounterTakesOnlyStateArgument.TARGET),
-                forSourceLines("DroiduxCounterStore", Source.CounterTakesOnlyStateArgument.GENERATED)
-        );
-    }
-
-    @Test
-    public void twoActionDispatchableReducer() {
-        assertJavaSource(
-                forSourceLines("TodoListReducer", Source.TodoList.TARGET),
-                forSourceLines("DroiduxTodoListStore", Source.TodoList.GENERATED)
+                forSourceLines("RootStore", Source.Counter.TARGET),
+                forSourceLines("RootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
+                forSourceLines("DroiduxRootStore", Source.Counter.GENERATED_STORE)
         );
     }
 
@@ -58,15 +43,9 @@ public class DroiduxProcessorTest {
     public void combinedTwoReducers() {
         assertJavaSource(
                 forSourceLines("RootReducer", Source.CombinedTwoReducers.TARGET),
+                forSourceLines("RootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
+                forSourceLines("RootStore_TodoListStoreImpl", Source.StoreImpl.TODO_LIST),
                 forSourceLines("DroiduxRootStore", Source.CombinedTwoReducers.GENERATED)
-        );
-    }
-
-    @Test
-    public void undoableReducer() {
-        assertJavaSource(
-                forSourceLines("UndoableTodoListReducer", Source.UndoableTodoList.TARGET),
-                forSourceLines("DroiduxUndoableTodoListStore", Source.UndoableTodoList.GENERATED)
         );
     }
 
@@ -90,15 +69,6 @@ public class DroiduxProcessorTest {
         );
     }
 
-    @Test
-    public void dispatchableMethodTakesNoArguments() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("CounterReducer#onIncrement() must take 2 arguments.");
-        assertJavaSource(
-                forSourceLines("CounterReducer", Source.DispatchableTakesNoArguments.TARGET),
-                forSourceLines("DroiduxCounterReducer", Source.EMPTY)
-        );
-    }
 
     @Test
     public void dispatchableMethodTakesExtraArguments() {
