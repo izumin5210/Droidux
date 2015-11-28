@@ -22,8 +22,10 @@ import static info.izumin.android.droidux.processor.util.AnnotationUtils.getType
 public class StoreModel {
     public static final String TAG = StoreModel.class.getSimpleName();
 
+    public static final String MIDDLEWARES_FIELD_NAME = "middlewares";
+    public static final String ATTACH_MIDDLEWARE_METHOD_NAME = "onAttach";
+
     private static final String CLASS_NAME_PREFIX = "Droidux";
-    private static final String BUILDER_CLASS_NAME = "Builder";
 
     private final TypeElement element;
 

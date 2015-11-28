@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.lang.model.element.Modifier;
 
+import info.izumin.android.droidux.Middleware;
 import info.izumin.android.droidux.processor.model.BuilderModel;
 import info.izumin.android.droidux.processor.model.DispatcherModel;
 import info.izumin.android.droidux.processor.model.StoreImplModel;
@@ -76,16 +77,23 @@ public class StoreClassGenerator {
                     BuilderModel.VARIABLE_NAME, storeImpl.getReducerModel().getVariableName());
         }
 
-        return builder.addStatement("$N = new $N($N.$N, $N)",
-                DispatcherModel.VARIABLE_NAME, DispatcherModel.CLASS_NAME,
-                BuilderModel.VARIABLE_NAME, BuilderModel.MIDDLEWARES_VARIABLE_NAME,
-                FluentIterable.from(storeModel.getStoreImplModels())
-                        .transform(new Function<StoreImplModel, String>() {
-                            @Override
-                            public String apply(StoreImplModel input) {
-                                return input.getVariableName();
-                            }
-                        }).join(Joiner.on(", ")))
+        final String middlewareFiledName = "middleware";
+        return builder
+                .beginControlFlow("for ($T $N : $N.$N)", Middleware.class, middlewareFiledName,
+                        BuilderModel.VARIABLE_NAME, StoreModel.MIDDLEWARES_FIELD_NAME)
+                .addStatement("$N.$N(this)",
+                        middlewareFiledName, StoreModel.ATTACH_MIDDLEWARE_METHOD_NAME)
+                .endControlFlow()
+                .addStatement("$N = new $N($N.$N, $N)",
+                        DispatcherModel.VARIABLE_NAME, DispatcherModel.CLASS_NAME,
+                        BuilderModel.VARIABLE_NAME, BuilderModel.MIDDLEWARES_VARIABLE_NAME,
+                        FluentIterable.from(storeModel.getStoreImplModels())
+                                .transform(new Function<StoreImplModel, String>() {
+                                    @Override
+                                    public String apply(StoreImplModel input) {
+                                        return input.getVariableName();
+                                    }
+                                }).join(Joiner.on(", ")))
                 .build();
     }
 
