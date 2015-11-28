@@ -1,6 +1,7 @@
 package info.izumin.android.droidux.processor.generator;
 
-import com.squareup.javapoet.ClassName;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -11,13 +12,13 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 
 import info.izumin.android.droidux.Middleware;
-import info.izumin.android.droidux.Store;
 import info.izumin.android.droidux.exception.NotInitializedException;
+import info.izumin.android.droidux.processor.model.BuilderModel;
 import info.izumin.android.droidux.processor.model.ReducerModel;
 import info.izumin.android.droidux.processor.model.StoreModel;
 
-import static info.izumin.android.droidux.processor.util.PoetUtils.getOverrideAnnotation;
 import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterSpec;
+import static info.izumin.android.droidux.processor.util.StringUtils.getLowerCamelFromUpperCamel;
 
 /**
  * Created by izumin on 11/2/15.
@@ -25,101 +26,109 @@ import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterS
 public class StoreBuilderClassGenerator {
     public static final String TAG = StoreBuilderClassGenerator.class.getSimpleName();
 
-    static final String REDUCER_SETTER_METHOD_NAME = "setReducer";
-    static final String INITIAL_STATE_SETTER_METHOD_NAME = "setInitialState";
-    static final String ADD_MIDDLEWARE_METHOD_NAME = "addMiddleware";
-    static final String BUILD_METHOD_NAME = "build";
-    static final String ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION = "$N has not been initialized.";
+    static final String ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION = "$T has not been initialized.";
 
-    private final StoreModel storeModel;
-    private final List<ReducerModel> reducerModels;
+    private final BuilderModel builderModel;
 
-    public StoreBuilderClassGenerator(final StoreModel storeModel) {
-        this(storeModel, new ArrayList<ReducerModel>() {{
-            add(storeModel.getReducerModel());
-        }});
-    }
-
-    public StoreBuilderClassGenerator(StoreModel storeModel, List<ReducerModel> reducerModels) {
-        this.storeModel = storeModel;
-        this.reducerModels = reducerModels;
+    public StoreBuilderClassGenerator(StoreModel storeModel) {
+        builderModel = storeModel.getBuilderModel();
     }
 
     public TypeSpec createBuilderTypeSpec() {
-        return TypeSpec.classBuilder(storeModel.getBuilderName())
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .superclass(ClassName.get(Store.class).nestedClass(storeModel.getBuilderName()))
+        return TypeSpec.classBuilder(builderModel.getClassName().simpleName())
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
                 .addFields(createFieldSpecs())
                 .addMethod(createAddMiddlewareMethodSpec())
                 .addMethod(createBuilderConstructor())
-                .addMethods(createAddReducerMethodSpecs())
+                .addMethods(createReducerSetterMethodSpecs())
+                .addMethods(createStateSetterMethodSpecs())
                 .addMethod(createBuildMethodSpec())
                 .build();
     }
 
     private List<FieldSpec> createFieldSpecs() {
         List<FieldSpec> specs = new ArrayList<>();
-        for (ReducerModel reducerModel : reducerModels) {
-            specs.add(FieldSpec.builder(
-                    reducerModel.getReducer(), reducerModel.getVariableName(), Modifier.PRIVATE
-            ).build());
-            specs.add(FieldSpec.builder(
-                    reducerModel.getState(), reducerModel.getStateVariableName(), Modifier.PRIVATE
-            ).build());
-        }
+        specs.add(FieldSpec.builder(BuilderModel.MIDDLEWARES_TYPE,
+                BuilderModel.MIDDLEWARES_VARIABLE_NAME, Modifier.FINAL, Modifier.PRIVATE).build());
+        specs.addAll(FluentIterable.from(builderModel.getReducerModels())
+                .transform(new Function<ReducerModel, FieldSpec>() {
+                    @Override
+                    public FieldSpec apply(ReducerModel input) {
+                        return FieldSpec.builder(input.getClassName(),
+                                input.getVariableName(), Modifier.PRIVATE).build();
+                    }
+                })
+                .toList());
+        specs.addAll(FluentIterable.from(builderModel.getReducerModels())
+                .transform(new Function<ReducerModel, FieldSpec>() {
+                    @Override
+                    public FieldSpec apply(ReducerModel input) {
+                        return FieldSpec.builder(input.getState(),
+                                input.getStateVariableName(), Modifier.PRIVATE).build();
+                    }
+                })
+                .toList());
         return specs;
     }
 
     private MethodSpec createBuilderConstructor() {
         return MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addStatement("super()")
+                .addStatement("$N = new $T<>()", BuilderModel.MIDDLEWARES_VARIABLE_NAME, ArrayList.class)
                 .build();
     }
 
     private MethodSpec createAddMiddlewareMethodSpec() {
-        return MethodSpec.methodBuilder(ADD_MIDDLEWARE_METHOD_NAME)
+        return MethodSpec.methodBuilder(BuilderModel.ADD_MIDDLEWARE_METHOD_NAME)
                 .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(getOverrideAnnotation())
-                .returns(storeModel.getBuilder())
+                .returns(builderModel.getClassName())
                 .addParameter(getParameterSpec(Middleware.class))
-                .addStatement("super.addMiddleware(middleware)")
+                .addStatement("$N.add($N)", BuilderModel.MIDDLEWARES_VARIABLE_NAME,
+                        getLowerCamelFromUpperCamel(Middleware.class.getName()))
                 .addStatement("return this")
                 .build();
     }
 
-    private List<MethodSpec> createAddReducerMethodSpecs() {
-        List<MethodSpec> specs = new ArrayList<>();
-        for (ReducerModel reducerModel : reducerModels) {
-            specs.add(
-                    MethodSpec.methodBuilder(REDUCER_SETTER_METHOD_NAME)
-                            .addModifiers(Modifier.PUBLIC)
-                            .returns(storeModel.getBuilder())
-                            .addParameter(getParameterSpec(reducerModel.getReducer()))
-                            .addStatement("this.$N = $N", reducerModel.getVariableName(), reducerModel.getVariableName())
-                            .addStatement("return this")
-                            .build()
-            );
-            specs.add(
-                    MethodSpec.methodBuilder(INITIAL_STATE_SETTER_METHOD_NAME)
-                            .addModifiers(Modifier.PUBLIC)
-                            .returns(storeModel.getBuilder())
-                            .addParameter(getParameterSpec(reducerModel.getState()))
-                            .addStatement("this.$N = $N", reducerModel.getStateVariableName(), reducerModel.getStateVariableName())
-                            .addStatement("return this")
-                            .build()
-            );
-        }
-        return specs;
+    private List<MethodSpec> createReducerSetterMethodSpecs() {
+        return FluentIterable.from(builderModel.getReducerModels())
+                .transform(new Function<ReducerModel, MethodSpec>() {
+                    @Override
+                    public MethodSpec apply(ReducerModel input) {
+                        return MethodSpec.methodBuilder(BuilderModel.REDUCER_SETTER_METHOD_NAME)
+                                .addModifiers(Modifier.PUBLIC)
+                                .returns(builderModel.getClassName())
+                                .addParameter(getParameterSpec(input.getClassName()))
+                                .addStatement("this.$N = $N", input.getVariableName(), input.getVariableName())
+                                .addStatement("return this")
+                                .build();
+                    }
+                })
+                .toList();
+    }
+
+    private List<MethodSpec> createStateSetterMethodSpecs() {
+        return FluentIterable.from(builderModel.getReducerModels())
+                .transform(new Function<ReducerModel, MethodSpec>() {
+                    @Override
+                    public MethodSpec apply(ReducerModel input) {
+                        return MethodSpec.methodBuilder(BuilderModel.STATE_SETTER_METHOD_NAME)
+                                .addModifiers(Modifier.PUBLIC)
+                                .returns(builderModel.getClassName())
+                                .addParameter(getParameterSpec(input.getState()))
+                                .addStatement("this.$N = $N", input.getStateVariableName(), input.getStateVariableName())
+                                .addStatement("return this")
+                                .build();
+                    }
+                })
+                .toList();
     }
 
     private MethodSpec createBuildMethodSpec() {
-        MethodSpec.Builder builder = MethodSpec.methodBuilder(BUILD_METHOD_NAME)
+        MethodSpec.Builder builder = MethodSpec.methodBuilder(BuilderModel.BUILD_METHOD_NAME)
                 .addModifiers(Modifier.PUBLIC)
-                .addAnnotation(getOverrideAnnotation())
-                .returns(storeModel.getStore());
+                .returns(builderModel.getStoreModel().getClassName());
 
-        for (ReducerModel reducerModel : reducerModels) {
+        for (ReducerModel reducerModel : builderModel.getReducerModels()) {
             builder = builder
                     .beginControlFlow("if ($N == null)", reducerModel.getVariableName())
                     .addStatement("throw new $T(\"" + ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION + "\")",
@@ -127,12 +136,12 @@ public class StoreBuilderClassGenerator {
                     .endControlFlow()
                     .beginControlFlow("if ($N == null)", reducerModel.getStateVariableName())
                     .addStatement("throw new $T(\"" + ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION + "\")",
-                            NotInitializedException.class, reducerModel.getStateName())
+                            NotInitializedException.class, reducerModel.getState())
                     .endControlFlow();
         }
 
         return builder
-                .addStatement("return new $N(this)", storeModel.getClassName())
+                .addStatement("return new $T(this)", builderModel.getStoreModel().getClassName())
                 .build();
     }
 }
