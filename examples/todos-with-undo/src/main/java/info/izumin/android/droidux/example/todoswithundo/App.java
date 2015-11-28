@@ -4,7 +4,6 @@ import android.app.Application;
 
 import info.izumin.android.droidux.example.todoswithundo.entity.TodoList;
 import info.izumin.android.droidux.example.todoswithundo.middleware.Logger;
-import info.izumin.android.droidux.example.todoswithundo.reducer.DroiduxRootStore;
 import info.izumin.android.droidux.example.todoswithundo.reducer.TodoListReducer;
 
 /**
@@ -13,7 +12,7 @@ import info.izumin.android.droidux.example.todoswithundo.reducer.TodoListReducer
 public class App extends Application {
     public static final String TAG = App.class.getSimpleName();
 
-    private DroiduxRootStore store;
+    private RootStore store;
 
     @Override
     public void onCreate() {
@@ -25,7 +24,7 @@ public class App extends Application {
                 .build();
     }
 
-    public DroiduxRootStore getStore() {
+    public RootStore getStore() {
         return store;
     }
 }

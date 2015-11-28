@@ -13,8 +13,7 @@ import info.izumin.android.droidux.example.todoswithundo.action.AddTodoAction;
 import info.izumin.android.droidux.example.todoswithundo.action.ClearCompletedTodoAction;
 import info.izumin.android.droidux.example.todoswithundo.action.DeleteTodoAction;
 import info.izumin.android.droidux.example.todoswithundo.action.ToggleCompletedTodoAction;
-import info.izumin.android.droidux.example.todoswithundo.reducer.DroiduxRootStore;
-import info.izumin.android.droidux.example.todoswithundo.reducer.DroiduxTodoListStore;
+import info.izumin.android.droidux.example.todoswithundo.entity.TodoList;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
@@ -26,7 +25,7 @@ public class MainActivityHelper {
     public static final String TAG = MainActivityHelper.class.getSimpleName();
 
     private MainActivity activity;
-    private DroiduxRootStore store;
+    private RootStore store;
 
     private EditText editNewTodo;
     private Button btnAddTodo;
@@ -72,10 +71,10 @@ public class MainActivityHelper {
                 store.dispatch(new ClearCompletedTodoAction()).subscribe();
                 return true;
             case R.id.menu_undo_todo:
-                store.dispatch(new UndoAction(DroiduxTodoListStore.class)).subscribe();
+                store.dispatch(new UndoAction(TodoList.class)).subscribe();
                 return true;
             case R.id.menu_redo_todo:
-                store.dispatch(new RedoAction(DroiduxTodoListStore.class)).subscribe();
+                store.dispatch(new RedoAction(TodoList.class)).subscribe();
                 return true;
             default:
                 return false;
@@ -100,7 +99,7 @@ public class MainActivityHelper {
             new AlertDialog.Builder(activity)
                     .setTitle(R.string.dialog_delete_todo_title)
                     .setMessage(activity.getString(R.string.dialog_delete_todo_message,
-                            store.getTodoListStore().getState().getTodoById((int) id).getText()))
+                            store.todoList().getTodoById((int) id).getText()))
                     .setPositiveButton(R.string.dialog_delete_todo_btn_positive, (dialog, which) -> {
                         subject.onNext(id);
                     })
