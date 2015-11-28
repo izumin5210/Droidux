@@ -109,20 +109,27 @@ public class DroiduxProcessorTest {
     @Test
     public void reducerWithoutSuffix() {
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Class name of annotated class with @Reducer must be end with \"Reducer\".");
+        expectedException.expectMessage(
+                "@Reducer class name must end with \"Reducer\". \"CounterReduce\" has invalid class name."
+        );
         assertJavaSource(
-                forSourceLines("CounterReduce", Source.ReducerWithoutSuffix.TARGET),
-                forSourceLines("DroiduxTodoListReduce", Source.EMPTY)
+                forSourceLines("CounterStore", Source.ReducerWithoutSuffix.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
 
     @Test
     public void undoableReducerWithoutUndoableState() {
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("State class for undoable reducer must implement \"UndoableState<T>\".");
+        expectedException.expectMessage(
+                "@Reducer class annotated with @Undoable must have the state implements \"UndoableState<T>\". "
+                        + "Counter state of CounterReducer does not implement it."
+        );
         assertJavaSource(
-                forSourceLines("CounterReduce", Source.UndoableReducerWithoutUndoableState.TARGET),
-                forSourceLines("DroiduxTodoListReduce", Source.EMPTY)
+                forSourceLines("CounterStore", Source.UndoableReducerWithoutUndoableState.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
 }
