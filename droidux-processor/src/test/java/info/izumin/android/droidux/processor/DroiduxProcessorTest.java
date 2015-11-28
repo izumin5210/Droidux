@@ -52,31 +52,57 @@ public class DroiduxProcessorTest {
     @Test
     public void dispatchableMethodTakesWrongStateType() {
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("1st argument of CounterReducer#onIncrement() does not match the @Reducer value.");
+        expectedException.expectMessage(
+                "@Dispatchable method can have arguments only state or action. "
+                        + "CounterReducer#increment() has more than one invalid argument."
+        );
         assertJavaSource(
-                forSourceLines("CounterReducer", Source.DispatchableTakesWrongStateType.TARGET),
-                forSourceLines("DroiduxCounterReducer", Source.EMPTY)
+                forSourceLines("CounterStore", Source.DispatchableTakesWrongStateType.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
 
     @Test
     public void dispatchableMethodTakesWrongActionType() {
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("2nd argument of TodoListReducer#onAddItem() does not match the @Dispatchable value.");
+        expectedException.expectMessage(
+                "@Dispatchable method can have arguments only state or action. "
+                        + "TodoListReducer#addItem() has more than one invalid argument."
+        );
         assertJavaSource(
-                forSourceLines("TodoListReducer", Source.DispatchableTakesWrongActionType.TARGET),
-                forSourceLines("DroiduxTodoListReducer", Source.EMPTY)
+                forSourceLines("TodoListStore", Source.DispatchableTakesWrongActionType.TARGET),
+                forSourceLines("DroiduxTodoListStore_TodoListStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxTodoListStore", Source.EMPTY)
         );
     }
 
 
     @Test
-    public void dispatchableMethodTakesExtraArguments() {
+    public void dispatchableMethodReturnsWrongType() {
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("CounterReducer#onIncrement() must take 2 arguments.");
+        expectedException.expectMessage(
+                "@Dispatchable method can have arguments only state or action. "
+                        + "CounterReducer#increment() has more than one invalid argument."
+        );
         assertJavaSource(
-                forSourceLines("CounterReducer", Source.DispatchableTakesExtraArguments.TARGET),
-                forSourceLines("DroiduxTodoListReducer", Source.EMPTY)
+                forSourceLines("CounterStore", Source.DispatchableTakesExtraArguments.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
+        );
+    }
+
+    @Test
+    public void dispatchableMethodShouldReturnState() {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(
+                "@Dispatchable method must return new state. "
+                        + "But CounterReducer#increment() returns invalid type."
+        );
+        assertJavaSource(
+                forSourceLines("CounterStore", Source.DispatchableMethosReturnsWrongType.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
 
