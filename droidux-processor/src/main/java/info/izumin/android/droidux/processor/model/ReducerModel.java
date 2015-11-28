@@ -30,18 +30,16 @@ public class ReducerModel {
 
     private final TypeElement element;
     private ClassName state;
-    private final ClassName reducer;
+    private final ClassName className;
 
     private final String qualifiedName;
     private final String packageName;
-    private final String className;
     private final String variableName;
     private String stateName;
     private String stateVariableName;
 
     private final boolean isUndoable;
 
-    private StoreModel storeModel;
     private List<DispatchableModel> dispatchableModels;
 
     public ReducerModel(TypeElement element) {
@@ -64,17 +62,16 @@ public class ReducerModel {
             }
         }
 
+        this.className = ClassName.get(element);
+
         this.qualifiedName = element.getQualifiedName().toString();
         this.packageName = StringUtils.getPackageName(qualifiedName);
-        this.className = StringUtils.getClassName(qualifiedName);
-        this.variableName = StringUtils.getLowerCamelFromUpperCamel(className);
+        this.variableName = StringUtils.getLowerCamelFromUpperCamel(className.simpleName());
 
-        if (!className.endsWith(CLASS_NAME_SUFFIX)) {
+        if (!className.simpleName().endsWith(CLASS_NAME_SUFFIX)) {
             throw new InvalidClassNameException("Class name of annotated class with @Reducer must be end with \"Reducer\".");
         }
 
-        this.reducer = ClassName.get(packageName, className);
-        this.storeModel = new StoreModel(this);
         this.dispatchableModels = new ArrayList<>();
         for (ExecutableElement el : findMethodsByAnnotation(element, Dispatchable.class)) {
             dispatchableModels.add(new DispatchableModel(el, this));
@@ -89,8 +86,8 @@ public class ReducerModel {
         return state;
     }
 
-    public ClassName getReducer() {
-        return reducer;
+    public ClassName getClassName() {
+        return className;
     }
 
     public String getQualifiedName() {
@@ -99,10 +96,6 @@ public class ReducerModel {
 
     public String getPackageName() {
         return packageName;
-    }
-
-    public String getClassName() {
-        return className;
     }
 
     public String getVariableName() {
@@ -115,10 +108,6 @@ public class ReducerModel {
 
     public String getStateVariableName() {
         return stateVariableName;
-    }
-
-    public StoreModel getStoreModel() {
-        return storeModel;
     }
 
     public List<DispatchableModel> getDispatchableModels() {

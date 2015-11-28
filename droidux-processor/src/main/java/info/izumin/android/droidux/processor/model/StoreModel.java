@@ -1,9 +1,19 @@
 package info.izumin.android.droidux.processor.model;
 
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
 import com.squareup.javapoet.ClassName;
 
-import static info.izumin.android.droidux.processor.util.StringUtils.getLowerCamelFromUpperCamel;
-import static info.izumin.android.droidux.processor.util.StringUtils.replaceSuffix;
+import java.util.List;
+
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+
+import info.izumin.android.droidux.annotation.Store;
+
+import static com.google.auto.common.MoreTypes.asTypeElement;
+import static info.izumin.android.droidux.processor.util.AnnotationUtils.getTypesFromAnnotation;
 
 /**
  * Created by izumin on 11/3/15.
@@ -12,93 +22,72 @@ public class StoreModel {
     public static final String TAG = StoreModel.class.getSimpleName();
 
     private static final String CLASS_NAME_PREFIX = "Droidux";
-    private static final String CLASS_NAME_SUFFIX = "Store";
-    private static final String REDUCER_CLASS_NAME_SUFFIX = "Reducer";
     private static final String BUILDER_CLASS_NAME = "Builder";
 
-    private final ClassName state;
-    private final ClassName store;
-    private final ClassName builder;
+    private final TypeElement element;
 
-    private final String packageName;
-    private final String storeName;
-    private final String className;
-    private final String variableName;
-    private final String stateName;
-    private final String stateVariableName;
-    private final String builderName;
-    private final String builderVariableName;
+    private final ClassName interfaceName;
+    private final ClassName className;
 
-    private final boolean isUndoable;
+    private final List<ReducerModel> reducerModels;
+    private final List<StoreImplModel> storeImplModels;
+    private final List<StoreMethodModel> methodModels;
+    private final BuilderModel builderModel;
 
-    private final ReducerModel reducerModel;
+    public StoreModel(TypeElement element) {
+        this.element = element;
+        this.interfaceName = ClassName.get(element);
+        this.className = ClassName.get(interfaceName.packageName(), CLASS_NAME_PREFIX + interfaceName.simpleName());
+        reducerModels = FluentIterable.from(getTypesFromAnnotation(element, Store.class, "value"))
+                .transform(new Function<TypeMirror, ReducerModel>() {
+                    @Override
+                    public ReducerModel apply(TypeMirror input) {
+                        return new ReducerModel(asTypeElement(input));
+                    }
+                }).toList();
 
-    public StoreModel(ReducerModel reducerModel) {
-        this.reducerModel = reducerModel;
-        this.state = reducerModel.getState();
-        this.packageName = reducerModel.getPackageName();
-        this.storeName =
-                replaceSuffix(reducerModel.getClassName(), REDUCER_CLASS_NAME_SUFFIX, CLASS_NAME_SUFFIX);
-        this.className = CLASS_NAME_PREFIX + storeName;
-        this.variableName = getLowerCamelFromUpperCamel(storeName);
-        this.stateName = reducerModel.getStateName();
-        this.stateVariableName = reducerModel.getStateVariableName();
-        this.store = ClassName.get(packageName, className);
-        this.builderName = BUILDER_CLASS_NAME;
-        this.builder = store.nestedClass(builderName);
-        this.builderVariableName = getLowerCamelFromUpperCamel(builderName);
-        this.isUndoable = reducerModel.isUndoable();
+        storeImplModels = FluentIterable.from(reducerModels)
+                .transform(new Function<ReducerModel, StoreImplModel>() {
+                    @Override
+                    public StoreImplModel apply(ReducerModel input) {
+                        return new StoreImplModel(StoreModel.this, input);
+                    }
+                }).toList();
+
+        methodModels = FluentIterable.from(element.getEnclosedElements())
+                .filter(ExecutableElement.class)
+                .transform(new Function<ExecutableElement, StoreMethodModel>() {
+                    @Override
+                    public StoreMethodModel apply(ExecutableElement input) {
+                        return new StoreMethodModel(input, StoreModel.this);
+                    }
+                }).toList();
+
+        this.builderModel = new BuilderModel(this);
+
     }
 
-    public ClassName getState() {
-        return state;
+    public ClassName getInterfaceName() {
+        return interfaceName;
     }
 
-    public ClassName getStore() {
-        return store;
-    }
-
-    public ClassName getBuilder() {
-        return builder;
-    }
-
-    public String getPackageName() {
-        return packageName;
-    }
-
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public String getClassName() {
+    public ClassName getClassName() {
         return className;
     }
 
-    public String getVariableName() {
-        return variableName;
+    public List<ReducerModel> getReducerModels() {
+        return reducerModels;
     }
 
-    public String getStateName() {
-        return stateName;
+    public List<StoreImplModel> getStoreImplModels() {
+        return storeImplModels;
     }
 
-    public String getStateVariableName() {
-        return stateVariableName;
+    public List<StoreMethodModel> getMethodModels() {
+        return methodModels;
     }
 
-    public String getBuilderName() {
-        return builderName;
-    }
-
-    public String getBuilderVariableName() {
-        return builderVariableName;
-    }
-
-    public ReducerModel getReducerModel() {
-        return reducerModel;
-    }
-
-    public boolean isUndoable() {
-        return isUndoable;
+    public BuilderModel getBuilderModel() {
+        return builderModel;
     }
 }
