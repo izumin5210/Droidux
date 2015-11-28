@@ -1,9 +1,9 @@
 package info.izumin.android.droidux.action;
 
 import info.izumin.android.droidux.Action;
+import info.izumin.android.droidux.StoreImpl;
 import info.izumin.android.droidux.UndoableState;
 import info.izumin.android.droidux.History;
-import info.izumin.android.droidux.Store;
 
 /**
  * Created by izumin on 11/24/15.
@@ -29,15 +29,15 @@ public class HistoryAction extends Action {
     }
 
     private final Kind kind;
-    private final Class<? extends Store> target;
+    private final Class<? extends UndoableState> targetStateType;
 
-    public HistoryAction(Kind kind, Class<? extends Store> target) {
+    public HistoryAction(Kind kind, Class<? extends UndoableState> targetStateType) {
         this.kind = kind;
-        this.target = target;
+        this.targetStateType = targetStateType;
     }
 
-    public boolean isAssignableTo(Store store) {
-        return target.isAssignableFrom(store.getClass());
+    public boolean isAssignableTo(StoreImpl store) {
+        return targetStateType.isAssignableFrom(store.getState().getClass());
     }
 
     public <T extends UndoableState<T>> T handle(History<T> history) {
