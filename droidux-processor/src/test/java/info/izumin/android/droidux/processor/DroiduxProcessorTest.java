@@ -34,7 +34,7 @@ public class DroiduxProcessorTest {
     public void singleReducer() {
         assertJavaSource(
                 forSourceLines("RootStore", Source.Counter.TARGET),
-                forSourceLines("RootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
+                forSourceLines("DroiduxRootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
                 forSourceLines("DroiduxRootStore", Source.Counter.GENERATED_STORE)
         );
     }
@@ -42,9 +42,9 @@ public class DroiduxProcessorTest {
     @Test
     public void combinedTwoReducers() {
         assertJavaSource(
-                forSourceLines("RootReducer", Source.CombinedTwoReducers.TARGET),
-                forSourceLines("RootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
-                forSourceLines("RootStore_TodoListStoreImpl", Source.StoreImpl.TODO_LIST),
+                forSourceLines("RootStore", Source.CombinedTwoReducers.TARGET),
+                forSourceLines("DroiduxRootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
+                forSourceLines("DroiduxRootStore_TodoListStoreImpl", Source.StoreImpl.TODO_LIST),
                 forSourceLines("DroiduxRootStore", Source.CombinedTwoReducers.GENERATED)
         );
     }

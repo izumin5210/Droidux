@@ -13,7 +13,7 @@ import info.izumin.android.droidux.processor.fixture.action.SquareCountAction;
 @Reducer(Counter.class)
 public class CounterReducer {
     @Dispatchable(IncrementCountAction.class)
-    public Counter icrement(Counter state, IncrementCountAction action) {
+    public Counter increment(Counter state, IncrementCountAction action) {
         return new Counter(state.getCount() + action.getValue());
     }
 
