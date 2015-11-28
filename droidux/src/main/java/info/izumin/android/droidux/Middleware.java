@@ -5,16 +5,16 @@ import rx.Observable;
 /**
  * Created by izumin on 11/2/15.
  */
-public abstract class Middleware {
+public abstract class Middleware<S> {
     public static final String TAG = Middleware.class.getSimpleName();
 
-    private Store store;
+    private S store;
 
-    public void onAttach(Store store) {
+    public void onAttach(S store) {
         this.store = store;
     }
 
-    public Store getStore() {
+    public S getStore() {
         return store;
     }
 
