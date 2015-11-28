@@ -11,6 +11,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 
 import info.izumin.android.droidux.annotation.Dispatchable;
+import info.izumin.android.droidux.processor.validator.DispatchableValidator;
 
 import static com.google.auto.common.MoreTypes.asTypeElement;
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.getTypeFromAnnotation;
@@ -22,6 +23,7 @@ public class DispatchableModel {
     public static final String TAG = DispatchableModel.class.getSimpleName();
 
     private final ExecutableElement element;
+    private final ReducerModel reducerModel;
     private final ClassName action;
     private final String methodName;
 
@@ -29,6 +31,7 @@ public class DispatchableModel {
 
     public DispatchableModel(ExecutableElement element, ReducerModel reducerModel) {
         this.element = element;
+        this.reducerModel = reducerModel;
         this.methodName = element.getSimpleName().toString();
         this.action = ClassName.get(asTypeElement(getTypeFromAnnotation(element, Dispatchable.class, "value")));
         this.arguments = FluentIterable.from(element.getParameters())
@@ -38,6 +41,8 @@ public class DispatchableModel {
                         return ClassName.get(MoreTypes.asTypeElement(input.asType()));
                     }
                 }).toList();
+
+        DispatchableValidator.validate(this);
     }
 
     public ClassName getAction() {
@@ -52,7 +57,18 @@ public class DispatchableModel {
         return element.getParameters().size();
     }
 
+    public ExecutableElement getElement() {
+        return element;
+    }
+
     public List<ClassName> getArguments() {
         return arguments;
+    }
+
+    public ClassName getReducerClassName() {
+        return reducerModel.getClassName();
+    }
+    public ClassName getState() {
+        return reducerModel.getState();
     }
 }
