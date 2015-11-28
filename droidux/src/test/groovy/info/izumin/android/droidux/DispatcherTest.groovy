@@ -1,0 +1,44 @@
+package info.izumin.android.droidux
+
+import rx.Observable
+import spock.lang.Specification;
+
+/**
+ * Created by izumin on 11/24/15.
+ */
+class DispatcherTest extends Specification {
+
+    def store1
+    def store2
+    def middleware1
+    def middleware2
+    def action
+    def dispatcher
+
+    def setup() {
+        store1 = Mock(StoreImpl.class)
+        store2 = Mock(StoreImpl.class)
+        middleware1 = Mock(Middleware.class)
+        middleware2 = Mock(Middleware.class)
+        action = Mock(Action.class)
+
+        def middlewares = new ArrayList<Middleware>()
+        middlewares.add(middleware1)
+        middlewares.add(middleware2)
+
+        dispatcher = new Dispatcher(middlewares, store1, store2)
+    }
+
+    def "#dispatch()"() {
+        when:
+        dispatcher.dispatch(action).subscribe()
+
+        then:
+        1 * middleware1.beforeDispatch(action) >> Observable.just(action)
+        1 * middleware2.beforeDispatch(action) >> Observable.just(action)
+        1 * store1.dispatch(action)
+        1 * store2.dispatch(action)
+        1 * middleware2.afterDispatch(action) >> Observable.just(action)
+        1 * middleware1.afterDispatch(action) >> Observable.just(action)
+    }
+}
