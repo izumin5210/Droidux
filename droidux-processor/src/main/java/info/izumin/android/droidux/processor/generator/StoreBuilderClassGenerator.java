@@ -73,7 +73,7 @@ public class StoreBuilderClassGenerator {
 
     private MethodSpec createBuilderConstructor() {
         return MethodSpec.constructorBuilder()
-                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.PRIVATE)
                 .addStatement("$N = new $T<>()", BuilderModel.MIDDLEWARES_VARIABLE_NAME, ArrayList.class)
                 .build();
     }
