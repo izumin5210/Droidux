@@ -7,7 +7,7 @@ import info.izumin.android.droidux.Action;
 /**
  * Created by izumin on 11/5/15.
  */
-public class ToggleCompletedTodoAction extends Action {
+public class ToggleCompletedTodoAction implements Action {
     public static final String TAG = ToggleCompletedTodoAction.class.getSimpleName();
 
     private final int id;
