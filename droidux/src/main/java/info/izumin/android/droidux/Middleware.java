@@ -9,13 +9,19 @@ public abstract class Middleware<S> {
     public static final String TAG = Middleware.class.getSimpleName();
 
     private S store;
+    private Dispatcher dispatcher;
 
-    public void onAttach(S store) {
+    public void onAttach(S store, Dispatcher dispatcher) {
         this.store = store;
+        this.dispatcher = dispatcher;
     }
 
-    public S getStore() {
+    protected S getStore() {
         return store;
+    }
+
+    protected Dispatcher getDispatcher() {
+        return dispatcher;
     }
 
     public abstract Observable<Action> beforeDispatch(Action action);

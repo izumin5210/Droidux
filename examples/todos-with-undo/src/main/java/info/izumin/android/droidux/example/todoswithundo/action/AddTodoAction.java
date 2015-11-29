@@ -7,7 +7,7 @@ import info.izumin.android.droidux.Action;
 /**
  * Created by izumin on 11/4/15.
  */
-public class AddTodoAction extends Action {
+public class AddTodoAction implements Action {
     public static final String TAG = AddTodoAction.class.getSimpleName();
 
     private final String text;

@@ -7,7 +7,7 @@ import info.izumin.android.droidux.Action;
 /**
  * Created by izumin on 11/5/15.
  */
-public class DeleteTodoAction extends Action {
+public class DeleteTodoAction implements Action {
     public static final String TAG = DeleteTodoAction.class.getSimpleName();
 
     private final long id;

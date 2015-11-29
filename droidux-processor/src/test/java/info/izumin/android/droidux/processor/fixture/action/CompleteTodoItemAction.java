@@ -5,7 +5,7 @@ import info.izumin.android.droidux.Action;
 /**
  * Created by izumin on 11/2/15.
  */
-public class CompleteTodoItemAction extends Action {
+public class CompleteTodoItemAction implements Action {
     public static final String TAG = CompleteTodoItemAction.class.getSimpleName();
 
     private final int id;
