@@ -46,6 +46,7 @@ public class StoreClassGenerator {
                 .addSuperinterface(storeModel.getInterfaceName())
                 .addFields(createFieldSpecs())
                 .addMethod(createConstructor())
+                .addMethod(createBuilderMethodSpec())
                 .addMethods(createGetterMethodSpecs())
                 .addType(new StoreBuilderClassGenerator(storeModel).createBuilderTypeSpec())
                 .build();
@@ -94,6 +95,14 @@ public class StoreClassGenerator {
                 .addStatement("$N.$N(this, $N)", middlewareFiledName,
                         StoreModel.ATTACH_MIDDLEWARE_METHOD_NAME, DispatcherModel.VARIABLE_NAME)
                 .endControlFlow()
+                .build();
+    }
+
+    private MethodSpec createBuilderMethodSpec() {
+        return MethodSpec.methodBuilder(StoreModel.BUILDER_METHOD_NAME)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .returns(storeModel.getBuilderModel().getClassName())
+                .addStatement("return new $T()", storeModel.getBuilderModel().getClassName())
                 .build();
     }
 
