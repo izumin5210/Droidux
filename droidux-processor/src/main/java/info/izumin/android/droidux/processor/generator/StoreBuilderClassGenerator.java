@@ -133,10 +133,6 @@ public class StoreBuilderClassGenerator {
                     .beginControlFlow("if ($N == null)", reducerModel.getVariableName())
                     .addStatement("throw new $T(\"" + ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION + "\")",
                             NotInitializedException.class, reducerModel.getClassName())
-                    .endControlFlow()
-                    .beginControlFlow("if ($N == null)", reducerModel.getStateVariableName())
-                    .addStatement("throw new $T(\"" + ERROR_MESSAGE_NOT_INITIALIZED_EXCEPTION + "\")",
-                            NotInitializedException.class, reducerModel.getState())
                     .endControlFlow();
         }
 
