@@ -35,4 +35,7 @@ ext {
     def versionBuild = 0
 
     VERSION = "${versionMajor}.${versionMinor}.${versionPatch}"
+    USER_ORG = 'izumin5210'
+    GROUP_ID = 'info.izumin.android'
+    WEBSITE = 'https://github.com/izumin5210/Droidux'
 }
