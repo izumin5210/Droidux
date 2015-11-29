@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import info.izumin.android.droidux.example.todomvc.entity.TodoList;
 import info.izumin.android.droidux.example.todomvc.middleware.Logger;
-import info.izumin.android.droidux.example.todomvc.reducer.DroiduxRootStore;
 import info.izumin.android.droidux.example.todomvc.reducer.TodoListReducer;
 
 /**
@@ -15,7 +14,7 @@ import info.izumin.android.droidux.example.todomvc.reducer.TodoListReducer;
 public class App extends Application {
     public static final String TAG = App.class.getSimpleName();
 
-    private DroiduxRootStore store;
+    private RootStore store;
 
     @Override
     public void onCreate() {
@@ -27,7 +26,7 @@ public class App extends Application {
                 .build();
     }
 
-    public DroiduxRootStore getStore() {
+    public RootStore getStore() {
         return store;
     }
 }

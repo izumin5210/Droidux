@@ -9,7 +9,6 @@ import android.widget.BaseAdapter;
 
 import info.izumin.android.droidux.example.todomvc.databinding.ListItemTodoBinding;
 import info.izumin.android.droidux.example.todomvc.entity.TodoList;
-import info.izumin.android.droidux.example.todomvc.reducer.DroiduxRootStore;
 
 /**
  * Created by izumin on 11/4/15.
@@ -20,23 +19,23 @@ public class TodoListAdapter extends BaseAdapter {
     private static final int LAYOUT_RES_ID = R.layout.list_item_todo;
 
     private final LayoutInflater inflater;
-    private final DroiduxRootStore store;
+    private final RootStore store;
 
     public TodoListAdapter(Context context) {
         super();
         this.inflater = LayoutInflater.from(context);
         this.store = ((App) context.getApplicationContext()).getStore();
-        this.store.getTodoListStore().observe().subscribe(todoList -> notifyDataSetChanged());
+        this.store.observeTodoList().subscribe(todoList -> notifyDataSetChanged());
     }
 
     @Override
     public int getCount() {
-        return store.getTodoListStore().getState().getTodoList().size();
+        return store.todoList().getTodoList().size();
     }
 
     @Override
     public TodoList.Todo getItem(int position) {
-        return store.getTodoListStore().getState().getTodoList().get(position);
+        return store.todoList().getTodoList().get(position);
     }
 
     @Override

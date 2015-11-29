@@ -1,33 +1,17 @@
 package info.izumin.android.droidux.processor.fixture;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import info.izumin.android.droidux.UndoableState;
 
 /**
  * Created by izumin on 11/2/15.
  */
-public class TodoList implements UndoableState<TodoList> {
-
-    private List<Item> items;
-
-    public TodoList() {
-        this.items = new ArrayList<>();
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
+public class TodoList extends ArrayList<TodoList.Item> implements UndoableState<TodoList> {
 
     @Override
     public TodoList clone() {
-        try {
-            return (TodoList) super.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return (TodoList) super.clone();
     }
 
     public static class Item {

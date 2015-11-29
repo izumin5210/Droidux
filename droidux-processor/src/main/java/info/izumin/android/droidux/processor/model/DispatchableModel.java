@@ -1,11 +1,17 @@
 package info.izumin.android.droidux.processor.model;
 
+import com.google.auto.common.MoreTypes;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
 import com.squareup.javapoet.ClassName;
 
+import java.util.List;
+
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 
 import info.izumin.android.droidux.annotation.Dispatchable;
-import info.izumin.android.droidux.processor.exception.InvalidMethodArgumentsException;
+import info.izumin.android.droidux.processor.validator.DispatchableValidator;
 
 import static com.google.auto.common.MoreTypes.asTypeElement;
 import static info.izumin.android.droidux.processor.util.AnnotationUtils.getTypeFromAnnotation;
@@ -17,27 +23,26 @@ public class DispatchableModel {
     public static final String TAG = DispatchableModel.class.getSimpleName();
 
     private final ExecutableElement element;
+    private final ReducerModel reducerModel;
     private final ClassName action;
     private final String methodName;
 
+    private final List<ClassName> arguments;
+
     public DispatchableModel(ExecutableElement element, ReducerModel reducerModel) {
         this.element = element;
+        this.reducerModel = reducerModel;
         this.methodName = element.getSimpleName().toString();
         this.action = ClassName.get(asTypeElement(getTypeFromAnnotation(element, Dispatchable.class, "value")));
+        this.arguments = FluentIterable.from(element.getParameters())
+                .transform(new Function<VariableElement, ClassName>() {
+                    @Override
+                    public ClassName apply(VariableElement input) {
+                        return ClassName.get(MoreTypes.asTypeElement(input.asType()));
+                    }
+                }).toList();
 
-        String displayName = reducerModel.getClassName() + "#" + element.getSimpleName() + "()";
-
-        if (element.getParameters().size() < 1 || element.getParameters().size() > 2) {
-            throw new InvalidMethodArgumentsException(displayName + " must take 2 arguments.");
-        }
-
-        if (!ClassName.get(element.getParameters().get(0).asType()).equals(reducerModel.getState())) {
-            throw new InvalidMethodArgumentsException("1st argument of " + displayName + " does not match the @Reducer value.");
-        }
-
-        if (element.getParameters().size() == 2 && !ClassName.get(element.getParameters().get(1).asType()).equals(action)) {
-            throw new InvalidMethodArgumentsException("2nd argument of " + displayName + " does not match the @Dispatchable value.");
-        }
+        DispatchableValidator.validate(this);
     }
 
     public ClassName getAction() {
@@ -50,5 +55,20 @@ public class DispatchableModel {
 
     public int argumentCount() {
         return element.getParameters().size();
+    }
+
+    public ExecutableElement getElement() {
+        return element;
+    }
+
+    public List<ClassName> getArguments() {
+        return arguments;
+    }
+
+    public ClassName getReducerClassName() {
+        return reducerModel.getClassName();
+    }
+    public ClassName getState() {
+        return reducerModel.getState();
     }
 }

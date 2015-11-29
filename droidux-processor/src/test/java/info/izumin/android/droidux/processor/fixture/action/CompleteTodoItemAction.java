@@ -1,4 +1,4 @@
-package info.izumin.android.droidux.processor.fixture;
+package info.izumin.android.droidux.processor.fixture.action;
 
 import info.izumin.android.droidux.Action;
 
@@ -8,6 +8,13 @@ import info.izumin.android.droidux.Action;
 public class CompleteTodoItemAction extends Action {
     public static final String TAG = CompleteTodoItemAction.class.getSimpleName();
 
-    public CompleteTodoItemAction(String value) {
+    private final int id;
+
+    public CompleteTodoItemAction(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 }

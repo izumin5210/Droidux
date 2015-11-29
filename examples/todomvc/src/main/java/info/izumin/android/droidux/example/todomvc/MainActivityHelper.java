@@ -11,7 +11,6 @@ import info.izumin.android.droidux.example.todomvc.action.AddTodoAction;
 import info.izumin.android.droidux.example.todomvc.action.ClearCompletedTodoAction;
 import info.izumin.android.droidux.example.todomvc.action.DeleteTodoAction;
 import info.izumin.android.droidux.example.todomvc.action.ToggleCompletedTodoAction;
-import info.izumin.android.droidux.example.todomvc.reducer.DroiduxRootStore;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
@@ -23,7 +22,7 @@ public class MainActivityHelper {
     public static final String TAG = MainActivityHelper.class.getSimpleName();
 
     private MainActivity activity;
-    private DroiduxRootStore store;
+    private RootStore store;
 
     private EditText editNewTodo;
     private Button btnAddTodo;
@@ -91,7 +90,7 @@ public class MainActivityHelper {
             new AlertDialog.Builder(activity)
                     .setTitle(R.string.dialog_delete_todo_title)
                     .setMessage(activity.getString(R.string.dialog_delete_todo_message,
-                            store.getTodoListStore().getState().getTodoById((int) id).getText()))
+                            store.todoList().getTodoById((int) id).getText()))
                     .setPositiveButton(R.string.dialog_delete_todo_btn_positive, (dialog, which) -> {
                         subject.onNext(id);
                     })

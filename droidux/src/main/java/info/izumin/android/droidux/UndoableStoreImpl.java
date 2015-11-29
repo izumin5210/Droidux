@@ -7,18 +7,18 @@ import info.izumin.android.droidux.action.HistoryAction;
 /**
  * Created by izumin on 11/25/15.
  */
-public abstract class UndoableStore<T extends UndoableState<T>> extends Store<T> {
-    public static final String TAG = UndoableStore.class.getSimpleName();
+public abstract class UndoableStoreImpl<T extends UndoableState<T>> extends StoreImpl<T> {
+    public static final String TAG = UndoableStoreImpl.class.getSimpleName();
 
     private final History<T> history;
 
-    protected UndoableStore(Builder builder, T initialState) {
-        super(builder);
-        history = new History<>(initialState);
+    protected UndoableStoreImpl(T state) {
+        super(state);
+        history = new History<>(state);
     }
 
     @Override
-    protected void dispatchToReducer(Action action) {
+    protected void dispatch(Action action) {
         if (HistoryAction.class.isAssignableFrom(action.getClass())) {
             HistoryAction historyAction = (HistoryAction) action;
             if (((HistoryAction) action).isAssignableTo(this)) {

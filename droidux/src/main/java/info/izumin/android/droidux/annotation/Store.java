@@ -10,6 +10,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
-public @interface CombinedReducer {
+public @interface Store {
     Class<?>[] value() default {};
 }

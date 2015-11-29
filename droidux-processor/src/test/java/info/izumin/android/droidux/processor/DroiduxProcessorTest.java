@@ -21,112 +21,129 @@ public class DroiduxProcessorTest {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
-    private static void assertJavaSource(JavaFileObject target, JavaFileObject generated) {
+    private static void assertJavaSource(JavaFileObject target, JavaFileObject generated, JavaFileObject... rest) {
         assert_().about(javaSource())
                 .that(target)
                 .processedWith(new DroiduxProcessor())
                 .compilesWithoutError()
                 .and()
-                .generatesSources(generated);
+                .generatesSources(generated, rest);
     }
 
     @Test
-    public void oneActionDispatchableReducer() {
+    public void singleReducer() {
         assertJavaSource(
-                forSourceLines("CounterReducer", Source.Counter.TARGET),
-                forSourceLines("DroiduxCounterStore", Source.Counter.GENERATED)
-        );
-    }
-
-    @Test
-    public void dispatchableMethdoTakesOnlyStateArgument() {
-        assertJavaSource(
-                forSourceLines("CounterReducer", Source.CounterTakesOnlyStateArgument.TARGET),
-                forSourceLines("DroiduxCounterStore", Source.CounterTakesOnlyStateArgument.GENERATED)
-        );
-    }
-
-    @Test
-    public void twoActionDispatchableReducer() {
-        assertJavaSource(
-                forSourceLines("TodoListReducer", Source.TodoList.TARGET),
-                forSourceLines("DroiduxTodoListStore", Source.TodoList.GENERATED)
+                forSourceLines("RootStore", Source.Counter.TARGET),
+                forSourceLines("DroiduxRootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
+                forSourceLines("DroiduxRootStore", Source.Counter.GENERATED_STORE)
         );
     }
 
     @Test
     public void combinedTwoReducers() {
         assertJavaSource(
-                forSourceLines("RootReducer", Source.CombinedTwoReducers.TARGET),
+                forSourceLines("RootStore", Source.CombinedTwoReducers.TARGET),
+                forSourceLines("DroiduxRootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
+                forSourceLines("DroiduxRootStore_TodoListStoreImpl", Source.StoreImpl.TODO_LIST),
                 forSourceLines("DroiduxRootStore", Source.CombinedTwoReducers.GENERATED)
-        );
-    }
-
-    @Test
-    public void undoableReducer() {
-        assertJavaSource(
-                forSourceLines("UndoableTodoListReducer", Source.UndoableTodoList.TARGET),
-                forSourceLines("DroiduxUndoableTodoListStore", Source.UndoableTodoList.GENERATED)
         );
     }
 
     @Test
     public void dispatchableMethodTakesWrongStateType() {
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("1st argument of CounterReducer#onIncrement() does not match the @Reducer value.");
+        expectedException.expectMessage(
+                "@Dispatchable method can have arguments only state or action. "
+                        + "CounterReducer#increment() has more than one invalid argument."
+        );
         assertJavaSource(
-                forSourceLines("CounterReducer", Source.DispatchableTakesWrongStateType.TARGET),
-                forSourceLines("DroiduxCounterReducer", Source.EMPTY)
+                forSourceLines("CounterStore", Source.DispatchableTakesWrongStateType.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
 
     @Test
     public void dispatchableMethodTakesWrongActionType() {
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("2nd argument of TodoListReducer#onAddItem() does not match the @Dispatchable value.");
+        expectedException.expectMessage(
+                "@Dispatchable method can have arguments only state or action. "
+                        + "TodoListReducer#addItem() has more than one invalid argument."
+        );
         assertJavaSource(
-                forSourceLines("TodoListReducer", Source.DispatchableTakesWrongActionType.TARGET),
-                forSourceLines("DroiduxTodoListReducer", Source.EMPTY)
+                forSourceLines("TodoListStore", Source.DispatchableTakesWrongActionType.TARGET),
+                forSourceLines("DroiduxTodoListStore_TodoListStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxTodoListStore", Source.EMPTY)
+        );
+    }
+
+
+    @Test
+    public void dispatchableMethodReturnsWrongType() {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(
+                "@Dispatchable method can have arguments only state or action. "
+                        + "CounterReducer#increment() has more than one invalid argument."
+        );
+        assertJavaSource(
+                forSourceLines("CounterStore", Source.DispatchableTakesExtraArguments.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
 
     @Test
-    public void dispatchableMethodTakesNoArguments() {
+    public void dispatchableMethodShouldReturnState() {
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("CounterReducer#onIncrement() must take 2 arguments.");
-        assertJavaSource(
-                forSourceLines("CounterReducer", Source.DispatchableTakesNoArguments.TARGET),
-                forSourceLines("DroiduxCounterReducer", Source.EMPTY)
+        expectedException.expectMessage(
+                "@Dispatchable method must return new state. "
+                        + "But CounterReducer#increment() returns invalid type."
         );
-    }
-
-    @Test
-    public void dispatchableMethodTakesExtraArguments() {
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("CounterReducer#onIncrement() must take 2 arguments.");
         assertJavaSource(
-                forSourceLines("CounterReducer", Source.DispatchableTakesExtraArguments.TARGET),
-                forSourceLines("DroiduxTodoListReducer", Source.EMPTY)
+                forSourceLines("CounterStore", Source.DispatchableMethosReturnsWrongType.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
 
     @Test
     public void reducerWithoutSuffix() {
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Class name of annotated class with @Reducer must be end with \"Reducer\".");
+        expectedException.expectMessage(
+                "@Reducer class name must end with \"Reducer\". \"CounterReduce\" has invalid class name."
+        );
         assertJavaSource(
-                forSourceLines("CounterReduce", Source.ReducerWithoutSuffix.TARGET),
-                forSourceLines("DroiduxTodoListReduce", Source.EMPTY)
+                forSourceLines("CounterStore", Source.ReducerWithoutSuffix.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
 
     @Test
     public void undoableReducerWithoutUndoableState() {
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("State class for undoable reducer must implement \"UndoableState<T>\".");
+        expectedException.expectMessage(
+                "@Reducer class annotated with @Undoable must have the state implements \"UndoableState<T>\". "
+                        + "Counter state of CounterReducer does not implement it."
+        );
         assertJavaSource(
-                forSourceLines("CounterReduce", Source.UndoableReducerWithoutUndoableState.TARGET),
-                forSourceLines("DroiduxTodoListReduce", Source.EMPTY)
+                forSourceLines("CounterStore", Source.UndoableReducerWithoutUndoableState.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
+        );
+    }
+
+    @Test
+    public void storeHasClassThatIsNotAnnotatedWithReducer() {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(
+                "Values of @Store annotation must have only classes annotated with \"@Reducer\"."
+                        + "But CounterStore has invalid value."
+        );
+        assertJavaSource(
+                forSourceLines("CounterStore", Source.StoreHasInvalidValue.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
 }

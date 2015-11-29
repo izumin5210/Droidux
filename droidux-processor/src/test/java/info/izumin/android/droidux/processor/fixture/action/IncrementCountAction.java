@@ -1,4 +1,4 @@
-package info.izumin.android.droidux.processor.fixture;
+package info.izumin.android.droidux.processor.fixture.action;
 
 import info.izumin.android.droidux.Action;
 
@@ -8,6 +8,13 @@ import info.izumin.android.droidux.Action;
 public class IncrementCountAction extends Action {
     public static final String TAG = IncrementCountAction.class.getSimpleName();
 
-    public IncrementCountAction() {
+    private final int value;
+
+    public IncrementCountAction(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
     }
 }
