@@ -29,10 +29,10 @@ dependencies {
 }
 
 publish {
-    userOrg = 'izumin5210'
-    groupId = 'info.izumin.android'
+    userOrg = USER_ORG
+    groupId = GROUP_ID
     artifactId = 'droidux-thunk'
     version = '0.1.0'
     description = 'Thunk middleware for Droidux.'
-    website = 'https://github.com/izumin5210/Droidux'
+    website = WEBSITE
 }

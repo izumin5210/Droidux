@@ -28,6 +28,7 @@ Features of Droidux are following:
 see also: [Introduction to Redux // Speaker Deck](https://speakerdeck.com/axross/introduction-to-redux) (in Japanese)
 
 ## Installation
+Droidux depends on [RxJava][rxjava] and [Data Binding][databinding].
 Add to your project build.gradle file:
 
 ```groovy
@@ -41,13 +42,19 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
-  compile 'info.izumin.android:droidux:0.3.0'
-  apt 'info.izumin.android:droidux:0.3.0'
+  compile 'io.reactivex:rxjava:1.0.16'
+  compile 'info.izumin.android:droidux:0.4.0'
+  apt 'info.izumin.android:droidux:0.4.0'
 }
 ```
 
 And also you need to setup [Data Binding][databinding].
 
+When you use `AsyncAction`, you need to add [droidux-thunk](https://github.com/izumin5210/Droidux/tree/master/middlewares/droidux-thunk).
+
+```groovy
+compile 'info.izumin.android:droidux-thunk:0.1.0'
+```
 
 ## Usage
 ### Quick example
@@ -79,7 +86,7 @@ public class CounterReducer {
 
     /**
      * This is a method to handle actions.
-     * It should be applied @Dispatchable annotation is given an action class as ano argument.
+     * It should be applied @Dispatchable annotation is given an action class as an parameter.
      * It describe how to transform the state into the next state when dispatched actions.
      * It should return the next state instance, and it is preferred instantiate the new state.
      *
@@ -87,27 +94,40 @@ public class CounterReducer {
      + and it returns new counter instance that state is incremented.
      */
     @Dispatchable(IncrementCountAction.class)
-    public Counter increment(Counter state, IncrementCountAction action) {
+    public Counter increment(Counter state) {
         return new Counter(state.getCount() + 1);
     }
 
     @Dispatchable(DecrementCountAction.class)
-    public Counter decrement(Counter state, DecrementCountAction action) {
+    public Counter decrement(Counter state) {
         return new Counter(state.getCount() - 1);
     }
 
     @Dispatchable(ClearCountAction.class)
-    public Counter clear(Counter state, ClearCountAction action) {
+    public Counter clear() {
         return new Counter(0);
     }
+}
+
+
+/**
+ * This is a store interface.
+ * It should be applied @Store annotation and passing reducer classes as parameters.
+ * Droidux generates an implementation of getter method, observe method and dispatch method from user-defined interface.
+ */
+@Store(CounterReducer.class)
+public interface CounterStore {
+    Counter counter();
+    Observable<Counter> observeCounter();
+    Observable<Action> dispatch(Action action);
 }
 
 /**
  * They are action classes. They should extend Action class.
  */
-public class IncrementCountAction extends Action {}
-public class DecrementCountAction extends Action {}
-public class ClearCountAction extends Action {}
+public class IncrementCountAction implements Action {}
+public class DecrementCountAction implements Action {}
+public class ClearCountAction implements Action {}
 
 
 // Instantiate a Droidux store holding the state of your app.
@@ -118,9 +138,9 @@ public class ClearCountAction extends Action {}
 // 
 // Its APIs in this example are following:
 // - rx.Observable<Action> dispatch(Action action)
-// - rx.Observable<Counter> observe()
-// - Counter getState()
-DroiduxCounterStore store = new DroiduxCounterStore.Builder()
+// - rx.Observable<Counter> observeCounter()
+// - Counter counter()
+CounterStore store = DroiduxCounterStore.builder()
         .setReducer(new CounterReducer())
         .setInitialState(new Counter(0))
         .build();                                       // Counter: 0
@@ -138,15 +158,20 @@ store.dispatch(new DecrementCountAction()).subscribe(); // Counter: 2
 store.dispatch(new ClearCountAction()).subscribe();     // Counter: 0
 ```
 
-### Combined reducer/store
+### Combined store
 
 ```java
-@CombinedReducer({CounterReducer.class, TodoListReducer.class})
-class RootReducer {
+@Store({CounterReducer.class, TodoListReducer.class})
+class RootStore {
+    Counter counter();
+    Observable<Counter> observeCounter();
+    TodoList todoList();
+    Observable<TodoList> observeTodoList();
+    Observable<Action> dispatch(Action action);
 }
 
 
-DroiduxRootStore store = new DroiduxRootStore.Builder()
+RootStore store = DroiduxRootStore.builder()
         .setReducer(new CounterReducer())
         .setInitialState(new Counter(0))
         .setReducer(new TodoListReducer())
@@ -161,27 +186,23 @@ store.dispatch(new AddTodoAction("new task")).subscribe();  // Counter: 1, Todo:
 ### Middleware
 
 ```java
-class Logger extends Middleware {
+class Logger extends Middleware<CounterStore> {
     @Override
     public Observable<Action> beforeDispatch(Action action) {
-        Log.d("[prev counter]", String.valueOf(getCount()));
+        Log.d("[prev counter]", String.valueOf(getStore().count()));
         Log.d("[action]", action.getClass().getSimpleName());
         return Observable.just(action);
     }
 
     @Override
     public Observable<Action> afterDispatch(Action action) {
-        Log.d("[next counter]", String.valueOf(getCount()));
+        Log.d("[next counter]", String.valueOf(getStore().count()));
         return Observable.just(action);
-    }
-
-    private int getCount() {
-        return ((DroiduxCounterStore) getStore()).getState().getCount();
     }
 }
 
 // Instantiate store class 
-DroiduxCounterStore store = new DroiduxCounterStore.Builder()
+CounterStore store = DroiduxCounterStore.builder()
         .setReducer(new CounterReducer())
         .setInitialState(new Counter(0))
         .addMiddleware(new Logger())        // apply logger middleware
@@ -209,21 +230,7 @@ store.dispatch(new ClearCountAction()).subscribe();
 ### Undo / Redo
 
 ```java
-@Undoable
-@Reducer(TodoList.class)
-class TodoListReducer {
-    @Dispatchable(AddTodoAction.class)
-    public TodoList addTodo(TodoList state, AddTodoAction action) {
-        // ...
-    }
-
-    @Dispatchable(CompleteTodoAction.class)
-    public TodoList completeTodo(TodoList state, CompleteTodoAction action) {
-        // ...
-    }
-}
-
-class TodoList extends ArrayList<TodoList.Todo> implements UndoableStore<TodoList> {
+class TodoList extends ArrayList<TodoList.Todo> implements UndoableState<TodoList> {
     @Override
     public TodoList clone() {
         // ...
@@ -234,16 +241,37 @@ class TodoList extends ArrayList<TodoList.Todo> implements UndoableStore<TodoLis
     }
 }
 
-class AddTodoAction extends Action {
+@Undoable
+@Reducer(TodoList.class)
+class TodoListReducer {
+    @Dispatchable(AddTodoAction.class)
+    public TodoList add(TodoList state, AddTodoAction action) {
+        // ...
+    }
+
+    @Dispatchable(CompleteTodoAction.class)
+    public TodoList complete(TodoList state, CompleteTodoAction action) {
+        // ...
+    }
+}
+
+@Store(TodoListReducer.class)
+public interface TodoListStore {
+    TodoList todoList();
+    Observable<TodoList> observeTodoList();
+    Observable<Action> dispatch(Action action);
+}
+
+class AddTodoAction implements Action {
     // ...
 }
 
-class CompleteTodoAction extends Action {
+class CompleteTodoAction implements Action {
     // ...
 }
 
 
-DroiduxTodoListStore store = new DroiduxTodoListStore.Builder()
+TodoListStore store = DroiduxTodoListStore.builder()
         .setReducer(new TodoListReducer())
         .setInitialState(new TodoList())
         .build();
@@ -254,34 +282,58 @@ store.dispatch(new AddTodoAction("item 3")).subscribe();        // ["item 1", "i
 store.dispatch(new CompleteTodoAction("item 2")).subscribe();   // ["item 1", "item 3"]
 store.dispatch(new AddTodoAction("item 4")).subscribe();        // ["item 1", "item 3", "item 4"]
 
-store.dispatch(new UndoAction(DroiduxTodoListStore.class)).subscribe();
+store.dispatch(new UndoAction(TodoList.class)).subscribe();
 // => ["item 1", "item 3"]
 
-store.dispatch(new UndoAction(DroiduxTodoListStore.class)).subscribe();
+store.dispatch(new UndoAction(TodoList.class)).subscribe();
 // => ["item 1", "item 2", "item 3"]
 
-store.dispatch(new RedoAction(DroiduxTodoListStore.class)).subscribe();
+store.dispatch(new RedoAction(TodoList.class)).subscribe();
 // => ["item 1", "item 3"]
 ```
 
 ### Async action
 
+Use [droidux-thunk](https://github.com/izumin5210/Droidux/tree/master/middlewares/droidux-thunk).
+
 ```java
-class FetchTodoListAction extends Action {
-    public Observable<FetchTodoListAction> fetch() {
+class FetchTodoListAction implements AsyncAction {
+    private final TodoListApi client;
+
+    public ReceiveTodoListAction(TodoListApi client) {
+        this.client = client;
+    }
+
+    public Observable<ReceiveTodoListAction> call() {
         return client.fetch()
                 .map(todoList -> {
                     this.todoList = todoList;
-                    return this;
+                    return new ReceiveTodoListAction(todoList);
                 });
     }
-    
+}
+
+class ReceiveTodoListAction implements Action {
+    private final TodoList todoList;
+
+    public ReceiveTodoListAction(TodoList todoList) {
+        this.todoList = todoList;
+    }
+
     public TodoList getTodoList() {
         return todoList;
     }
 }
 
-new FetchTodoAction().fetch().flatMap(store::dispatch).subscribe();
+
+TodoListStore store = DroiduxTodoListStore.builder()
+        .setReducer(new TodoListReducer())
+        .setInitialState(new TodoList())
+        .addMiddleware(new ThunkMiddleware())
+        .build();
+
+
+store.dispatch(new FetchTodoListAction(client)).subscribe();
 ```
 
 ### Bindable methods
@@ -295,6 +347,7 @@ new FetchTodoAction().fetch().flatMap(store::dispatch).subscribe();
 
 * [TodoMVC](https://github.com/izumin5210/Droidux/tree/master/examples/todomvc)
 * [Todos with Undo](https://github.com/izumin5210/Droidux/tree/master/examples/todos-with-undo)
+* [Todos with Dagger 2](https://github.com/izumin5210/Droidux/tree/master/examples/todos-with-dagger)
 
 
 ## License
