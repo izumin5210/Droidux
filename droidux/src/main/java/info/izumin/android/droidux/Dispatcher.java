@@ -53,7 +53,7 @@ public class Dispatcher {
             o = o.flatMap(new Func1<Action, Observable<Action>>() {
                 @Override
                 public Observable<Action> call(Action a) {
-                    return mw.afterDispatch(a);
+                    return mw.beforeDispatch(a);
                 }
             });
         }
