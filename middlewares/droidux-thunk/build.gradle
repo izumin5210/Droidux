@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'groovyx.grooid.groovy-android'
 
 android {
@@ -25,4 +26,13 @@ dependencies {
 
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
     testCompile 'cglib:cglib-nodep:2.2'
+}
+
+publish {
+    userOrg = 'izumin5210'
+    groupId = 'info.izumin.android'
+    artifactId = 'droidux-thunk'
+    version = '0.1.0'
+    description = 'Thunk middleware for Droidux.'
+    website = 'https://github.com/izumin5210/Droidux'
 }
