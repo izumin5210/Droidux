@@ -35,10 +35,20 @@ class DispatcherTest extends Specification {
 
         then:
         1 * middleware1.beforeDispatch(action) >> Observable.just(action)
+
+        then:
         1 * middleware2.beforeDispatch(action) >> Observable.just(action)
+
+        then:
         1 * store1.dispatch(action)
+
+        then:
         1 * store2.dispatch(action)
+
+        then:
         1 * middleware2.afterDispatch(action) >> Observable.just(action)
+
+        then:
         1 * middleware1.afterDispatch(action) >> Observable.just(action)
     }
 }
