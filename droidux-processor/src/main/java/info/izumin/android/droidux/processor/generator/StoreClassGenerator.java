@@ -79,11 +79,6 @@ public class StoreClassGenerator {
 
         final String middlewareFiledName = "middleware";
         return builder
-                .beginControlFlow("for ($T $N : $N.$N)", Middleware.class, middlewareFiledName,
-                        BuilderModel.VARIABLE_NAME, StoreModel.MIDDLEWARES_FIELD_NAME)
-                .addStatement("$N.$N(this)",
-                        middlewareFiledName, StoreModel.ATTACH_MIDDLEWARE_METHOD_NAME)
-                .endControlFlow()
                 .addStatement("$N = new $N($N.$N, $N)",
                         DispatcherModel.VARIABLE_NAME, DispatcherModel.CLASS_NAME,
                         BuilderModel.VARIABLE_NAME, BuilderModel.MIDDLEWARES_VARIABLE_NAME,
@@ -94,6 +89,11 @@ public class StoreClassGenerator {
                                         return input.getVariableName();
                                     }
                                 }).join(Joiner.on(", ")))
+                .beginControlFlow("for ($T $N : $N.$N)", Middleware.class, middlewareFiledName,
+                        BuilderModel.VARIABLE_NAME, StoreModel.MIDDLEWARES_FIELD_NAME)
+                .addStatement("$N.$N(this, $N)", middlewareFiledName,
+                        StoreModel.ATTACH_MIDDLEWARE_METHOD_NAME, DispatcherModel.VARIABLE_NAME)
+                .endControlFlow()
                 .build();
     }
 
