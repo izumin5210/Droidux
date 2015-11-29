@@ -48,7 +48,8 @@ public class Dispatcher {
 
     private Observable<Action> applyMiddlewaresBeforeDispatch(Action action) {
         Observable<Action> o = Observable.just(action);
-        for (final Middleware mw : middlewares) {
+
+        for (final Middleware<?> mw : middlewares) {
             o = o.flatMap(new Func1<Action, Observable<Action>>() {
                 @Override
                 public Observable<Action> call(Action a) {
@@ -63,7 +64,7 @@ public class Dispatcher {
         Observable<Action> o = Observable.just(action);
         ListIterator<Middleware> iterator = middlewares.listIterator(middlewares.size());
         while(iterator.hasPrevious()) {
-            final Middleware mw = iterator.previous();
+            final Middleware<?> mw = iterator.previous();
             o = o.flatMap(new Func1<Action, Observable<Action>>() {
                 @Override
                 public Observable<Action> call(Action a) {
