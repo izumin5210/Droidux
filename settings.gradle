@@ -1,1 +1,1 @@
-include ':droidux', ':droidux-processor', ':examples:todomvc', ':examples:todos-with-undo'
+include ':droidux', ':droidux-processor', ':middlewares:droidux-thunk', ':examples:todomvc', ':examples:todos-with-undo'
