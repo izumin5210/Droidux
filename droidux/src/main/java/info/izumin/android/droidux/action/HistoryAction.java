@@ -8,7 +8,7 @@ import info.izumin.android.droidux.History;
 /**
  * Created by izumin on 11/24/15.
  */
-public class HistoryAction extends Action {
+public class HistoryAction implements Action {
     public static final String TAG = HistoryAction.class.getSimpleName();
 
     enum Kind {
