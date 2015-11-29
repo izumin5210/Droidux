@@ -19,7 +19,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        store = new DroiduxRootStore.Builder()
+        store = DroiduxRootStore.builder()
                 .addMiddleware(new Logger())
                 .setReducer(new TodoListReducer())
                 .setInitialState(new TodoList(new ArrayList<>()))
