@@ -21,7 +21,7 @@ import info.izumin.android.droidux.example.todoswithdagger.databinding.ActivityM
 
 public class MainActivity extends AppCompatActivity implements MainView, MainEventHandlers {
 
-    @Inject MainActivityHelper helper;
+    @Inject MainPresenter presenter;
     @Inject RootStore store;
 
     @Override
@@ -37,12 +37,12 @@ public class MainActivity extends AppCompatActivity implements MainView, MainEve
     @Override
     protected void onStart() {
         super.onStart();
-        helper.onStart();
+        presenter.onStart();
     }
 
     @Override
     protected void onStop() {
-        helper.onStop();
+        presenter.onStop();
         super.onStop();
     }
 
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements MainView, MainEve
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_clear_completed_todo:
-                helper.clearCompletedTodo();
+                presenter.clearCompletedTodo();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements MainView, MainEve
                 .setMessage(getString(R.string.dialog_delete_todo_message,
                         store.todoList().getTodoById((int) id).getText()))
                 .setPositiveButton(R.string.dialog_delete_todo_btn_positive, (dialog, which) -> {
-                    helper.onLongClickListItem(id);
+                    presenter.onLongClickListItem(id);
                 })
                 .setNeutralButton(R.string.dialog_delete_todo_btn_neutral, (dialog, which) -> {
                     dialog.dismiss();
@@ -85,12 +85,12 @@ public class MainActivity extends AppCompatActivity implements MainView, MainEve
 
     @Override
     public void onClickAddTodo(View view) {
-        helper.onClickBtnAddTodo(store.newTodoText());
+        presenter.onClickBtnAddTodo(store.newTodoText());
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        helper.onClickListItem(id);
+        presenter.onClickListItem(id);
     }
 
     @Override
@@ -101,11 +101,11 @@ public class MainActivity extends AppCompatActivity implements MainView, MainEve
 
     @Override
     public void onNewTodoTextChanged(CharSequence s, int start, int before, int count) {
-        helper.updateNewTodoText(s.toString());
+        presenter.updateNewTodoText(s.toString());
     }
 
-    protected MainActivityModule getModule() {
-        return new MainActivityModule(this);
+    protected MainModule getModule() {
+        return new MainModule(this);
     }
 
     private void setupComponent() {

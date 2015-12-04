@@ -8,18 +8,17 @@ import info.izumin.android.droidux.example.todoswithdagger.RootStore;
  * Created by izumin on 11/29/15.
  */
 @Module
-public class MainActivityModule {
-    public static final String TAG = MainActivityModule.class.getSimpleName();
+public class MainModule {
+    public static final String TAG = MainModule.class.getSimpleName();
 
     private final MainActivity activity;
 
-    public MainActivityModule(MainActivity activity) {
+    public MainModule(MainActivity activity) {
         this.activity = activity;
     }
 
     @Provides
-    MainActivityHelper provideMainActivityHelper(RootStore store) {
-        return new MainActivityHelper(activity, store);
+    MainPresenter provideMainPresenter(RootStore store) {
+        return new MainPresenter(activity, store);
     }
-
 }

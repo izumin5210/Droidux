@@ -15,8 +15,8 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by izumin on 11/5/15.
  */
-public class MainActivityHelper {
-    public static final String TAG = MainActivityHelper.class.getSimpleName();
+public class MainPresenter {
+    public static final String TAG = MainPresenter.class.getSimpleName();
 
     private final MainView view;
     private final RootStore store;
@@ -27,7 +27,7 @@ public class MainActivityHelper {
 
     private CompositeSubscription subscriptions;
 
-    public MainActivityHelper(MainView view, RootStore store) {
+    public MainPresenter(MainView view, RootStore store) {
         this.view = view;
         this.store = store;
     }
