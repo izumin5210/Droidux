@@ -2,6 +2,7 @@ package info.izumin.android.droidux.example.todoswithdagger.module.main;
 
 import dagger.Module;
 import dagger.Provides;
+import info.izumin.android.droidux.example.todoswithdagger.RootStore;
 
 /**
  * Created by izumin on 11/29/15.
@@ -17,7 +18,8 @@ public class MainActivityModule {
     }
 
     @Provides
-    MainActivityHelper provideMainActivityHelper() {
-        return new MainActivityHelper(activity);
+    MainActivityHelper provideMainActivityHelper(RootStore store) {
+        return new MainActivityHelper(activity, store);
     }
+
 }

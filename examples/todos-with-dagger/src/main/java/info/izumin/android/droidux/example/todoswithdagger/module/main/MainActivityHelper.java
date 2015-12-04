@@ -1,23 +1,16 @@
 package info.izumin.android.droidux.example.todoswithdagger.module.main;
 
-import android.support.v7.app.AlertDialog;
-import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
-
-import info.izumin.android.droidux.example.todoswithdagger.App;
 import info.izumin.android.droidux.example.todoswithdagger.R;
 import info.izumin.android.droidux.example.todoswithdagger.RootStore;
-import info.izumin.android.droidux.example.todoswithdagger.adapter.TodoListAdapter;
 import info.izumin.android.droidux.example.todoswithdagger.action.AddTodoAction;
 import info.izumin.android.droidux.example.todoswithdagger.action.ClearCompletedTodoAction;
+import info.izumin.android.droidux.example.todoswithdagger.action.ClearNewTodoTextAction;
 import info.izumin.android.droidux.example.todoswithdagger.action.DeleteTodoAction;
 import info.izumin.android.droidux.example.todoswithdagger.action.ToggleCompletedTodoAction;
-import rx.Observable;
+import info.izumin.android.droidux.example.todoswithdagger.action.UpdateNewTodoTextAction;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Created by izumin on 11/5/15.
@@ -25,85 +18,65 @@ import rx.subjects.PublishSubject;
 public class MainActivityHelper {
     public static final String TAG = MainActivityHelper.class.getSimpleName();
 
-    private MainActivity activity;
-    private RootStore store;
+    private final MainView view;
+    private final RootStore store;
 
-    private EditText editNewTodo;
-    private Button btnAddTodo;
-    private ListView listTodo;
+    private final PublishSubject<String> clickAddTodoSubject = PublishSubject.create();
+    private final PublishSubject<Long> clickItemSubject = PublishSubject.create();
+    private final PublishSubject<Long> longClickItemSubject = PublishSubject.create();
 
-    public MainActivityHelper(MainActivity activity) {
-        this.activity = activity;
+    private CompositeSubscription subscriptions;
+
+    public MainActivityHelper(MainView view, RootStore store) {
+        this.view = view;
+        this.store = store;
     }
 
-    public void onCreate() {
-        store = ((App) activity.getApplication()).getStore();
+    void onStart() {
+        subscriptions = new CompositeSubscription();
 
-        editNewTodo = (EditText) activity.findViewById(R.id.edit_new_todo);
-        btnAddTodo = (Button) activity.findViewById(R.id.btn_add_todo);
-        listTodo = (ListView) activity.findViewById(R.id.list_todo);
-
-        observeOnClickBtnAddTodo()
+        subscriptions.add(clickAddTodoSubject
                 .filter(s -> !s.isEmpty())
                 .flatMap(s -> store.dispatch(new AddTodoAction(s)))
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(action -> {
-                    editNewTodo.setText("");
-                    Toast.makeText(activity, R.string.toast_add_todo, Toast.LENGTH_SHORT).show();
-                });
+                .flatMap(_a -> store.dispatch(new ClearNewTodoTextAction()))
+                .subscribe(_a -> {
+                    view.showToast(R.string.toast_add_todo);
+                }));
 
-        observeOnClickListItem()
+        subscriptions.add(clickItemSubject
                 .flatMap(id -> store.dispatch(new ToggleCompletedTodoAction(id.intValue())))
-                .subscribe();
+                .subscribe());
 
-        observeOnLongClickListItem()
+        subscriptions.add(longClickItemSubject
                 .flatMap(id -> store.dispatch(new DeleteTodoAction(id)))
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(action -> {
-                    Toast.makeText(activity, R.string.toast_delete_todo, Toast.LENGTH_SHORT).show();
-                });
-
-        listTodo.setAdapter(new TodoListAdapter(activity));
+                    view.showToast(R.string.toast_delete_todo);
+                }));
     }
 
-    public boolean onOptionItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_clear_completed_todo:
-                store.dispatch(new ClearCompletedTodoAction()).subscribe();
-                return true;
-            default:
-                return false;
-        }
+    void onStop() {
+        subscriptions.unsubscribe();
     }
 
-    private Observable<String> observeOnClickBtnAddTodo() {
-        PublishSubject<String>  subject= PublishSubject.create();
-        btnAddTodo.setOnClickListener(v -> subject.onNext(editNewTodo.getText().toString()));
-        return subject;
+    void onClickBtnAddTodo(String text) {
+        clickAddTodoSubject.onNext(text);
     }
 
-    private Observable<Long> observeOnClickListItem() {
-        PublishSubject<Long> subject = PublishSubject.create();
-        listTodo.setOnItemClickListener((parent, view, position, id) -> subject.onNext(id));
-        return subject;
+    void onClickListItem(long id) {
+        clickItemSubject.onNext(id);
     }
 
-    private Observable<Long> observeOnLongClickListItem() {
-        PublishSubject<Long> subject = PublishSubject.create();
-        listTodo.setOnItemLongClickListener((parent, view, position, id) -> {
-            new AlertDialog.Builder(activity)
-                    .setTitle(R.string.dialog_delete_todo_title)
-                    .setMessage(activity.getString(R.string.dialog_delete_todo_message,
-                            store.todoList().getTodoById((int) id).getText()))
-                    .setPositiveButton(R.string.dialog_delete_todo_btn_positive, (dialog, which) -> {
-                        subject.onNext(id);
-                    })
-                    .setNeutralButton(R.string.dialog_delete_todo_btn_neutral, (dialog, which) -> {
-                        dialog.dismiss();
-                    })
-                    .show();
-            return true;
-        });
-        return subject;
+    void onLongClickListItem(long id) {
+        longClickItemSubject.onNext(id);
+    }
+
+    void clearCompletedTodo() {
+        store.dispatch(new ClearCompletedTodoAction()).subscribe();
+    }
+
+    void updateNewTodoText(String text) {
+        store.dispatch(new UpdateNewTodoTextAction(text)).subscribe();
     }
 }
