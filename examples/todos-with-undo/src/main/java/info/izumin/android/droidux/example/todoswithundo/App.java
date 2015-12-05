@@ -19,8 +19,7 @@ public class App extends Application {
         super.onCreate();
         store = DroiduxRootStore.builder()
                 .addMiddleware(new Logger())
-                .setReducer(new TodoListReducer())
-                .setInitialState(new TodoList())
+                .setReducer(new TodoListReducer(), new TodoList())
                 .build();
     }
 
