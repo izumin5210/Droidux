@@ -41,7 +41,7 @@ public class StoreBuilderClassGenerator {
                 .addMethod(createAddMiddlewareMethodSpec())
                 .addMethod(createBuilderConstructor())
                 .addMethods(createReducerSetterMethodSpecs())
-                .addMethods(createStateSetterMethodSpecs())
+                .addMethods(createReducerAndStateSetterMethodSpecs())
                 .addMethod(createBuildMethodSpec())
                 .build();
     }
@@ -106,17 +106,18 @@ public class StoreBuilderClassGenerator {
                 .toList();
     }
 
-    private List<MethodSpec> createStateSetterMethodSpecs() {
+    private List<MethodSpec> createReducerAndStateSetterMethodSpecs() {
         return FluentIterable.from(builderModel.getReducerModels())
                 .transform(new Function<ReducerModel, MethodSpec>() {
                     @Override
                     public MethodSpec apply(ReducerModel input) {
-                        return MethodSpec.methodBuilder(BuilderModel.STATE_SETTER_METHOD_NAME)
+                        return MethodSpec.methodBuilder(BuilderModel.REDUCER_SETTER_METHOD_NAME)
                                 .addModifiers(Modifier.PUBLIC)
                                 .returns(builderModel.getClassName())
+                                .addParameter(getParameterSpec(input.getClassName()))
                                 .addParameter(getParameterSpec(input.getState()))
                                 .addStatement("this.$N = $N", input.getStateVariableName(), input.getStateVariableName())
-                                .addStatement("return this")
+                                .addStatement("return $N($N)", BuilderModel.REDUCER_SETTER_METHOD_NAME, input.getVariableName())
                                 .build();
                     }
                 })

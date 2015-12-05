@@ -31,8 +31,7 @@ public class App extends Application {
 
     private void setupStore() {
         store = DroiduxRootStore.builder()
-                .setInitialState(new TodoList())
-                .setReducer(new TodoListReducer())
+                .setReducer(new TodoListReducer(), new TodoList())
                 .build();
     }
 
