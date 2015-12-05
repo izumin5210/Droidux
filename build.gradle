@@ -31,9 +31,18 @@ ext {
     def versionMajor = 0
     def versionMinor = 4
     def versionPatch = 0
+    version = "${versionMajor}.${versionMinor}.${versionPatch}"
 
-    VERSION = "${versionMajor}.${versionMinor}.${versionPatch}"
-    USER_ORG = 'izumin5210'
-    GROUP_ID = 'info.izumin.android'
-    WEBSITE = 'https://github.com/izumin5210/Droidux'
+    compileSdkVersion = 23
+    buildToolsVersion = '23.0.2'
+    minSdkVersion = 15
+    targetSdkVersion = compileSdkVersion
+
+    databindingBaseLibraryVersion = '1.0'
+    databindingLibraryVersion = '1.0-rc3'
+    supportLibrariesVersion = '23.1.1'
+    rxJavaVersion = '1.1.0'
+    rxAndroidVersion = '1.0.1'
+    spockCoreVersion = '1.0-groovy-2.4'
+    cglibVersion = '2.2'
 }

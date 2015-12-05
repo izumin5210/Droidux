@@ -3,12 +3,12 @@ apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'groovyx.grooid.groovy-android'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion project.compileSdkVersion
+    buildToolsVersion project.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 23
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
         versionCode 1
         versionName "1.0"
     }
@@ -21,18 +21,19 @@ android {
 }
 
 dependencies {
-    provided 'io.reactivex:rxjava:1.0.15'
+    provided "com.android.databinding:library:${project.databindingLibraryVersion}"
+    provided "io.reactivex:rxjava:${project.rxJavaVersion}"
     provided project(':droidux')
 
-    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-    testCompile 'cglib:cglib-nodep:2.2'
+    testCompile "org.spockframework:spock-core:${spockCoreVersion}"
+    testCompile "cglib:cglib-nodep:${project.cglibVersion}"
 }
 
 publish {
-    userOrg = USER_ORG
-    groupId = GROUP_ID
+    userOrg = project_bintray_org
+    groupId = project_group
     artifactId = 'droidux-thunk'
     version = '0.1.0'
     description = 'Thunk middleware for Droidux.'
-    website = WEBSITE
+    website = project_url
 }
