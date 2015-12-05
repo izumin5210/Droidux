@@ -22,8 +22,8 @@ class ThunkMiddlewareTest extends Specification {
     def dispatcher
 
     def setup() {
-        store1 = Mock(StoreImpl.class)
-        store2 = Mock(StoreImpl.class)
+        store1 = Mock(StoreImpl.class, constructorArgs: [null, null])
+        store2 = Mock(StoreImpl.class, constructorArgs: [null, null])
         thunkMiddleware = new ThunkMiddleware()
         middleware1 = Mock(Middleware.class)
         middleware2 = Mock(Middleware.class)
