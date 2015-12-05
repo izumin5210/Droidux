@@ -3,8 +3,8 @@ package info.izumin.android.droidux.example.todoswithdagger;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import info.izumin.android.droidux.example.todoswithdagger.module.main.MainActivityComponent;
-import info.izumin.android.droidux.example.todoswithdagger.module.main.MainActivityModule;
+import info.izumin.android.droidux.example.todoswithdagger.module.main.MainComponent;
+import info.izumin.android.droidux.example.todoswithdagger.module.main.MainModule;
 
 /**
  * Created by izumin on 11/29/15.
@@ -14,5 +14,5 @@ import info.izumin.android.droidux.example.todoswithdagger.module.main.MainActiv
         modules = AppModule.class
 )
 public interface AppComponent {
-    MainActivityComponent createMainActivityComponent(MainActivityModule module);
+    MainComponent createMainActivityComponent(MainModule module);
 }

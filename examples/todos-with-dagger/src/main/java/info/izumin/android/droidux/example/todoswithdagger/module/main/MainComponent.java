@@ -6,8 +6,8 @@ import dagger.Subcomponent;
  * Created by izumin on 11/29/15.
  */
 @Subcomponent(
-        modules = MainActivityModule.class
+        modules = MainModule.class
 )
-public interface MainActivityComponent {
+public interface MainComponent {
     void inject(MainActivity activity);
 }

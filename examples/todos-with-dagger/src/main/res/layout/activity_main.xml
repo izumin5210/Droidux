@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <variable name="handlers" type="info.izumin.android.droidux.example.todoswithdagger.module.main.MainEventHandlers" />
+        <variable name="todoAdapter" type="info.izumin.android.droidux.example.todoswithdagger.adapter.TodoListAdapter" />
+        <variable name="store" type="info.izumin.android.droidux.example.todoswithdagger.RootStore" />
     </data>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -20,7 +23,10 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:layout_above="@+id/btn_add_todo" />
+            android:layout_above="@+id/btn_add_todo"
+            android:onItemClick="@{handlers.onItemClick}"
+            android:onItemLongClick="@{handlers.onItemLongClick}"
+            app:todoAdapter="@{todoAdapter}" />
 
         <EditText
             android:id="@+id/edit_new_todo"
@@ -29,7 +35,9 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
             android:layout_toLeftOf="@+id/btn_add_todo"
-            android:hint="@string/edit_new_todo_hint" />
+            android:text="@{store.newTodoText()}"
+            android:hint="@string/edit_new_todo_hint"
+            android:onTextChanged="@{handlers.onNewTodoTextChanged}" />
 
         <Button
             android:id="@+id/btn_add_todo"
@@ -37,6 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
+            android:onClick="@{handlers.onClickAddTodo}"
             android:text="@string/btn_add_todo" />
     </RelativeLayout>
 </layout>
