@@ -47,8 +47,6 @@ public class StoreImplClassGenerator {
                 .addModifiers(Modifier.FINAL)
                 .superclass(ParameterizedTypeName.get(ClassName.get(storeImplModel.isUndoable() ? UndoableStoreImpl.class : StoreImpl.class),
                         storeImplModel.getState(), storeImplModel.getReducerModel().getClassName()))
-                .addField(storeImplModel.getReducerModel().getClassName(),
-                        StoreImplModel.REDUCER_VARIABLE_NAME, Modifier.PRIVATE, Modifier.FINAL)
                 .addMethod(createConstructor())
                 .addMethod(createMethodSpec())
                 .build();
@@ -60,9 +58,6 @@ public class StoreImplClassGenerator {
                 .addParameter(storeImplModel.getState(), StoreImplModel.STATE_VARIABLE_NAME)
                 .addParameter(storeImplModel.getReducerModel().getClassName(), StoreImplModel.REDUCER_VARIABLE_NAME)
                 .addStatement("super($N, $N)", StoreImplModel.STATE_VARIABLE_NAME, StoreImplModel.REDUCER_VARIABLE_NAME)
-                .addStatement("this.$N = $N",
-                        StoreImplModel.REDUCER_VARIABLE_NAME,
-                        StoreImplModel.REDUCER_VARIABLE_NAME)
                 .build();
     }
 
@@ -95,9 +90,9 @@ public class StoreImplClassGenerator {
         for (final DispatchableModel dispatchableModel : storeImplModel.getReducerModel().getDispatchableModels()) {
             final List<Object> args = new ArrayList<>();
             args.add(RESULT_FIELD);
-            args.add(StoreImplModel.REDUCER_VARIABLE_NAME);
+            args.add(StoreImplModel.REDUCER_GETTER_METHOD_NAME);
             args.add(dispatchableModel.getMethodName());
-            final String format = "$N = $N.$N(" + FluentIterable.from(dispatchableModel.getArguments())
+            final String format = "$N = $N().$N(" + FluentIterable.from(dispatchableModel.getArguments())
                     .transform(new Function<ClassName, String>() {
                         @Override
                         public String apply(ClassName input) {
