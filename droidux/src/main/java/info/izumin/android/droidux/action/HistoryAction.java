@@ -1,9 +1,14 @@
 package info.izumin.android.droidux.action;
 
+import java.lang.annotation.Annotation;
+import java.util.HashSet;
+import java.util.Set;
+
 import info.izumin.android.droidux.Action;
-import info.izumin.android.droidux.StoreImpl;
-import info.izumin.android.droidux.UndoableState;
 import info.izumin.android.droidux.History;
+import info.izumin.android.droidux.UndoableState;
+import info.izumin.android.droidux.annotation.Reducer;
+import info.izumin.android.droidux.annotation.Undoable;
 
 /**
  * Created by izumin on 11/24/15.
@@ -29,15 +34,22 @@ public class HistoryAction implements Action {
     }
 
     private final Kind kind;
-    private final Class<? extends UndoableState> targetStateType;
+    private final Class targetReducerType;
+    private final Set<Class<? extends Annotation>> necessaryAnnotationTypes =
+            new HashSet<Class<? extends Annotation>>(){{ add(Reducer.class); add(Undoable.class); }};
 
-    public HistoryAction(Kind kind, Class<? extends UndoableState> targetStateType) {
+    public HistoryAction(Kind kind, Class targetReducerType) {
+        for (Class<? extends Annotation> annotationType : necessaryAnnotationTypes) {
+            if (targetReducerType.getAnnotation(annotationType) == null) {
+                throw new IllegalArgumentException();
+            }
+        }
         this.kind = kind;
-        this.targetStateType = targetStateType;
+        this.targetReducerType = targetReducerType;
     }
 
-    public boolean isAssignableTo(StoreImpl store) {
-        return targetStateType.isAssignableFrom(store.getState().getClass());
+    public <R> boolean isAssignableTo(R reducer) {
+        return targetReducerType.equals(reducer.getClass());
     }
 
     public <T extends UndoableState<T>> T handle(History<T> history) {
