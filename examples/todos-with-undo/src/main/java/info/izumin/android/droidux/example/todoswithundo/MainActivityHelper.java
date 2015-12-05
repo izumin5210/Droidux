@@ -13,7 +13,7 @@ import info.izumin.android.droidux.example.todoswithundo.action.AddTodoAction;
 import info.izumin.android.droidux.example.todoswithundo.action.ClearCompletedTodoAction;
 import info.izumin.android.droidux.example.todoswithundo.action.DeleteTodoAction;
 import info.izumin.android.droidux.example.todoswithundo.action.ToggleCompletedTodoAction;
-import info.izumin.android.droidux.example.todoswithundo.entity.TodoList;
+import info.izumin.android.droidux.example.todoswithundo.reducer.TodoListReducer;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
@@ -71,10 +71,10 @@ public class MainActivityHelper {
                 store.dispatch(new ClearCompletedTodoAction()).subscribe();
                 return true;
             case R.id.menu_undo_todo:
-                store.dispatch(new UndoAction(TodoList.class)).subscribe();
+                store.dispatch(new UndoAction(TodoListReducer.class)).subscribe();
                 return true;
             case R.id.menu_redo_todo:
-                store.dispatch(new RedoAction(TodoList.class)).subscribe();
+                store.dispatch(new RedoAction(TodoListReducer.class)).subscribe();
                 return true;
             default:
                 return false;

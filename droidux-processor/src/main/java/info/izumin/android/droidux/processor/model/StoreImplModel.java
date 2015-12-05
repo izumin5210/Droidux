@@ -15,6 +15,7 @@ public class StoreImplModel {
     public static final String STATE_VARIABLE_NAME = "state";
     public static final String DISPATCH_METHOD_NAME = "dispatch";
     public static final String STATE_GETTER_METHOD_NAME = "getState";
+    public static final String REDUCER_GETTER_METHOD_NAME = "getReducer";
     public static final String STATE_OBSERVE_METHOD_NAME = "observe";
 
     private static final String CLASS_NAME_SUFFIX = "StoreImpl";

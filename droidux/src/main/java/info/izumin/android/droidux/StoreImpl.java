@@ -9,14 +9,16 @@ import rx.subjects.BehaviorSubject;
 /**
  * Created by izumin on 11/2/15.
  */
-public abstract class StoreImpl<T> extends BaseObservable {
+public abstract class StoreImpl<T, R> extends BaseObservable {
     public static final String TAG = StoreImpl.class.getSimpleName();
 
     private final BehaviorSubject<T> subject;
     private T state;
+    private final R reducer;
 
-    protected StoreImpl(T state) {
+    protected StoreImpl(T state, R reducer) {
         this.state = state;
+        this.reducer = reducer;
         subject = BehaviorSubject.create();
     }
 
@@ -33,6 +35,10 @@ public abstract class StoreImpl<T> extends BaseObservable {
         this.state = state;
         notifyChange();
         subject.onNext(state);
+    }
+
+    protected R getReducer() {
+        return reducer;
     }
 
     protected abstract void dispatch(Action action);

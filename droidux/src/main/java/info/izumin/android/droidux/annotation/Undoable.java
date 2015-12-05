@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Created by izumin on 11/23/15.
  */
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Undoable {
 }
