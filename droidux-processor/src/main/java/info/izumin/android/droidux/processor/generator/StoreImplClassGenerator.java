@@ -45,7 +45,8 @@ public class StoreImplClassGenerator {
     private TypeSpec createTypeSpec() {
         return TypeSpec.classBuilder(storeImplModel.getClassName().simpleName())
                 .addModifiers(Modifier.FINAL)
-                .superclass(ParameterizedTypeName.get(ClassName.get(storeImplModel.isUndoable() ? UndoableStoreImpl.class : StoreImpl.class), storeImplModel.getState()))
+                .superclass(ParameterizedTypeName.get(ClassName.get(storeImplModel.isUndoable() ? UndoableStoreImpl.class : StoreImpl.class),
+                        storeImplModel.getState(), storeImplModel.getReducerModel().getClassName()))
                 .addField(storeImplModel.getReducerModel().getClassName(),
                         StoreImplModel.REDUCER_VARIABLE_NAME, Modifier.PRIVATE, Modifier.FINAL)
                 .addMethod(createConstructor())
@@ -58,7 +59,7 @@ public class StoreImplClassGenerator {
                 .addModifiers(Modifier.PROTECTED)
                 .addParameter(storeImplModel.getState(), StoreImplModel.STATE_VARIABLE_NAME)
                 .addParameter(storeImplModel.getReducerModel().getClassName(), StoreImplModel.REDUCER_VARIABLE_NAME)
-                .addStatement("super($N)", StoreImplModel.STATE_VARIABLE_NAME)
+                .addStatement("super($N, $N)", StoreImplModel.STATE_VARIABLE_NAME, StoreImplModel.REDUCER_VARIABLE_NAME)
                 .addStatement("this.$N = $N",
                         StoreImplModel.REDUCER_VARIABLE_NAME,
                         StoreImplModel.REDUCER_VARIABLE_NAME)
