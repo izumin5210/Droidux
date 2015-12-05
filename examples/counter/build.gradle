@@ -1,0 +1,42 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'me.tatarka.retrolambda'
+
+android {
+    compileSdkVersion project.compileSdkVersion
+    buildToolsVersion project.buildToolsVersion
+
+    defaultConfig {
+        applicationId "info.izumin.android.droidux.example.counter"
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    dataBinding {
+        enabled = true
+    }
+}
+
+dependencies {
+    compile "io.reactivex:rxjava:${project.rxJavaVersion}"
+    compile "io.reactivex:rxandroid:${project.rxAndroidVersion}"
+    compile project(':droidux')
+    apt project(':droidux-processor')
+    compile project(':middlewares:droidux-thunk')
+    compile "com.android.support:appcompat-v7:${project.supportLibrariesVersion}"
+    compile "com.android.support:design:${project.supportLibrariesVersion}"
+}

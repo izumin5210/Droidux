@@ -1,2 +1,2 @@
 include ':droidux', ':droidux-processor', ':middlewares:droidux-thunk'
-include ':examples:todomvc', ':examples:todos-with-undo', ':examples:todos-with-dagger'
+include ':examples:counter', ':examples:todomvc', ':examples:todos-with-undo', ':examples:todos-with-dagger'
