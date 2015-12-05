@@ -6,8 +6,7 @@ buildscript {
         maven { url "https://jitpack.io" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.3.0'
-        classpath "com.android.databinding:dataBinder:1.0-rc3"
+        classpath 'com.android.tools.build:gradle:1.5.0'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.novoda:bintray-release:0.3.4'
         classpath 'me.tatarka:gradle-retrolambda:3.2.3'
@@ -32,10 +31,18 @@ ext {
     def versionMajor = 0
     def versionMinor = 4
     def versionPatch = 0
-    def versionBuild = 0
+    version = "${versionMajor}.${versionMinor}.${versionPatch}"
 
-    VERSION = "${versionMajor}.${versionMinor}.${versionPatch}"
-    USER_ORG = 'izumin5210'
-    GROUP_ID = 'info.izumin.android'
-    WEBSITE = 'https://github.com/izumin5210/Droidux'
+    compileSdkVersion = 23
+    buildToolsVersion = '23.0.2'
+    minSdkVersion = 15
+    targetSdkVersion = compileSdkVersion
+
+    databindingBaseLibraryVersion = '1.0'
+    databindingLibraryVersion = '1.0-rc3'
+    supportLibrariesVersion = '23.1.1'
+    rxJavaVersion = '1.1.0'
+    rxAndroidVersion = '1.0.1'
+    spockCoreVersion = '1.0-groovy-2.4'
+    cglibVersion = '2.2'
 }

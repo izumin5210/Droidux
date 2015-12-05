@@ -1,15 +1,14 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.android.databinding'
 apply plugin: 'com.novoda.bintray-release'
 apply plugin: 'groovyx.grooid.groovy-android'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion project.compileSdkVersion
+    buildToolsVersion project.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 23
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.targetSdkVersion
         versionCode 1
         versionName "1.0"
     }
@@ -29,18 +28,20 @@ android {
 }
 
 dependencies {
-    provided 'io.reactivex:rxjava:1.0.15'
+    provided "io.reactivex:rxjava:${project.rxJavaVersion}"
+    provided "com.android.databinding:baseLibrary:${project.databindingBaseLibraryVersion}"
+    provided "com.android.databinding:library:${project.databindingLibraryVersion}"
 
     testCompile 'junit:junit:4.12'
-    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
-    testCompile 'cglib:cglib-nodep:2.2'
+    testCompile "org.spockframework:spock-core:${project.spockCoreVersion}"
+    testCompile "cglib:cglib-nodep:${project.cglibVersion}"
 }
 
 publish {
-    userOrg = USER_ORG
-    groupId = GROUP_ID
+    userOrg = project_bintray_org
+    groupId = project_group
     artifactId = 'droidux'
-    version = VERSION
+    version = project.version
     description = '"Predictable state container" implementation, inspired by Redux for JS.'
-    website = WEBSITE
+    website = project_url
 }
