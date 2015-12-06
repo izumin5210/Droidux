@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements MainView, MainEve
 
     @Override
     public void onClickAddTodo(View view) {
-        presenter.onClickBtnAddTodo(store.newTodoText());
+        presenter.onClickBtnAddTodo(store.getNewTodoText());
     }
 
     @Override

@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity implements MainEventHandlers
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         store = DroiduxRootStore.builder()
-                .setReducer(new CounterReducer(), new Counter(0))
+                .setReducer(new CounterReducer(), new Counter(0), BR.counter)
                 .build();
 
         binding.setHandlers(this);
