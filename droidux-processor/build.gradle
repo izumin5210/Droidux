@@ -34,7 +34,7 @@ publish {
     userOrg = project_bintray_org
     groupId = project_group
     artifactId = 'droidux-processor'
-    version = project.version
+    version = project.versionName
     description = 'Code generator for info.izumin.android.droidux'
     website = project_url
 }
