@@ -6,7 +6,6 @@ import com.google.common.collect.FluentIterable;
 import com.squareup.javapoet.ClassName;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -74,25 +73,22 @@ public class StoreModel {
                 })
                 .toList();
 
-        FluentIterable.from(storeImplModels)
-                .forEach(new Consumer<StoreImplModel>() {
-                    @Override
-                    public void accept(final StoreImplModel storeImplModel) {
-                        storeImplModel.setIsBindable(FluentIterable.from(methodModels)
-                                .filter(new Predicate<StoreMethodModel>() {
-                                    @Override
-                                    public boolean apply(StoreMethodModel input) {
-                                        return ClassName.get(input.getReturnType()).equals(storeImplModel.getState());
-                                    }
-                                })
-                                .anyMatch(new Predicate<StoreMethodModel>() {
-                                    @Override
-                                    public boolean apply(StoreMethodModel input) {
-                                        return input.isBindable();
-                                    }
-                                }));
-                    }
-                });
+        for (final StoreImplModel storeImplModel : storeImplModels) {
+            storeImplModel.setIsBindable(FluentIterable.from(methodModels)
+                    .filter(new Predicate<StoreMethodModel>() {
+                        @Override
+                        public boolean apply(StoreMethodModel input) {
+                            return ClassName.get(input.getReturnType()).equals(storeImplModel.getState());
+                        }
+                    })
+                    .anyMatch(new Predicate<StoreMethodModel>() {
+                        @Override
+                        public boolean apply(StoreMethodModel input) {
+                            return input.isBindable();
+                        }
+                    }));
+        }
+
         this.builderModel = new BuilderModel(this);
     }
 

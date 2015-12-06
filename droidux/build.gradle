@@ -40,7 +40,7 @@ publish {
     userOrg = project_bintray_org
     groupId = project_group
     artifactId = 'droidux'
-    version = project.version
+    version = project.versionName
     description = '"Predictable state container" implementation, inspired by Redux for JS.'
     website = project_url
 }

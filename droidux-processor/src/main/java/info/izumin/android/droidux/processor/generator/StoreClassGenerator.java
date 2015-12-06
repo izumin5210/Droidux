@@ -80,7 +80,7 @@ public class StoreClassGenerator {
     private MethodSpec createConstructor() {
         MethodSpec.Builder builder = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PROTECTED)
-                .addParameter(getParameterSpec(storeModel.getBuilderModel().getClassName()));
+                .addParameter(getParameterSpec(storeModel.getBuilderModel().getClassName(), Modifier.FINAL));
 
         for (StoreImplModel storeImpl : storeModel.getStoreImplModels()) {
             builder = builder.addStatement("$N = new $T($N.$N, $N.$N)",
