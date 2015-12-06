@@ -50,15 +50,11 @@ public class StoreClassGenerator {
     }
 
     private TypeSpec createTypeSpec() {
-        TypeSpec.Builder builder = TypeSpec.classBuilder(storeModel.getClassName().simpleName())
+        return TypeSpec.classBuilder(storeModel.getClassName().simpleName())
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addSuperinterface(storeModel.getInterfaceName());
-
-        if (storeModel.isBindable()) {
-            builder = builder.superclass(TypeName.get(BaseObservable.class));
-        }
-
-        return builder.addFields(createFieldSpecs())
+                .addSuperinterface(storeModel.getInterfaceName())
+                .superclass(TypeName.get(BaseObservable.class))
+                .addFields(createFieldSpecs())
                 .addMethod(createConstructor())
                 .addMethod(createBuilderMethodSpec())
                 .addMethods(createGetterMethodSpecs())

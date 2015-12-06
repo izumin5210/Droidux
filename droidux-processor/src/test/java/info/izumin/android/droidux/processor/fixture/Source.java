@@ -98,6 +98,7 @@ public final class Source {
         public static final String[] GENERATED_STORE = {
                 "package info.izumin.android.droidux.sample;",
                 "",
+                "import android.databinding.BaseObservable;",
                 "import info.izumin.android.droidux.Action;",
                 "import info.izumin.android.droidux.Dispatcher;",
                 "import info.izumin.android.droidux.Middleware;",
@@ -108,7 +109,7 @@ public final class Source {
                 "import java.util.List;",
                 "import rx.Observable;",
                 "",
-                "public final class DroiduxRootStore implements RootStore {",
+                "public final class DroiduxRootStore extends BaseObservable implements RootStore {",
                 "    private final DroiduxRootStore_CounterStoreImpl counterStoreImpl;",
                 "    private final Dispatcher dispatcher;",
                 "",
@@ -303,6 +304,7 @@ public final class Source {
         public static final String[] GENERATED = {
                 "package info.izumin.android.droidux.sample;",
                 "",
+                "import android.databinding.BaseObservable;",
                 "import info.izumin.android.droidux.Action;",
                 "import info.izumin.android.droidux.Dispatcher;",
                 "import info.izumin.android.droidux.Middleware;",
@@ -315,7 +317,7 @@ public final class Source {
                 "import java.util.List;",
                 "import rx.Observable;",
                 "",
-                "public final class DroiduxRootStore implements RootStore {",
+                "public final class DroiduxRootStore extends BaseObservable implements RootStore {",
                 "    private final DroiduxRootStore_CounterStoreImpl counterStoreImpl;",
                 "    private final DroiduxRootStore_TodoListStoreImpl todoListStoreImpl;",
                 "    private final Dispatcher dispatcher;",

@@ -29,6 +29,7 @@ android {
 
 dependencies {
     provided "io.reactivex:rxjava:${project.rxJavaVersion}"
+    provided "com.android.databinding:baseLibrary:${project.databindingBaseLibraryVersion}"
 
     testCompile 'junit:junit:4.12'
     testCompile "org.spockframework:spock-core:${project.spockCoreVersion}"
