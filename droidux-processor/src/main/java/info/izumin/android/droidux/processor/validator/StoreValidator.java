@@ -3,9 +3,12 @@ package info.izumin.android.droidux.processor.validator;
 import com.google.auto.common.MoreTypes;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.TypeName;
 
 import javax.lang.model.type.TypeMirror;
 
+import info.izumin.android.droidux.BaseStore;
 import info.izumin.android.droidux.annotation.Reducer;
 import info.izumin.android.droidux.annotation.Store;
 import info.izumin.android.droidux.processor.exception.InvalidStoreDelcarationException;
@@ -28,6 +31,12 @@ public final class StoreValidator {
                             + "But " + model.getInterfaceName().simpleName() + " has invalid value."
             );
         }
+
+        if (!doesExtendBaseStore(model)) {
+            throw new InvalidStoreDelcarationException(
+                    "The interface that is annotated @Store must extend \"BaseStore\"."
+            );
+        }
     }
 
     private static boolean hasAnnotatedReducers(StoreModel model) {
@@ -38,5 +47,15 @@ public final class StoreValidator {
                         return MoreTypes.asTypeElement(input).getAnnotation(Reducer.class) == null;
                     }
                 }).size() == 0;
+    }
+
+    private static boolean doesExtendBaseStore(StoreModel model) {
+        return FluentIterable.from(model.getElement().getInterfaces())
+                .anyMatch(new Predicate<TypeMirror>() {
+                    @Override
+                    public boolean apply(TypeMirror input) {
+                        return TypeName.get(BaseStore.class).equals(ClassName.get(input));
+                    }
+                });
     }
 }

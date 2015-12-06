@@ -550,13 +550,14 @@ public final class Source {
     public static class DispatchableTakesWrongStateType {
         public static final String[] TARGET = {
                 "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.annotation.Dispatchable;",
                 "import info.izumin.android.droidux.annotation.Reducer;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "import info.izumin.android.droidux.processor.fixture.action.IncrementCountAction;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "@Store(CounterStore.CounterReducer.class)",
-                "public interface CounterStore {",
+                "public interface CounterStore extends BaseStore {",
                 "    @Reducer(Counter.class)",
                 "    public static class CounterReducer {",
                 "        @Dispatchable(IncrementCountAction.class)",
@@ -571,6 +572,7 @@ public final class Source {
     public static class DispatchableTakesWrongActionType {
         public static final String[] TARGET = {
                 "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.annotation.Dispatchable;",
                 "import info.izumin.android.droidux.annotation.Reducer;",
                 "import info.izumin.android.droidux.annotation.Store;",
@@ -578,7 +580,7 @@ public final class Source {
                 "import info.izumin.android.droidux.processor.fixture.action.CompleteTodoItemAction;",
                 "import info.izumin.android.droidux.processor.fixture.TodoList;",
                 "@Store(TodoListStore.TodoListReducer.class)",
-                "public interface TodoListStore {",
+                "public interface TodoListStore extends BaseStore {",
                 "    @Reducer(TodoList.class)",
                 "    public static class TodoListReducer {",
                 "        @Dispatchable(CompleteTodoItemAction.class)",
@@ -593,13 +595,14 @@ public final class Source {
     public static class DispatchableTakesExtraArguments {
         public static final String[] TARGET = {
                 "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.annotation.Dispatchable;",
                 "import info.izumin.android.droidux.annotation.Reducer;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "import info.izumin.android.droidux.processor.fixture.action.IncrementCountAction;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "@Store(CounterStore.CounterReducer.class)",
-                "public interface CounterStore {",
+                "public interface CounterStore extends BaseStore {",
                 "    @Reducer(Counter.class)",
                 "    public static class CounterReducer {",
                 "        @Dispatchable(IncrementCountAction.class)",
@@ -614,13 +617,14 @@ public final class Source {
     public static class DispatchableMethosReturnsWrongType{
         public static final String[] TARGET = {
                 "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.annotation.Dispatchable;",
                 "import info.izumin.android.droidux.annotation.Reducer;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "import info.izumin.android.droidux.processor.fixture.action.IncrementCountAction;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "@Store(CounterStore.CounterReducer.class)",
-                "public interface CounterStore {",
+                "public interface CounterStore extends BaseStore {",
                 "    @Reducer(Counter.class)",
                 "    public static class CounterReducer {",
                 "        @Dispatchable(IncrementCountAction.class)",
@@ -635,13 +639,14 @@ public final class Source {
     public static class ReducerWithoutSuffix {
         public static final String[] TARGET = {
                 "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.annotation.Dispatchable;",
                 "import info.izumin.android.droidux.annotation.Reducer;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "import info.izumin.android.droidux.processor.fixture.action.IncrementCountAction;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "@Store(CounterStore.CounterReduce.class)",
-                "public interface CounterStore {",
+                "public interface CounterStore extends BaseStore {",
                 "    @Reducer(Counter.class)",
                 "    public static class CounterReduce {",
                 "        @Dispatchable(IncrementCountAction.class)",
@@ -656,12 +661,13 @@ public final class Source {
     public static class UndoableReducerWithoutUndoableState {
         public static final String[] TARGET = {
                 "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.annotation.Reducer;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "import info.izumin.android.droidux.annotation.Undoable;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "@Store(CounterStore.CounterReducer.class)",
-                "public interface CounterStore {",
+                "public interface CounterStore extends BaseStore {",
                 "    @Undoable",
                 "    @Reducer(Counter.class)",
                 "    public static class CounterReducer {",
@@ -673,9 +679,26 @@ public final class Source {
     public static class StoreHasInvalidValue {
         public static final String[] TARGET = {
                 "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "@Store(CounterStore.CounterReducer.class)",
+                "public interface CounterStore extends BaseStore {",
+                "    public static class CounterReducer {",
+                "    }",
+                "}"
+        };
+    }
+
+    public static class StoreNotExtendsBaseStore {
+        public static final String[] TARGET = {
+                "package info.izumin.android.droidux.sample;",
+                "import info.izumin.android.droidux.BaseStore;",
+                "import info.izumin.android.droidux.annotation.Reducer;",
+                "import info.izumin.android.droidux.annotation.Store;",
+                "import info.izumin.android.droidux.processor.fixture.Counter;",
+                "@Store(CounterStore.CounterReducer.class)",
                 "public interface CounterStore {",
+                "    @Reducer(Counter.class)",
                 "    public static class CounterReducer {",
                 "    }",
                 "}"

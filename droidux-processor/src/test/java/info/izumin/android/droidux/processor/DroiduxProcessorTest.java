@@ -165,4 +165,17 @@ public class DroiduxProcessorTest {
                 forSourceLines("DroiduxCounterStore", Source.EMPTY)
         );
     }
+
+    @Test
+    public void storeNotExtendBaseStore() {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(
+                "The interface that is annotated @Store must extend \"BaseStore\"."
+        );
+        assertJavaSource(
+                forSourceLines("CounterStore", Source.StoreNotExtendsBaseStore.TARGET),
+                forSourceLines("DroiduxCounterStore_CounterStoreImpl", Source.EMPTY),
+                forSourceLines("DroiduxCounterStore", Source.EMPTY)
+        );
+    }
 }
