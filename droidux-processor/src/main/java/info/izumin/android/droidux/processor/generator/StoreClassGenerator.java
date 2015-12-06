@@ -21,6 +21,7 @@ import info.izumin.android.droidux.processor.model.StoreImplModel;
 import info.izumin.android.droidux.processor.model.StoreMethodModel;
 import info.izumin.android.droidux.processor.model.StoreModel;
 
+import static info.izumin.android.droidux.processor.util.PoetUtils.getOverrideAnnotation;
 import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterSpec;
 
 /**
@@ -112,6 +113,7 @@ public class StoreClassGenerator {
                     @Override
                     public MethodSpec apply(StoreMethodModel input) {
                         return MethodSpec.methodBuilder(input.getName())
+                                .addAnnotation(getOverrideAnnotation())
                                 .addModifiers(Modifier.PUBLIC)
                                 .returns(TypeName.get(input.getReturnType()))
                                 .addParameters(input.getParameters())
