@@ -46,7 +46,6 @@ public final class ReducerValidator {
                 .transform(new Function<TypeMirror, TypeName>() {
                     @Override
                     public TypeName apply(TypeMirror input) {
-                        System.out.println(MoreTypes.asTypeElement(input));
                         return ClassName.get(MoreTypes.asTypeElement(input));
                     }
                 })
