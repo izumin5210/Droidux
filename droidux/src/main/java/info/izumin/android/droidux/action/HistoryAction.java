@@ -35,11 +35,9 @@ public class HistoryAction implements Action {
 
     private final Kind kind;
     private final Class targetReducerType;
-    private final Set<Class<? extends Annotation>> necessaryAnnotationTypes =
-            new HashSet<Class<? extends Annotation>>(){{ add(Reducer.class); add(Undoable.class); }};
 
     public HistoryAction(Kind kind, Class targetReducerType) {
-        for (Class<? extends Annotation> annotationType : necessaryAnnotationTypes) {
+        for (Class<? extends Annotation> annotationType : getNecessaryAnnotationTypes()) {
             if (targetReducerType.getAnnotation(annotationType) == null) {
                 throw new IllegalArgumentException();
             }
@@ -54,5 +52,12 @@ public class HistoryAction implements Action {
 
     public <T extends UndoableState<T>> T handle(History<T> history) {
         return kind.handle(history);
+    }
+
+    protected Set<Class<? extends Annotation>> getNecessaryAnnotationTypes() {
+        return new HashSet<Class<? extends Annotation>>() {{
+            add(Reducer.class);
+            add(Undoable.class);
+        }};
     }
 }
