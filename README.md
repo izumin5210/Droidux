@@ -43,8 +43,8 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
   compile 'io.reactivex:rxjava:1.1.0'
-  compile 'info.izumin.android:droidux:0.4.0'
-  apt 'info.izumin.android:droidux:0.4.0'
+  compile 'info.izumin.android:droidux:0.5.0'
+  apt 'info.izumin.android:droidux:0.5.0'
 }
 ```
 
