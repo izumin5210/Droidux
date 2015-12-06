@@ -17,9 +17,13 @@ public class StoreImplModel {
     public static final String STATE_GETTER_METHOD_NAME = "getState";
     public static final String REDUCER_GETTER_METHOD_NAME = "getReducer";
     public static final String STATE_OBSERVE_METHOD_NAME = "observe";
+    public static final String ADD_LISTENER_METHOD_NAME = "addListener";
+    public static final String ON_STATE_CHANGED_METHOD_NAME = "onStateChanged";
+    public static final String NOTIFY_PROPERTY_CHANGED_METHOD_NAME = "notifyPropertyChanged";
 
     private static final String CLASS_NAME_SUFFIX = "StoreImpl";
     private static final String REDUCER_CLASS_NAME_SUFFIX = "Reducer";
+    private static final String FIELD_ID_SUFFIX = "FieldId";
 
     private final ClassName className;
 
@@ -28,6 +32,8 @@ public class StoreImplModel {
 
     private final StoreModel storeModel;
     private final ReducerModel reducerModel;
+
+    private boolean isBindable = false;
 
     public StoreImplModel(StoreModel storeModel, ReducerModel reducerModel) {
         this.storeModel = storeModel;
@@ -74,5 +80,17 @@ public class StoreImplModel {
 
     public ReducerModel getReducerModel() {
         return reducerModel;
+    }
+
+    public String getFieldIdName() {
+        return getStateVariableName() + FIELD_ID_SUFFIX;
+    }
+
+    public boolean isBindable() {
+        return isBindable;
+    }
+
+    public void setIsBindable(boolean isBindable) {
+        this.isBindable = isBindable;
     }
 }

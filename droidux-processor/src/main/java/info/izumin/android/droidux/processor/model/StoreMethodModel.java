@@ -1,5 +1,7 @@
 package info.izumin.android.droidux.processor.model;
 
+import android.databinding.Bindable;
+
 import com.google.auto.common.MoreTypes;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -36,6 +38,7 @@ public class StoreMethodModel {
     private final StoreModel storeModel;
     private final Kind kind;
     private final DeclaredType returnType;
+    private boolean isBindable = false;
 
     public StoreMethodModel(ExecutableElement element, StoreModel storeModel) {
         this.element = element;
@@ -53,6 +56,7 @@ public class StoreMethodModel {
 
         if (states.contains(ClassName.get(returnType))) {
             kind = Kind.GETTER;
+            isBindable = element.getAnnotation(Bindable.class) != null;
         } else if (getName().equals(DispatcherModel.DISPATCH_METHOD_NAME)) {
             kind = Kind.DISPATCH;
         } else if (MoreTypes.isTypeOf(OBSERVE_METHOD_CLASS, returnType.asElement().asType())
@@ -113,5 +117,9 @@ public class StoreMethodModel {
                                 input.getSimpleName().toString()).build();
                     }
                 }).toList();
+    }
+
+    public boolean isBindable() {
+        return isBindable;
     }
 }

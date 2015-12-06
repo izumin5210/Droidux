@@ -40,12 +40,31 @@ public class DroiduxProcessorTest {
     }
 
     @Test
+    public void singleReducerBindable() {
+        assertJavaSource(
+                forSourceLines("RootStore", Source.BindableCounter.TARGET),
+                forSourceLines("DroiduxRootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
+                forSourceLines("DroiduxRootStore", Source.BindableCounter.GENERATED_STORE)
+        );
+    }
+
+    @Test
     public void combinedTwoReducers() {
         assertJavaSource(
                 forSourceLines("RootStore", Source.CombinedTwoReducers.TARGET),
                 forSourceLines("DroiduxRootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
                 forSourceLines("DroiduxRootStore_TodoListStoreImpl", Source.StoreImpl.TODO_LIST),
                 forSourceLines("DroiduxRootStore", Source.CombinedTwoReducers.GENERATED)
+        );
+    }
+
+    @Test
+    public void combinedReducerAndBindableReducer() {
+        assertJavaSource(
+                forSourceLines("RootStore", Source.CombinedReducerAndBindableReducer.TARGET),
+                forSourceLines("DroiduxRootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
+                forSourceLines("DroiduxRootStore_TodoListStoreImpl", Source.StoreImpl.TODO_LIST),
+                forSourceLines("DroiduxRootStore", Source.CombinedReducerAndBindableReducer.GENERATED)
         );
     }
 

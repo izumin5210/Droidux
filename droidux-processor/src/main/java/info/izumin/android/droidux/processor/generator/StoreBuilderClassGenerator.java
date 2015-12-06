@@ -1,9 +1,11 @@
 package info.izumin.android.droidux.processor.generator;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import info.izumin.android.droidux.Middleware;
 import info.izumin.android.droidux.exception.NotInitializedException;
 import info.izumin.android.droidux.processor.model.BuilderModel;
 import info.izumin.android.droidux.processor.model.ReducerModel;
+import info.izumin.android.droidux.processor.model.StoreImplModel;
 import info.izumin.android.droidux.processor.model.StoreModel;
 
 import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterSpec;
@@ -68,6 +71,21 @@ public class StoreBuilderClassGenerator {
                     }
                 })
                 .toList());
+        specs.addAll(FluentIterable.from(builderModel.getStoreModel().getStoreImplModels())
+                .filter(new Predicate<StoreImplModel>() {
+                    @Override
+                    public boolean apply(StoreImplModel input) {
+                        return input.isBindable();
+                    }
+                })
+                .transform(new Function<StoreImplModel, FieldSpec>() {
+                    @Override
+                    public FieldSpec apply(StoreImplModel input) {
+                        return FieldSpec.builder(TypeName.INT, input.getFieldIdName(), Modifier.PRIVATE)
+                                .build();
+                    }
+                })
+                .toList());
         return specs;
     }
 
@@ -90,15 +108,19 @@ public class StoreBuilderClassGenerator {
     }
 
     private List<MethodSpec> createReducerSetterMethodSpecs() {
-        return FluentIterable.from(builderModel.getReducerModels())
-                .transform(new Function<ReducerModel, MethodSpec>() {
+        return FluentIterable.from(builderModel.getStoreModel().getStoreImplModels())
+                .transform(new Function<StoreImplModel, MethodSpec>() {
                     @Override
-                    public MethodSpec apply(ReducerModel input) {
-                        return MethodSpec.methodBuilder(BuilderModel.REDUCER_SETTER_METHOD_NAME)
+                    public MethodSpec apply(StoreImplModel input) {
+                        MethodSpec.Builder builder = MethodSpec.methodBuilder(BuilderModel.REDUCER_SETTER_METHOD_NAME)
                                 .addModifiers(Modifier.PUBLIC)
                                 .returns(builderModel.getClassName())
-                                .addParameter(getParameterSpec(input.getClassName()))
-                                .addStatement("this.$N = $N", input.getVariableName(), input.getVariableName())
+                                .addParameter(getParameterSpec(input.getReducerModel().getClassName()));
+                        if (input.isBindable()) {
+                            builder = builder.addParameter(TypeName.INT, input.getFieldIdName())
+                                    .addStatement("this.$N = $N", input.getFieldIdName(), input.getFieldIdName());
+                        }
+                        return builder.addStatement("this.$N = $N", input.getReducerModel().getVariableName(), input.getReducerModel().getVariableName())
                                 .addStatement("return this")
                                 .build();
                     }
@@ -107,18 +129,25 @@ public class StoreBuilderClassGenerator {
     }
 
     private List<MethodSpec> createReducerAndStateSetterMethodSpecs() {
-        return FluentIterable.from(builderModel.getReducerModels())
-                .transform(new Function<ReducerModel, MethodSpec>() {
+        return FluentIterable.from(builderModel.getStoreModel().getStoreImplModels())
+                .transform(new Function<StoreImplModel, MethodSpec>() {
                     @Override
-                    public MethodSpec apply(ReducerModel input) {
-                        return MethodSpec.methodBuilder(BuilderModel.REDUCER_SETTER_METHOD_NAME)
+                    public MethodSpec apply(StoreImplModel input) {
+                        MethodSpec.Builder builder = MethodSpec.methodBuilder(BuilderModel.REDUCER_SETTER_METHOD_NAME)
                                 .addModifiers(Modifier.PUBLIC)
                                 .returns(builderModel.getClassName())
-                                .addParameter(getParameterSpec(input.getClassName()))
-                                .addParameter(getParameterSpec(input.getState()))
-                                .addStatement("this.$N = $N", input.getStateVariableName(), input.getStateVariableName())
-                                .addStatement("return $N($N)", BuilderModel.REDUCER_SETTER_METHOD_NAME, input.getVariableName())
-                                .build();
+                                .addParameter(getParameterSpec(input.getReducerModel().getClassName()))
+                                .addParameter(getParameterSpec(input.getState()));
+                        if (input.isBindable()) {
+                            builder = builder.addParameter(TypeName.INT, input.getFieldIdName());
+                        }
+                        builder = builder.addStatement("this.$N = $N", input.getStateVariableName(), input.getStateVariableName());
+                        if (input.isBindable()) {
+                            builder = builder.addStatement("return $N($N, $N)", BuilderModel.REDUCER_SETTER_METHOD_NAME, input.getReducerModel().getVariableName(), input.getFieldIdName());
+                        } else {
+                            builder = builder.addStatement("return $N($N)", BuilderModel.REDUCER_SETTER_METHOD_NAME, input.getReducerModel().getVariableName());
+                        }
+                        return builder.build();
                     }
                 })
                 .toList();

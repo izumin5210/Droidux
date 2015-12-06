@@ -1,11 +1,15 @@
 package info.izumin.android.droidux.processor.generator;
 
+import android.databinding.BaseObservable;
+
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
@@ -15,6 +19,7 @@ import java.util.List;
 import javax.lang.model.element.Modifier;
 
 import info.izumin.android.droidux.Middleware;
+import info.izumin.android.droidux.OnStateChangedListener;
 import info.izumin.android.droidux.processor.model.BuilderModel;
 import info.izumin.android.droidux.processor.model.DispatcherModel;
 import info.izumin.android.droidux.processor.model.StoreImplModel;
@@ -42,10 +47,15 @@ public class StoreClassGenerator {
     }
 
     private TypeSpec createTypeSpec() {
-        return TypeSpec.classBuilder(storeModel.getClassName().simpleName())
+        TypeSpec.Builder builder = TypeSpec.classBuilder(storeModel.getClassName().simpleName())
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addSuperinterface(storeModel.getInterfaceName())
-                .addFields(createFieldSpecs())
+                .addSuperinterface(storeModel.getInterfaceName());
+
+        if (storeModel.isBindable()) {
+            builder = builder.superclass(TypeName.get(BaseObservable.class));
+        }
+
+        return builder.addFields(createFieldSpecs())
                 .addMethod(createConstructor())
                 .addMethod(createBuilderMethodSpec())
                 .addMethods(createGetterMethodSpecs())
@@ -77,6 +87,26 @@ public class StoreClassGenerator {
                     storeImpl.getVariableName(), storeImpl.getClassName(),
                     BuilderModel.VARIABLE_NAME, storeImpl.getStateVariableName(),
                     BuilderModel.VARIABLE_NAME, storeImpl.getReducerModel().getVariableName());
+
+            if (storeImpl.isBindable()) {
+                TypeSpec listener = TypeSpec.anonymousClassBuilder("")
+                        .addSuperinterface(ParameterizedTypeName.get(ClassName.get(OnStateChangedListener.class), storeImpl.getState()))
+                        .addMethod(
+                                // TODO
+                                MethodSpec.methodBuilder(StoreImplModel.ON_STATE_CHANGED_METHOD_NAME)
+                                        .addAnnotation(getOverrideAnnotation())
+                                        .addModifiers(Modifier.PUBLIC)
+                                        .addParameter(getParameterSpec(storeImpl.getState()))
+                                        .addStatement("$N($N.$N)",
+                                                StoreImplModel.NOTIFY_PROPERTY_CHANGED_METHOD_NAME,
+                                                BuilderModel.VARIABLE_NAME,
+                                                storeImpl.getFieldIdName())
+                                        .build()
+                        )
+                        .build();
+                builder = builder.addStatement("$N.$N($L)", storeImpl.getVariableName(),
+                        StoreImplModel.ADD_LISTENER_METHOD_NAME, listener);
+            }
         }
 
         final String middlewareFiledName = "middleware";
