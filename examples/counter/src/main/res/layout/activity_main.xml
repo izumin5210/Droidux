@@ -24,7 +24,7 @@
             android:layout_marginBottom="@dimen/counter_vertical_margin"
             android:layout_centerInParent="true"
             android:textSize="@dimen/text_size_display3"
-            android:text="@{String.valueOf(store.counter().getCount())}"
+            android:text="@{String.valueOf(store.counter.getCount())}"
             tools:text="16" />
 
         <LinearLayout

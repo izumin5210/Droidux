@@ -1,11 +1,15 @@
 package info.izumin.android.droidux.processor.generator;
 
+import android.databinding.BaseObservable;
+
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.FluentIterable;
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
@@ -14,14 +18,19 @@ import java.util.List;
 
 import javax.lang.model.element.Modifier;
 
+import info.izumin.android.droidux.Action;
 import info.izumin.android.droidux.Middleware;
+import info.izumin.android.droidux.OnStateChangedListener;
 import info.izumin.android.droidux.processor.model.BuilderModel;
 import info.izumin.android.droidux.processor.model.DispatcherModel;
 import info.izumin.android.droidux.processor.model.StoreImplModel;
 import info.izumin.android.droidux.processor.model.StoreMethodModel;
 import info.izumin.android.droidux.processor.model.StoreModel;
+import rx.Observable;
 
+import static info.izumin.android.droidux.processor.util.PoetUtils.getOverrideAnnotation;
 import static info.izumin.android.droidux.processor.util.PoetUtils.getParameterSpec;
+import static info.izumin.android.droidux.processor.util.StringUtils.getLowerCamelFromUpperCamel;
 
 /**
  * Created by izumin on 11/3/15.
@@ -44,10 +53,12 @@ public class StoreClassGenerator {
         return TypeSpec.classBuilder(storeModel.getClassName().simpleName())
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addSuperinterface(storeModel.getInterfaceName())
+                .superclass(TypeName.get(BaseObservable.class))
                 .addFields(createFieldSpecs())
                 .addMethod(createConstructor())
                 .addMethod(createBuilderMethodSpec())
                 .addMethods(createGetterMethodSpecs())
+                .addMethod(createDispatchMethodSpec())
                 .addType(new StoreBuilderClassGenerator(storeModel).createBuilderTypeSpec())
                 .build();
     }
@@ -76,6 +87,25 @@ public class StoreClassGenerator {
                     storeImpl.getVariableName(), storeImpl.getClassName(),
                     BuilderModel.VARIABLE_NAME, storeImpl.getStateVariableName(),
                     BuilderModel.VARIABLE_NAME, storeImpl.getReducerModel().getVariableName());
+
+            if (storeImpl.isBindable()) {
+                TypeSpec listener = TypeSpec.anonymousClassBuilder("")
+                        .addSuperinterface(ParameterizedTypeName.get(ClassName.get(OnStateChangedListener.class), storeImpl.getState()))
+                        .addMethod(
+                                MethodSpec.methodBuilder(StoreImplModel.ON_STATE_CHANGED_METHOD_NAME)
+                                        .addAnnotation(getOverrideAnnotation())
+                                        .addModifiers(Modifier.PUBLIC)
+                                        .addParameter(getParameterSpec(storeImpl.getState()))
+                                        .addStatement("$N($N.$N)",
+                                                StoreImplModel.NOTIFY_PROPERTY_CHANGED_METHOD_NAME,
+                                                BuilderModel.VARIABLE_NAME,
+                                                storeImpl.getFieldIdName())
+                                        .build()
+                        )
+                        .build();
+                builder = builder.addStatement("$N.$N($L)", storeImpl.getVariableName(),
+                        StoreImplModel.ADD_LISTENER_METHOD_NAME, listener);
+            }
         }
 
         final String middlewareFiledName = "middleware";
@@ -112,6 +142,7 @@ public class StoreClassGenerator {
                     @Override
                     public MethodSpec apply(StoreMethodModel input) {
                         return MethodSpec.methodBuilder(input.getName())
+                                .addAnnotation(getOverrideAnnotation())
                                 .addModifiers(Modifier.PUBLIC)
                                 .returns(TypeName.get(input.getReturnType()))
                                 .addParameters(input.getParameters())
@@ -120,5 +151,17 @@ public class StoreClassGenerator {
                     }
                 })
                 .toList();
+    }
+
+    private MethodSpec createDispatchMethodSpec() {
+        return MethodSpec.methodBuilder(StoreModel.DISPATCH_METHOD_NAME)
+                .addAnnotation(getOverrideAnnotation())
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ParameterizedTypeName.get(ClassName.get(Observable.class), ClassName.get(Action.class)))
+                .addParameter(getParameterSpec(Action.class))
+                .addStatement("return $N.$N($N)",
+                        DispatcherModel.VARIABLE_NAME, DispatcherModel.DISPATCH_METHOD_NAME,
+                        getLowerCamelFromUpperCamel(ClassName.get(Action.class).simpleName()))
+                .build();
     }
 }

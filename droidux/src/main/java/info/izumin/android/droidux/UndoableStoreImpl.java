@@ -1,7 +1,5 @@
 package info.izumin.android.droidux;
 
-import android.databinding.Bindable;
-
 import info.izumin.android.droidux.action.HistoryAction;
 
 /**
@@ -38,7 +36,6 @@ public abstract class UndoableStoreImpl<T extends UndoableState<T>, R> extends S
     }
 
     @Override
-    @Bindable
     public T getState() {
         return history.getPresent();
     }
@@ -47,12 +44,10 @@ public abstract class UndoableStoreImpl<T extends UndoableState<T>, R> extends S
         return history;
     }
 
-    @Bindable
     public boolean isUndoable() {
         return history.isUndoable();
     }
 
-    @Bindable
     public boolean isRedoable() {
         return history.isRedoable();
     }

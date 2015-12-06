@@ -1,14 +1,14 @@
 package info.izumin.android.droidux.example.counter;
 
-import info.izumin.android.droidux.Action;
+import android.databinding.Bindable;
+
+import info.izumin.android.droidux.BaseStore;
 import info.izumin.android.droidux.annotation.Store;
-import rx.Observable;
 
 /**
  * Created by izumin on 12/6/15.
  */
 @Store(CounterReducer.class)
-public interface RootStore {
-    Counter counter();
-    Observable<Action> dispatch(Action action);
+public interface RootStore extends BaseStore {
+    @Bindable Counter getCounter();
 }

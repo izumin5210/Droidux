@@ -1,10 +1,12 @@
 package info.izumin.android.droidux.processor.model;
 
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.squareup.javapoet.ClassName;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -25,6 +27,7 @@ public class StoreModel {
     public static final String MIDDLEWARES_FIELD_NAME = "middlewares";
     public static final String ATTACH_MIDDLEWARE_METHOD_NAME = "onAttach";
     public static final String BUILDER_METHOD_NAME = "builder";
+    public static final String DISPATCH_METHOD_NAME = "dispatch";
 
     private static final String CLASS_NAME_PREFIX = "Droidux";
 
@@ -68,8 +71,28 @@ public class StoreModel {
                     public StoreMethodModel apply(ExecutableElement input) {
                         return new StoreMethodModel(input, StoreModel.this);
                     }
-                }).toList();
+                })
+                .toList();
 
+        FluentIterable.from(storeImplModels)
+                .forEach(new Consumer<StoreImplModel>() {
+                    @Override
+                    public void accept(final StoreImplModel storeImplModel) {
+                        storeImplModel.setIsBindable(FluentIterable.from(methodModels)
+                                .filter(new Predicate<StoreMethodModel>() {
+                                    @Override
+                                    public boolean apply(StoreMethodModel input) {
+                                        return ClassName.get(input.getReturnType()).equals(storeImplModel.getState());
+                                    }
+                                })
+                                .anyMatch(new Predicate<StoreMethodModel>() {
+                                    @Override
+                                    public boolean apply(StoreMethodModel input) {
+                                        return input.isBindable();
+                                    }
+                                }));
+                    }
+                });
         this.builderModel = new BuilderModel(this);
     }
 
@@ -99,5 +122,15 @@ public class StoreModel {
 
     public BuilderModel getBuilderModel() {
         return builderModel;
+    }
+
+    public boolean isBindable() {
+        return FluentIterable.from(methodModels)
+                .anyMatch(new Predicate<StoreMethodModel>() {
+                    @Override
+                    public boolean apply(StoreMethodModel input) {
+                        return input.isBindable();
+                    }
+                });
     }
 }
