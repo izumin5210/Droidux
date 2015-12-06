@@ -84,14 +84,14 @@ public final class Source {
                 "package info.izumin.android.droidux.sample;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "import info.izumin.android.droidux.Action;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "import info.izumin.android.droidux.processor.fixture.CounterReducer;",
                 "import rx.Observable;",
                 "@Store({CounterReducer.class})",
-                "public interface RootStore {",
+                "public interface RootStore extends BaseStore {",
                 "    Counter counter();",
                 "    Observable<Counter> observeCounter();",
-                "    Observable<Action> dispatch(Action action);",
                 "}"
         };
 
@@ -180,14 +180,14 @@ public final class Source {
                 "import android.databinding.Bindable;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "import info.izumin.android.droidux.Action;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "import info.izumin.android.droidux.processor.fixture.CounterReducer;",
                 "import rx.Observable;",
                 "@Store({CounterReducer.class})",
-                "public interface RootStore {",
+                "public interface RootStore extends BaseStore {",
                 "    @Bindable Counter counter();",
                 "    Observable<Counter> observeCounter();",
-                "    Observable<Action> dispatch(Action action);",
                 "}"
         };
 
@@ -285,18 +285,18 @@ public final class Source {
                 "package info.izumin.android.droidux.sample;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "import info.izumin.android.droidux.Action;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.processor.fixture.CounterReducer;",
                 "import info.izumin.android.droidux.processor.fixture.TodoListReducer;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "import info.izumin.android.droidux.processor.fixture.TodoList;",
                 "import rx.Observable;",
                 "@Store({CounterReducer.class, TodoListReducer.class})",
-                "public interface RootStore {",
+                "public interface RootStore extends BaseStore {",
                 "    Counter counter();",
                 "    Observable<Counter> observeCounter();",
                 "    TodoList todoList();",
                 "    Observable<TodoList> observeTodoList();",
-                "    Observable<Action> dispatch(Action action);",
                 "}"
         };
 
@@ -414,18 +414,18 @@ public final class Source {
                 "import android.databinding.Bindable;",
                 "import info.izumin.android.droidux.annotation.Store;",
                 "import info.izumin.android.droidux.Action;",
+                "import info.izumin.android.droidux.BaseStore;",
                 "import info.izumin.android.droidux.processor.fixture.CounterReducer;",
                 "import info.izumin.android.droidux.processor.fixture.TodoListReducer;",
                 "import info.izumin.android.droidux.processor.fixture.Counter;",
                 "import info.izumin.android.droidux.processor.fixture.TodoList;",
                 "import rx.Observable;",
                 "@Store({CounterReducer.class, TodoListReducer.class})",
-                "public interface RootStore {",
+                "public interface RootStore extends BaseStore {",
                 "    Counter counter();",
                 "    Observable<Counter> observeCounter();",
                 "    @Bindable TodoList todoList();",
                 "    Observable<TodoList> observeTodoList();",
-                "    Observable<Action> dispatch(Action action);",
                 "}"
         };
 

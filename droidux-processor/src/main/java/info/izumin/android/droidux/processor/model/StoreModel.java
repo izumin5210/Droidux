@@ -27,6 +27,7 @@ public class StoreModel {
     public static final String MIDDLEWARES_FIELD_NAME = "middlewares";
     public static final String ATTACH_MIDDLEWARE_METHOD_NAME = "onAttach";
     public static final String BUILDER_METHOD_NAME = "builder";
+    public static final String DISPATCH_METHOD_NAME = "dispatch";
 
     private static final String CLASS_NAME_PREFIX = "Droidux";
 
