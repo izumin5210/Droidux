@@ -7,7 +7,6 @@ import info.izumin.android.droidux.example.todoswithdagger.action.ClearCompleted
 import info.izumin.android.droidux.example.todoswithdagger.action.ClearNewTodoTextAction;
 import info.izumin.android.droidux.example.todoswithdagger.action.DeleteTodoAction;
 import info.izumin.android.droidux.example.todoswithdagger.action.ToggleCompletedTodoAction;
-import info.izumin.android.droidux.example.todoswithdagger.action.UpdateNewTodoTextAction;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -41,6 +40,7 @@ public class MainPresenter {
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .flatMap(_a -> store.dispatch(new ClearNewTodoTextAction()))
                 .subscribe(_a -> {
+                    view.clearNewTodoText();
                     view.showToast(R.string.toast_add_todo);
                 }));
 
@@ -74,9 +74,5 @@ public class MainPresenter {
 
     void clearCompletedTodo() {
         store.dispatch(new ClearCompletedTodoAction()).subscribe();
-    }
-
-    void updateNewTodoText(String text) {
-        store.dispatch(new UpdateNewTodoTextAction(text)).subscribe();
     }
 }

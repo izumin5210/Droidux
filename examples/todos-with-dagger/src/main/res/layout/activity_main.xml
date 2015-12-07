@@ -35,9 +35,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentBottom="true"
             android:layout_toLeftOf="@+id/btn_add_todo"
-            android:text="@{store.newTodoText}"
-            android:hint="@string/edit_new_todo_hint"
-            android:onTextChanged="@{handlers.onNewTodoTextChanged}" />
+            android:hint="@string/edit_new_todo_hint" />
 
         <Button
             android:id="@+id/btn_add_todo"
