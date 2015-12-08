@@ -3,7 +3,6 @@ package info.izumin.android.droidux.example.todoswithdagger;
 import android.app.Application;
 
 import info.izumin.android.droidux.example.todoswithdagger.entity.TodoList;
-import info.izumin.android.droidux.example.todoswithdagger.reducer.NewTodoTextReducer;
 import info.izumin.android.droidux.example.todoswithdagger.reducer.TodoListReducer;
 
 /**
@@ -33,7 +32,6 @@ public class App extends Application {
     private void setupStore() {
         store = DroiduxRootStore.builder()
                 .setReducer(new TodoListReducer(), new TodoList())
-                .setReducer(new NewTodoTextReducer(), BR.newTodoText)
                 .build();
     }
 

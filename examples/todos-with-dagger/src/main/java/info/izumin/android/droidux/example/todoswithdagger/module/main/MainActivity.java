@@ -24,10 +24,12 @@ public class MainActivity extends AppCompatActivity implements MainView, MainEve
     @Inject MainPresenter presenter;
     @Inject RootStore store;
 
+    private ActivityMainBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         setupComponent();
         binding.setHandlers(this);
         binding.setTodoAdapter(new TodoListAdapter(this));
@@ -84,8 +86,13 @@ public class MainActivity extends AppCompatActivity implements MainView, MainEve
     }
 
     @Override
+    public void clearNewTodoText() {
+        binding.editNewTodo.setText("");
+    }
+
+    @Override
     public void onClickAddTodo(View view) {
-        presenter.onClickBtnAddTodo(store.getNewTodoText());
+        presenter.onClickBtnAddTodo(binding.editNewTodo.getText().toString());
     }
 
     @Override
@@ -97,11 +104,6 @@ public class MainActivity extends AppCompatActivity implements MainView, MainEve
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         showConfirmDeleteDialog(id);
         return true;
-    }
-
-    @Override
-    public void onNewTodoTextChanged(CharSequence s, int start, int before, int count) {
-        presenter.updateNewTodoText(s.toString());
     }
 
     protected MainModule getModule() {

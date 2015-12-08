@@ -8,4 +8,5 @@ import android.support.annotation.StringRes;
 public interface MainView {
     void showToast(@StringRes int resId, Object... args);
     void showConfirmDeleteDialog(long id);
+    void clearNewTodoText();
 }
