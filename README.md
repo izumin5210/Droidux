@@ -329,7 +329,7 @@ Use [droidux-thunk](https://github.com/izumin5210/Droidux/tree/master/middleware
 class FetchTodoListAction implements AsyncAction {
     private final TodoListApi client;
 
-    public ReceiveTodoListAction(TodoListApi client) {
+    public FetchTodoListAction(TodoListApi client) {
         this.client = client;
     }
 
