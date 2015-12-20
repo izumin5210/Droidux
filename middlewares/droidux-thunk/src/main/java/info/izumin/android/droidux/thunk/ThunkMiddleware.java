@@ -14,7 +14,7 @@ public class ThunkMiddleware extends Middleware {
     @Override
     public Observable<Action> beforeDispatch(final Action action) {
         if (action instanceof AsyncAction) {
-            return ((AsyncAction) action).call()
+            return ((AsyncAction) action).call(getDispatcher())
                     .flatMap(new Func1<Action, Observable<Action>>() {
                         @Override
                         public Observable<Action> call(Action next) {
