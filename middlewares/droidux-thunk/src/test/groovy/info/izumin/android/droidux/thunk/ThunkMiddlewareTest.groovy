@@ -30,7 +30,7 @@ class ThunkMiddlewareTest extends Specification {
         action = Mock(Action.class)
         asyncAction = new AsyncAction() {
             @Override
-            Observable<Action> call() {
+            Observable<Action> call(Dispatcher d) {
                 Observable.just(action) as Observable<Action>
             }
         }
