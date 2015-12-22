@@ -17,6 +17,7 @@ class ThunkMiddlewareTest extends Specification {
     def thunkMiddleware
     def middleware1
     def middleware2
+    def preAction
     def action
     def asyncAction
     def dispatcher
@@ -27,14 +28,14 @@ class ThunkMiddlewareTest extends Specification {
         thunkMiddleware = new ThunkMiddleware()
         middleware1 = Mock(Middleware.class)
         middleware2 = Mock(Middleware.class)
+        preAction = Mock(Action.class)
         action = Mock(Action.class)
         asyncAction = new AsyncAction() {
             @Override
             Observable<Action> call(Dispatcher d) {
-                Observable.just(action) as Observable<Action>
+                d.dispatch(preAction).flatMap({_a -> Observable.just(action) }) as Observable<Action>
             }
         }
-
 
         def middlewares = new ArrayList<Middleware>()
         middlewares.add(middleware1)
@@ -51,6 +52,24 @@ class ThunkMiddlewareTest extends Specification {
 
         then:
         1 * middleware1.beforeDispatch(asyncAction) >> Observable.just(asyncAction)
+
+        then:
+        1 * middleware1.beforeDispatch(preAction) >> Observable.just(preAction)
+
+        then:
+        1 * middleware2.beforeDispatch(preAction) >> Observable.just(preAction)
+
+        then:
+        1 * store1.dispatch(preAction)
+
+        then:
+        1 * store2.dispatch(preAction)
+
+        then:
+        1 * middleware2.afterDispatch(preAction) >> Observable.just(preAction)
+
+        then:
+        1 * middleware1.afterDispatch(preAction) >> Observable.just(preAction)
 
         then:
         1 * middleware1.beforeDispatch(action) >> Observable.just(action)
