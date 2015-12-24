@@ -53,7 +53,7 @@ And also you need to setup [Data Binding][databinding].
 When you use `AsyncAction`, you need to add [droidux-thunk](https://github.com/izumin5210/Droidux/tree/master/middlewares/droidux-thunk).
 
 ```groovy
-compile 'info.izumin.android:droidux-thunk:0.1.0'
+compile 'info.izumin.android:droidux-thunk:0.2.0'
 ```
 
 ## Usage
@@ -333,8 +333,9 @@ class FetchTodoListAction implements AsyncAction {
         this.client = client;
     }
 
-    public Observable<ReceiveTodoListAction> call() {
-        return client.fetch()
+    public Observable<ReceiveTodoListAction> call(Dispatcher dispatcher) {
+        return dispatcher.dispatch(new DoingFetchAction())
+                .flatMap(_action -> client.fetch())
                 .map(todoList -> {
                     this.todoList = todoList;
                     return new ReceiveTodoListAction(todoList);
