@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/izumin5210/Droidux.svg)](https://travis-ci.org/izumin5210/Droidux)
 [![Download](https://api.bintray.com/packages/izumin5210/maven/droidux/images/download.svg) ](https://bintray.com/izumin5210/maven/droidux/_latestVersion)
 [![Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/izumin5210/Droidux/blob/master/LICENSE.md)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Droidux-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/2892)
 
 Droidux is "predictable state container" implementation, inspired by **[Redux][redux]**.
 
