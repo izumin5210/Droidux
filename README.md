@@ -160,8 +160,9 @@ store.dispatch(new ClearCountAction()).subscribe();     // Counter: 0
 ### Data Binding
 
 ```java
+// If you use databinding, yor store interface must extend `android.databinding.Observable`.
 @Store(CounterReducer.class)
-public interface CounterStore extends BaseStore {
+public interface CounterStore extends BaseStore, android.databinding.Observable {
     // You should annotate the getter method with @Bindable
     @Bindable Counter getCounter();
 }

@@ -186,7 +186,7 @@ public final class Source {
                 "import info.izumin.android.droidux.processor.fixture.CounterReducer;",
                 "import rx.Observable;",
                 "@Store({CounterReducer.class})",
-                "public interface RootStore extends BaseStore {",
+                "public interface RootStore extends BaseStore, android.databinding.Observable {",
                 "    @Bindable Counter counter();",
                 "    Observable<Counter> observeCounter();",
                 "}"
@@ -423,7 +423,7 @@ public final class Source {
                 "import info.izumin.android.droidux.processor.fixture.TodoList;",
                 "import rx.Observable;",
                 "@Store({CounterReducer.class, TodoListReducer.class})",
-                "public interface RootStore extends BaseStore {",
+                "public interface RootStore extends BaseStore, android.databinding.Observable {",
                 "    Counter counter();",
                 "    Observable<Counter> observeCounter();",
                 "    @Bindable TodoList todoList();",

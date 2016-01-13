@@ -1,29 +1,12 @@
-apply plugin: 'com.android.library'
+apply plugin: 'java'
+apply plugin: 'groovy'
 apply plugin: 'com.novoda.bintray-release'
-apply plugin: 'groovyx.grooid.groovy-android'
 
-android {
-    compileSdkVersion project.compileSdkVersion
-    buildToolsVersion project.buildToolsVersion
-
-    defaultConfig {
-        minSdkVersion project.minSdkVersion
-        targetSdkVersion project.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-}
+targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
-    provided "com.android.databinding:library:${project.databindingLibraryVersion}"
-    provided "io.reactivex:rxjava:${project.rxJavaVersion}"
-    provided project(':droidux')
+    compile project(':droidux')
 
     testCompile "org.spockframework:spock-core:${spockCoreVersion}"
     testCompile "cglib:cglib-nodep:${project.cglibVersion}"
