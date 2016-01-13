@@ -44,8 +44,8 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
   compile 'io.reactivex:rxjava:1.1.0'
-  compile 'info.izumin.android:droidux:0.5.0'
-  apt 'info.izumin.android:droidux-processor:0.5.0'
+  compile 'info.izumin.android:droidux:0.6.0'
+  apt 'info.izumin.android:droidux-processor:0.6.0'
 }
 ```
 
@@ -54,7 +54,7 @@ And also you need to setup [Data Binding][databinding].
 When you use `AsyncAction`, you need to add [droidux-thunk](https://github.com/izumin5210/Droidux/tree/master/middlewares/droidux-thunk).
 
 ```groovy
-compile 'info.izumin.android:droidux-thunk:0.2.0'
+compile 'info.izumin.android:droidux-thunk:0.3.0'
 ```
 
 ## Usage
