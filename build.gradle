@@ -29,7 +29,7 @@ task clean(type: Delete) {
 
 ext {
     def versionMajor = 0
-    def versionMinor = 5
+    def versionMinor = 6
     def versionPatch = 0
     versionName = "${versionMajor}.${versionMinor}.${versionPatch}"
 

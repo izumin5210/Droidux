@@ -16,7 +16,7 @@ publish {
     userOrg = project_bintray_org
     groupId = project_group
     artifactId = 'droidux-thunk'
-    version = '0.2.0'
+    version = '0.3.0'
     description = 'Thunk middleware for Droidux.'
     website = project_url
 }
