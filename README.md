@@ -394,7 +394,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-[redux]: https://github.com/rackt/redux
+[redux]: https://github.com/reactjs/redux
 [rxjava]: https://github.com/ReactiveX/RxJava
-[three-principles]: http://rackt.org/redux/docs/introduction/ThreePrinciples.html
+[three-principles]: http://redux.js.org/docs/introduction/ThreePrinciples.html
 [databinding]: http://developer.android.com/tools/data-binding/guide.html
