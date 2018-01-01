@@ -1,6 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion project.compileSdkVersion
@@ -35,7 +33,7 @@ dependencies {
     compile "io.reactivex:rxjava:${project.rxJavaVersion}"
     compile "io.reactivex:rxandroid:${project.rxAndroidVersion}"
     compile project(':droidux')
-    apt project(':droidux-processor')
+    annotationProcessor project(':droidux-processor')
     compile project(':middlewares:droidux-thunk')
     compile "com.android.support:appcompat-v7:${project.supportLibrariesVersion}"
     compile "com.android.support:design:${project.supportLibrariesVersion}"

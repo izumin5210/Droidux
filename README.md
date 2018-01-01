@@ -40,7 +40,6 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
   compile 'io.reactivex:rxjava:1.1.0'
