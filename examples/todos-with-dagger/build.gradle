@@ -1,6 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion project.compileSdkVersion
@@ -42,12 +40,12 @@ dependencies {
     compile "io.reactivex:rxjava:${project.rxJavaVersion}"
     compile "io.reactivex:rxandroid:${project.rxAndroidVersion}"
     compile project(':droidux')
-    apt project(':droidux-processor')
+    annotationProcessor project(':droidux-processor')
     compile "com.android.support:appcompat-v7:${project.supportLibrariesVersion}"
     compile "com.android.support:design:${project.supportLibrariesVersion}"
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.google.dagger:dagger:2.0'
-    apt 'com.google.dagger:dagger-compiler:2.0'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.0'
 
     androidTestCompile 'com.android.support.test:runner:0.4.1'
     androidTestCompile 'com.android.support.test:rules:0.4.1'
