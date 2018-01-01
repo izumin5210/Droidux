@@ -33,18 +33,13 @@ Droidux depends on [RxJava][rxjava] and [Data Binding][databinding].
 Add to your project build.gradle file:
 
 ```groovy
-buildscript {
-  dependencies {
-    classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-  }
-}
 
 apply plugin: 'com.android.application'
 
 dependencies {
   compile 'io.reactivex:rxjava:1.1.0'
   compile 'info.izumin.android:droidux:0.6.0'
-  apt 'info.izumin.android:droidux-processor:0.6.0'
+  annotationProcessor 'info.izumin.android:droidux-processor:0.6.0'
 }
 ```
 
