@@ -1,6 +1,6 @@
 package info.izumin.android.droidux;
 
-import io.reactivex.Single;
+import io.reactivex.Flowable;
 
 /**
  * Created by izumin on 11/2/15.
@@ -24,6 +24,6 @@ public abstract class Middleware<S extends BaseStore> {
         return dispatcher;
     }
 
-    public abstract Single<Action> beforeDispatch(Action action);
-    public abstract Single<Action> afterDispatch(Action action);
+    public abstract Flowable<Action> beforeDispatch(Action action);
+    public abstract Flowable<Action> afterDispatch(Action action);
 }

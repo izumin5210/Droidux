@@ -4,8 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
-import io.reactivex.Single;
-import io.reactivex.SingleSource;
+import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
@@ -23,14 +22,14 @@ public class Dispatcher {
         this.storeImpls = Arrays.asList(storeImpls);
     }
 
-    public Single<Action> dispatch(Action action) {
-        return Single.just(action)
-                .flatMap(new Function<Action, SingleSource<? extends Action>>() {
+    public Flowable<Action> dispatch(Action action) {
+        return Flowable.just(action)
+                .flatMap(new Function<Action, Flowable<? extends Action>>() {
                     @Override
-                    public SingleSource<? extends Action> apply(Action action) throws Exception {
+                    public Flowable<? extends Action> apply(Action action) throws Exception {
                         return applyMiddlewaresBeforeDispatch(action);
                     }
-                }).doOnSuccess(new Consumer<Action>() {
+                }).doOnNext(new Consumer<Action>() {
                     @Override
                     public void accept(Action action) throws Exception {
                         for (StoreImpl store : storeImpls) {
@@ -38,21 +37,21 @@ public class Dispatcher {
                         }
                     }
                 })
-                .flatMap(new Function<Action, SingleSource<? extends Action>>() {
+                .flatMap(new Function<Action, Flowable<? extends Action>>() {
                     @Override
-                    public SingleSource<? extends Action> apply(Action action) throws Exception {
+                    public Flowable<? extends Action> apply(Action action) throws Exception {
                         return applyMiddlewaresAfterDispatch(action);
                     }
                 });
     }
 
-    private Single<Action> applyMiddlewaresBeforeDispatch(Action action) {
-        Single<Action> o = Single.just(action);
+    private Flowable<Action> applyMiddlewaresBeforeDispatch(Action action) {
+        Flowable<Action> o = Flowable.just(action);
 
         for (final Middleware<?> mw : middlewares) {
-            o = o.flatMap(new Function<Action, SingleSource<? extends Action>>() {
+            o = o.flatMap(new Function<Action, Flowable<? extends Action>>() {
                 @Override
-                public Single<Action> apply(Action a) throws Exception {
+                public Flowable<Action> apply(Action a) throws Exception {
                     return mw.beforeDispatch(a);
                 }
             });
@@ -60,14 +59,14 @@ public class Dispatcher {
         return o;
     }
 
-    private Single<Action> applyMiddlewaresAfterDispatch(Action action) {
-        Single<Action> o = Single.just(action);
+    private Flowable<Action> applyMiddlewaresAfterDispatch(Action action) {
+        Flowable<Action> o = Flowable.just(action);
         ListIterator<Middleware> iterator = middlewares.listIterator(middlewares.size());
         while(iterator.hasPrevious()) {
             final Middleware<?> mw = iterator.previous();
-            o = o.flatMap(new Function<Action, SingleSource<? extends Action>>() {
+            o = o.flatMap(new Function<Action, Flowable<? extends Action>>() {
                 @Override
-                public Single<Action> apply(Action a) throws Exception {
+                public Flowable<Action> apply(Action a) throws Exception {
                     return mw.afterDispatch(a);
                 }
             });
