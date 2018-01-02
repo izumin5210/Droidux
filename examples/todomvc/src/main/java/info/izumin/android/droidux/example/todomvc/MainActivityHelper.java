@@ -11,9 +11,8 @@ import info.izumin.android.droidux.example.todomvc.action.AddTodoAction;
 import info.izumin.android.droidux.example.todomvc.action.ClearCompletedTodoAction;
 import info.izumin.android.droidux.example.todomvc.action.DeleteTodoAction;
 import info.izumin.android.droidux.example.todomvc.action.ToggleCompletedTodoAction;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
+import io.reactivex.Single;
+import io.reactivex.subjects.SingleSubject;
 
 /**
  * Created by izumin on 11/5/15.
@@ -41,8 +40,9 @@ public class MainActivityHelper {
 
         observeOnClickBtnAddTodo()
                 .filter(s -> !s.isEmpty())
-                .flatMap(s -> store.dispatch(new AddTodoAction(s)))
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .flatMap(s -> store.dispatch(new AddTodoAction(s)).toMaybe())
+                /*TODO: Version up RxAndroid*/
+                /*.subscribeOn(AndroidSchedulers.mainThread())*/
                 .subscribe(action -> {
                     editNewTodo.setText("");
                     Toast.makeText(activity, R.string.toast_add_todo, Toast.LENGTH_SHORT).show();
@@ -54,7 +54,8 @@ public class MainActivityHelper {
 
         observeOnLongClickListItem()
                 .flatMap(id -> store.dispatch(new DeleteTodoAction(id)))
-                .subscribeOn(AndroidSchedulers.mainThread())
+                /*TODO: Version up RxAndroid*/
+                /*.subscribeOn(AndroidSchedulers.mainThread())*/
                 .subscribe(action -> {
                     Toast.makeText(activity, R.string.toast_delete_todo, Toast.LENGTH_SHORT).show();
                 });
@@ -72,27 +73,27 @@ public class MainActivityHelper {
         }
     }
 
-    private Observable<String> observeOnClickBtnAddTodo() {
-        PublishSubject<String>  subject= PublishSubject.create();
-        btnAddTodo.setOnClickListener(v -> subject.onNext(editNewTodo.getText().toString()));
+    private Single<String> observeOnClickBtnAddTodo() {
+        SingleSubject<String> subject = SingleSubject.create();
+        btnAddTodo.setOnClickListener(v -> subject.onSuccess(editNewTodo.getText().toString()));
         return subject;
     }
 
-    private Observable<Long> observeOnClickListItem() {
-        PublishSubject<Long> subject = PublishSubject.create();
-        listTodo.setOnItemClickListener((parent, view, position, id) -> subject.onNext(id));
+    private Single<Long> observeOnClickListItem() {
+        SingleSubject<Long> subject = SingleSubject.create();
+        listTodo.setOnItemClickListener((parent, view, position, id) -> subject.onSuccess(id));
         return subject;
     }
 
-    private Observable<Long> observeOnLongClickListItem() {
-        PublishSubject<Long> subject = PublishSubject.create();
+    private Single<Long> observeOnLongClickListItem() {
+        SingleSubject<Long> subject = SingleSubject.create();
         listTodo.setOnItemLongClickListener((parent, view, position, id) -> {
             new AlertDialog.Builder(activity)
                     .setTitle(R.string.dialog_delete_todo_title)
                     .setMessage(activity.getString(R.string.dialog_delete_todo_message,
                             store.todoList().getTodoById((int) id).getText()))
                     .setPositiveButton(R.string.dialog_delete_todo_btn_positive, (dialog, which) -> {
-                        subject.onNext(id);
+                        subject.onSuccess(id);
                     })
                     .setNeutralButton(R.string.dialog_delete_todo_btn_neutral, (dialog, which) -> {
                         dialog.dismiss();

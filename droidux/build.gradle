@@ -2,8 +2,8 @@ apply plugin: 'java'
 apply plugin: 'groovy'
 apply plugin: 'com.novoda.bintray-release'
 
-targetCompatibility = JavaVersion.VERSION_1_8
-sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_7
+sourceCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
     compile "io.reactivex.rxjava2:rxjava:${project.rxJava2Version}"
