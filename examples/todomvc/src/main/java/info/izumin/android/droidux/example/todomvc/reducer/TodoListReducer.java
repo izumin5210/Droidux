@@ -22,11 +22,13 @@ public class TodoListReducer {
     @Dispatchable(AddTodoAction.class)
     public TodoList onAddedTodo(TodoList state, AddTodoAction action) {
         List<TodoList.Todo> list = state.getTodoList();
+        if (list.isEmpty()) {
+            list.add(new TodoList.Todo(0, action.getText()));
+            return new TodoList(list);
+        }
         int id = Observable.fromIterable(list)
                 .reduce((todo, todo2) -> (todo.getId() < todo2.getId()) ? todo2 : todo)
-                .onErrorReturn(throwable -> new TodoList.Todo(0, ""))
-                .toObservable()
-                .blockingLast()
+                .blockingGet()
                 .getId();
         list.add(new TodoList.Todo(id + 1, action.getText()));
         return new TodoList(list);
