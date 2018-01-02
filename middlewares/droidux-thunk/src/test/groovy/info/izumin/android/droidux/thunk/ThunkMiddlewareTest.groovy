@@ -4,7 +4,7 @@ import info.izumin.android.droidux.Action
 import info.izumin.android.droidux.Dispatcher
 import info.izumin.android.droidux.Middleware
 import info.izumin.android.droidux.StoreImpl
-import rx.Observable
+import io.reactivex.Flowable
 import spock.lang.Specification
 
 /**
@@ -32,8 +32,8 @@ class ThunkMiddlewareTest extends Specification {
         action = Mock(Action.class)
         asyncAction = new AsyncAction() {
             @Override
-            Observable<Action> call(Dispatcher d) {
-                d.dispatch(preAction).flatMap({_a -> Observable.just(action) }) as Observable<Action>
+            Flowable<Action> call(Dispatcher d) {
+                d.dispatch(preAction).flatMap({_a -> Flowable.just(action) }) as Flowable<Action>
             }
         }
 
@@ -51,13 +51,13 @@ class ThunkMiddlewareTest extends Specification {
         dispatcher.dispatch(asyncAction).subscribe()
 
         then:
-        1 * middleware1.beforeDispatch(asyncAction) >> Observable.just(asyncAction)
+        1 * middleware1.beforeDispatch(asyncAction) >> Flowable.just(asyncAction)
 
         then:
-        1 * middleware1.beforeDispatch(preAction) >> Observable.just(preAction)
+        1 * middleware1.beforeDispatch(preAction) >> Flowable.just(preAction)
 
         then:
-        1 * middleware2.beforeDispatch(preAction) >> Observable.just(preAction)
+        1 * middleware2.beforeDispatch(preAction) >> Flowable.just(preAction)
 
         then:
         1 * store1.dispatch(preAction)
@@ -66,16 +66,16 @@ class ThunkMiddlewareTest extends Specification {
         1 * store2.dispatch(preAction)
 
         then:
-        1 * middleware2.afterDispatch(preAction) >> Observable.just(preAction)
+        1 * middleware2.afterDispatch(preAction) >> Flowable.just(preAction)
 
         then:
-        1 * middleware1.afterDispatch(preAction) >> Observable.just(preAction)
+        1 * middleware1.afterDispatch(preAction) >> Flowable.just(preAction)
 
         then:
-        1 * middleware1.beforeDispatch(action) >> Observable.just(action)
+        1 * middleware1.beforeDispatch(action) >> Flowable.just(action)
 
         then:
-        1 * middleware2.beforeDispatch(action) >> Observable.just(action)
+        1 * middleware2.beforeDispatch(action) >> Flowable.just(action)
 
         then:
         1 * store1.dispatch(action)
@@ -84,13 +84,13 @@ class ThunkMiddlewareTest extends Specification {
         1 * store2.dispatch(action)
 
         then:
-        1 * middleware2.afterDispatch(action) >> Observable.just(action)
+        1 * middleware2.afterDispatch(action) >> Flowable.just(action)
 
         then:
-        1 * middleware1.afterDispatch(action) >> Observable.just(action)
+        1 * middleware1.afterDispatch(action) >> Flowable.just(action)
 
         then:
-        1 * middleware2.beforeDispatch(asyncAction) >> Observable.just(asyncAction)
+        1 * middleware2.beforeDispatch(asyncAction) >> Flowable.just(asyncAction)
 
         then:
         1 * store1.dispatch(asyncAction)
@@ -99,9 +99,9 @@ class ThunkMiddlewareTest extends Specification {
         1 * store2.dispatch(asyncAction)
 
         then:
-        1 * middleware2.afterDispatch(asyncAction) >> Observable.just(asyncAction)
+        1 * middleware2.afterDispatch(asyncAction) >> Flowable.just(asyncAction)
 
         then:
-        1 * middleware1.afterDispatch(asyncAction) >> Observable.just(asyncAction)
+        1 * middleware1.afterDispatch(asyncAction) >> Flowable.just(asyncAction)
     }
 }
