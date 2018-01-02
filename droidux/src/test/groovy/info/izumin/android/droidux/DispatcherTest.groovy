@@ -1,6 +1,6 @@
 package info.izumin.android.droidux
 
-import rx.Observable
+import io.reactivex.Single
 import spock.lang.Specification;
 
 /**
@@ -34,10 +34,10 @@ class DispatcherTest extends Specification {
         dispatcher.dispatch(action).subscribe()
 
         then:
-        1 * middleware1.beforeDispatch(action) >> Observable.just(action)
+        1 * middleware1.beforeDispatch(action) >> Single.just(action)
 
         then:
-        1 * middleware2.beforeDispatch(action) >> Observable.just(action)
+        1 * middleware2.beforeDispatch(action) >> Single.just(action)
 
         then:
         1 * store1.dispatch(action)
@@ -46,9 +46,9 @@ class DispatcherTest extends Specification {
         1 * store2.dispatch(action)
 
         then:
-        1 * middleware2.afterDispatch(action) >> Observable.just(action)
+        1 * middleware2.afterDispatch(action) >> Single.just(action)
 
         then:
-        1 * middleware1.afterDispatch(action) >> Observable.just(action)
+        1 * middleware1.afterDispatch(action) >> Single.just(action)
     }
 }

@@ -17,7 +17,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
-import rx.Observable;
+import io.reactivex.Flowable;
 
 /**
  * Created by izumin on 11/28/15.
@@ -32,7 +32,7 @@ public class StoreMethodModel {
         UNKNOWN
     }
 
-    private static final Class OBSERVE_METHOD_CLASS = Observable.class;
+    private static final Class OBSERVE_METHOD_CLASS = Flowable.class;
 
     private final ExecutableElement element;
     private final StoreModel storeModel;
