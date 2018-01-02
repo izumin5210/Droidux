@@ -5,7 +5,6 @@ import java.util.Set;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
 /**
@@ -26,8 +25,12 @@ public abstract class StoreImpl<T, R> {
         listeners = new HashSet<>();
     }
 
-    public Observable<T> observe() {
-        return subject;
+    public Flowable<T> observe() {
+        return observe(BackpressureStrategy.DROP);
+    }
+
+    public Flowable<T> observe(BackpressureStrategy strategy) {
+        return subject.toFlowable(strategy);
     }
 
     public T getState() {

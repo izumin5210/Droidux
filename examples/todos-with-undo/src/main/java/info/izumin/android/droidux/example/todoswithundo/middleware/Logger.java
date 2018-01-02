@@ -5,6 +5,7 @@ import android.util.Log;
 import info.izumin.android.droidux.Action;
 import info.izumin.android.droidux.Middleware;
 import info.izumin.android.droidux.example.todoswithundo.RootStore;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 /**
@@ -15,15 +16,15 @@ public class Logger extends Middleware<RootStore> {
 
 
     @Override
-    public Single<Action> beforeDispatch(Action action) {
+    public Flowable<Action> beforeDispatch(Action action) {
         Log.d("[prev todo]", getStore().todoList().toString());
         Log.d("[" + action.getClass().getSimpleName() + "]", action.toString());
-        return Single.just(action);
+        return Flowable.just(action);
     }
 
     @Override
-    public Single<Action> afterDispatch(Action action) {
+    public Flowable<Action> afterDispatch(Action action) {
         Log.d("[next todo]", getStore().todoList().toString());
-        return Single.just(action);
+        return Flowable.just(action);
     }
 }

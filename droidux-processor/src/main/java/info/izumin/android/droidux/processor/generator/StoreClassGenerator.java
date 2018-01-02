@@ -26,6 +26,7 @@ import info.izumin.android.droidux.processor.model.DispatcherModel;
 import info.izumin.android.droidux.processor.model.StoreImplModel;
 import info.izumin.android.droidux.processor.model.StoreMethodModel;
 import info.izumin.android.droidux.processor.model.StoreModel;
+import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 import static info.izumin.android.droidux.processor.util.PoetUtils.getOverrideAnnotation;
@@ -157,7 +158,7 @@ public class StoreClassGenerator {
         return MethodSpec.methodBuilder(StoreModel.DISPATCH_METHOD_NAME)
                 .addAnnotation(getOverrideAnnotation())
                 .addModifiers(Modifier.PUBLIC)
-                .returns(ParameterizedTypeName.get(ClassName.get(Single.class), ClassName.get(Action.class)))
+                .returns(ParameterizedTypeName.get(ClassName.get(Flowable.class), ClassName.get(Action.class)))
                 .addParameter(getParameterSpec(Action.class))
                 .addStatement("return $N.$N($N)",
                         DispatcherModel.VARIABLE_NAME, DispatcherModel.DISPATCH_METHOD_NAME,
