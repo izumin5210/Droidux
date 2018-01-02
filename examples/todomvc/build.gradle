@@ -32,8 +32,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile "io.reactivex:rxjava:${project.rxJavaVersion}"
-    compile "io.reactivex:rxandroid:${project.rxAndroidVersion}"
+    compile "io.reactivex.rxjava2:rxjava:${project.rxJava2Version}"
+    compile "io.reactivex.rxjava2:rxandroid:${project.rxAndroid2Version}"
     compile project(':droidux')
     annotationProcessor project(':droidux-processor')
     compile "com.android.support:appcompat-v7:${project.supportLibrariesVersion}"
