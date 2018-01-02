@@ -2,8 +2,7 @@ package info.izumin.android.droidux.thunk;
 
 import info.izumin.android.droidux.Action;
 import info.izumin.android.droidux.Middleware;
-import io.reactivex.Single;
-import io.reactivex.SingleSource;
+import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
 
 /**
@@ -13,27 +12,27 @@ public class ThunkMiddleware extends Middleware {
     public static final String TAG = ThunkMiddleware.class.getSimpleName();
 
     @Override
-    public Single<Action> beforeDispatch(final Action action) {
+    public Flowable<Action> beforeDispatch(final Action action) {
         if (action instanceof AsyncAction) {
             return ((AsyncAction) action).call(getDispatcher())
-                    .flatMap(new Function<Action, SingleSource<? extends Action>>() {
+                    .flatMap(new Function<Action, Flowable<? extends Action>>() {
                         @Override
-                        public Single<Action> apply(Action next) throws Exception {
+                        public Flowable<Action> apply(Action next) throws Exception {
                             return getDispatcher().dispatch(next);
                         }
                     })
-                    .flatMap(new Function<Action, SingleSource<? extends Action>>() {
+                    .flatMap(new Function<Action, Flowable<? extends Action>>() {
                         @Override
-                        public Single<Action> apply(Action _next) throws Exception {
-                            return Single.just(action);
+                        public Flowable<Action> apply(Action _next) throws Exception {
+                            return Flowable.just(action);
                         }
                     });
         }
-        return Single.just(action);
+        return Flowable.just(action);
     }
 
     @Override
-    public Single<Action> afterDispatch(Action action) {
-        return Single.just(action);
+    public Flowable<Action> afterDispatch(Action action) {
+        return Flowable.just(action);
     }
 }
