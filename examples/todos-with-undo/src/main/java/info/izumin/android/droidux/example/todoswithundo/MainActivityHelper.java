@@ -18,6 +18,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.SingleSubject;
 
@@ -48,8 +49,7 @@ public class MainActivityHelper {
         observeOnClickBtnAddTodo()
                 .filter(s -> !s.isEmpty())
                 .flatMap(s -> store.dispatch(new AddTodoAction(s)))
-                /*TODO: Version up RxAndroid*/
-                /*.subscribeOn(AndroidSchedulers.mainThread())*/
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(action -> {
                     editNewTodo.setText("");
                     Toast.makeText(activity, R.string.toast_add_todo, Toast.LENGTH_SHORT).show();
@@ -61,8 +61,7 @@ public class MainActivityHelper {
 
         observeOnLongClickListItem()
                 .flatMap(id -> store.dispatch(new DeleteTodoAction(id)))
-                /*TODO: Version up RxAndroid*/
-                /*.subscribeOn(AndroidSchedulers.mainThread())*/
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(action -> {
                     Toast.makeText(activity, R.string.toast_delete_todo, Toast.LENGTH_SHORT).show();
                 });

@@ -8,7 +8,7 @@ import info.izumin.android.droidux.example.todoswithundo.action.ClearCompletedTo
 import info.izumin.android.droidux.example.todoswithundo.action.DeleteTodoAction;
 import info.izumin.android.droidux.example.todoswithundo.action.ToggleCompletedTodoAction;
 import info.izumin.android.droidux.example.todoswithundo.entity.TodoList;
-import rx.Observable;
+import io.reactivex.Observable;
 
 /**
  * Created by izumin on 11/4/15.
@@ -20,10 +20,12 @@ public class TodoListReducer {
 
     @Dispatchable(AddTodoAction.class)
     public TodoList onAddedTodo(TodoList state, AddTodoAction action) {
-        int id = Observable.from(state)
+        int id = Observable.fromIterable(state)
                 .reduce((todo, todo2) -> (todo.getId() < todo2.getId()) ? todo2 : todo)
                 .onErrorReturn(throwable -> new TodoList.Todo(0, ""))
-                .toBlocking().last().getId();
+                .toObservable()
+                .blockingLast()
+                .getId();
         TodoList newState = new TodoList(state);
         newState.add(new TodoList.Todo(id + 1, action.getText()));
         return newState;
@@ -31,28 +33,28 @@ public class TodoListReducer {
 
     @Dispatchable(ToggleCompletedTodoAction.class)
     public TodoList onCompletedTodo(TodoList state, ToggleCompletedTodoAction action) {
-        return new TodoList(Observable.from(state)
+        return new TodoList(Observable.fromIterable(state)
                 .map(todo -> {
                     if (todo.getId() == action.getId()) {
                         return new TodoList.Todo(todo.getId(), todo.getText(), !todo.isCompleted());
                     }
                     return todo;
                 })
-                .toList().toBlocking().single()
+                .toList().blockingGet()
         );
     }
 
     @Dispatchable(ClearCompletedTodoAction.class)
     public TodoList onClearCompletedTodo(TodoList state, ClearCompletedTodoAction action) {
-        return new TodoList(Observable.from(state)
-                .filter(todo -> !todo.isCompleted()).toList().toBlocking().single()
+        return new TodoList(Observable.fromIterable(state)
+                .filter(todo -> !todo.isCompleted()).toList().blockingGet()
         );
     }
 
     @Dispatchable(DeleteTodoAction.class)
     public TodoList onDeletedTodo(TodoList state, DeleteTodoAction action) {
-        return new TodoList(Observable.from(state)
-                .filter(todo -> todo.getId() != action.getId()).toList().toBlocking().single()
+        return new TodoList(Observable.fromIterable(state)
+                .filter(todo -> todo.getId() != action.getId()).toList().blockingGet()
         );
     }
 }

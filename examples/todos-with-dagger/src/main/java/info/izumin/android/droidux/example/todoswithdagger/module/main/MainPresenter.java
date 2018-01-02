@@ -7,6 +7,7 @@ import info.izumin.android.droidux.example.todoswithdagger.action.ClearCompleted
 import info.izumin.android.droidux.example.todoswithdagger.action.ClearNewTodoTextAction;
 import info.izumin.android.droidux.example.todoswithdagger.action.DeleteTodoAction;
 import info.izumin.android.droidux.example.todoswithdagger.action.ToggleCompletedTodoAction;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.subjects.PublishSubject;
 
@@ -36,8 +37,7 @@ public class MainPresenter {
         compositeDisposable.add(clickAddTodoSubject
                 .filter(s -> !s.isEmpty())
                 .flatMap(s -> store.dispatch(new AddTodoAction(s)).toObservable())
-                /*TODO: Version up RxAndroid*/
-                /*.subscribeOn(AndroidSchedulers.mainThread())*/
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .flatMap(_a -> store.dispatch(new ClearNewTodoTextAction()).toObservable())
                 .subscribe(_a -> {
                     view.clearNewTodoText();
@@ -50,8 +50,7 @@ public class MainPresenter {
 
         compositeDisposable.add(longClickItemSubject
                 .flatMap(id -> store.dispatch(new DeleteTodoAction(id)).toObservable())
-                /*TODO: Version up RxAndroid*/
-                /*.subscribeOn(AndroidSchedulers.mainThread())*/
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(action -> view.showToast(R.string.toast_delete_todo)));
     }
 
