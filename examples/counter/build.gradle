@@ -10,6 +10,7 @@ android {
         targetSdkVersion project.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -37,4 +38,7 @@ dependencies {
     compile project(':middlewares:droidux-thunk')
     compile "com.android.support:appcompat-v7:${project.supportLibrariesVersion}"
     compile "com.android.support:design:${project.supportLibrariesVersion}"
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
 }
