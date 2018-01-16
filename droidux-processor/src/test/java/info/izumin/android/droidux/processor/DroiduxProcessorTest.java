@@ -7,6 +7,7 @@ import org.junit.rules.ExpectedException;
 import javax.tools.JavaFileObject;
 
 import info.izumin.android.droidux.processor.fixture.Source;
+import io.reactivex.BackpressureStrategy;
 
 import static com.google.common.truth.Truth.assert_;
 import static com.google.testing.compile.JavaFileObjects.forSourceLines;
@@ -36,6 +37,15 @@ public class DroiduxProcessorTest {
                 forSourceLines("RootStore", Source.Counter.TARGET),
                 forSourceLines("DroiduxRootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
                 forSourceLines("DroiduxRootStore", Source.Counter.GENERATED_STORE)
+        );
+    }
+
+    @Test
+    public void singleReducer_with_BackpressureStrategySpecification() {
+        assertJavaSource(
+                forSourceLines("RootStore", Source.CounterWithBackpressureStrategy.TARGET),
+                forSourceLines("DroiduxRootStore_CounterStoreImpl", Source.StoreImpl.COUNTER),
+                forSourceLines("DroiduxRootStore", Source.CounterWithBackpressureStrategy.GENERATED_STORE)
         );
     }
 

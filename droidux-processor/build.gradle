@@ -19,7 +19,7 @@ dependencies {
     compile 'com.google.auto:auto-common:0.6'
     compile 'com.google.auto.service:auto-service:1.0-rc2'
 
-    compile "io.reactivex:rxjava:${project.rxJavaVersion}"
+    compile "io.reactivex.rxjava2:rxjava:${project.rxJava2Version}"
     compile "com.android.databinding:baseLibrary:${project.databindingBaseLibraryVersion}"
     compile fileTree(dir: './libs', includes: ['*.jar'])
 

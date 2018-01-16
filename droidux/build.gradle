@@ -6,7 +6,7 @@ targetCompatibility = JavaVersion.VERSION_1_7
 sourceCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
-    compile "io.reactivex:rxjava:${project.rxJavaVersion}"
+    compile "io.reactivex.rxjava2:rxjava:${project.rxJava2Version}"
 
     testCompile "org.spockframework:spock-core:${project.spockCoreVersion}"
     testCompile "cglib:cglib-nodep:${project.cglibVersion}"

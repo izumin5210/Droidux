@@ -44,8 +44,8 @@ ext {
     databindingBaseLibraryVersion = '1.0'
     databindingLibraryVersion = '1.0-rc3'
     supportLibrariesVersion = '23.1.1'
-    rxJavaVersion = '1.1.0'
-    rxAndroidVersion = '1.0.1'
+    rxJava2Version = '2.1.8'
+    rxAndroid2Version = '2.0.1'
     spockCoreVersion = '1.0-groovy-2.4'
     cglibVersion = '2.2'
 }

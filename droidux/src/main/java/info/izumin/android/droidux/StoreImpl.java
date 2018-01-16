@@ -3,8 +3,9 @@ package info.izumin.android.droidux;
 import java.util.HashSet;
 import java.util.Set;
 
-import rx.Observable;
-import rx.subjects.BehaviorSubject;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.subjects.BehaviorSubject;
 
 /**
  * Created by izumin on 11/2/15.
@@ -24,8 +25,12 @@ public abstract class StoreImpl<T, R> {
         listeners = new HashSet<>();
     }
 
-    public Observable<T> observe() {
-        return subject;
+    public Flowable<T> observe() {
+        return observe(BackpressureStrategy.DROP);
+    }
+
+    public Flowable<T> observe(BackpressureStrategy strategy) {
+        return subject.toFlowable(strategy);
     }
 
     public T getState() {

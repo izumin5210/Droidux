@@ -17,7 +17,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 
-import rx.Observable;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 
 /**
  * Created by izumin on 11/28/15.
@@ -29,16 +30,19 @@ public class StoreMethodModel {
         DISPATCH,
         GETTER,
         OBSERVE,
+        OBSERVE_WITH_BPS,
         UNKNOWN
     }
 
-    private static final Class OBSERVE_METHOD_CLASS = Observable.class;
+    private static final Class OBSERVE_METHOD_CLASS = Flowable.class;
+    private static final Class BACKPRESSURE_STRATEGY_PARAM_CLASS = BackpressureStrategy.class;
 
     private final ExecutableElement element;
     private final StoreModel storeModel;
     private final Kind kind;
     private final DeclaredType returnType;
     private boolean isBindable = false;
+    private String bpsParamName = "";
 
     public StoreMethodModel(ExecutableElement element, StoreModel storeModel) {
         this.element = element;
@@ -61,7 +65,14 @@ public class StoreMethodModel {
             kind = Kind.DISPATCH;
         } else if (MoreTypes.isTypeOf(OBSERVE_METHOD_CLASS, returnType.asElement().asType())
                 && states.contains(ClassName.get(returnType.getTypeArguments().get(0)))) {
-            kind = Kind.OBSERVE;
+            if (element.getParameters() != null
+                    && !element.getParameters().isEmpty()
+                    && MoreTypes.isTypeOf(BACKPRESSURE_STRATEGY_PARAM_CLASS, element.getParameters().get(0).asType())) {
+                bpsParamName = element.getParameters().get(0).getSimpleName().toString();
+                kind = Kind.OBSERVE_WITH_BPS;
+            } else {
+                kind = Kind.OBSERVE;
+            }
         } else {
             kind = Kind.UNKNOWN;
         }
@@ -90,6 +101,17 @@ public class StoreMethodModel {
                         StoreImplModel.STATE_GETTER_METHOD_NAME).build();
             case OBSERVE:
                 return CodeBlock.builder().addStatement("return $N.$N()",
+                        FluentIterable.from(storeModel.getStoreImplModels())
+                                .filter(new Predicate<StoreImplModel>() {
+                                    @Override
+                                    public boolean apply(StoreImplModel input) {
+                                        return ClassName.get(returnType.getTypeArguments().get(0)).equals(input.getState());
+                                    }
+                                })
+                                .get(0).getVariableName(),
+                        StoreImplModel.STATE_OBSERVE_METHOD_NAME).build();
+            case OBSERVE_WITH_BPS:
+                return CodeBlock.builder().addStatement("return $N.$N(" + bpsParamName + ")",
                         FluentIterable.from(storeModel.getStoreImplModels())
                                 .filter(new Predicate<StoreImplModel>() {
                                     @Override

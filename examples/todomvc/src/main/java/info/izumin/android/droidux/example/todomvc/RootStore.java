@@ -4,7 +4,8 @@ import info.izumin.android.droidux.BaseStore;
 import info.izumin.android.droidux.annotation.Store;
 import info.izumin.android.droidux.example.todomvc.entity.TodoList;
 import info.izumin.android.droidux.example.todomvc.reducer.TodoListReducer;
-import rx.Observable;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
 
 /**
  * Created by izumin on 11/29/15.
@@ -12,5 +13,6 @@ import rx.Observable;
 @Store(TodoListReducer.class)
 public interface RootStore extends BaseStore {
     TodoList todoList();
-    Observable<TodoList> observeTodoList();
+    Flowable<TodoList> observeTodoList();
+    Flowable<TodoList> observeTodoList(BackpressureStrategy strategy);
 }

@@ -20,7 +20,7 @@ Droidux is influenced by [Three principles][three-principles] of Redux.
 
 Features of Droidux are following:
 
-* All mutations can be observed via rx.Observable from [RxJava][rxjava]
+* All mutations can be observed via Flowable from [RxJava][rxjava]
 * All mutations are automatically notified to views via [Data Binding][databinding]
 
 ### Data flow
@@ -37,8 +37,9 @@ Add to your project build.gradle file:
 apply plugin: 'com.android.application'
 
 dependencies {
-  compile 'io.reactivex:rxjava:1.1.0'
   compile 'info.izumin.android:droidux:0.6.0'
+  compile 'io.reactivex.rxjava2:rxjava:2.1.8'
+  compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
   annotationProcessor 'info.izumin.android:droidux-processor:0.6.0'
 }
 ```
@@ -113,7 +114,7 @@ public class CounterReducer {
 @Store(CounterReducer.class)
 public interface CounterStore extends BaseStore {
     Counter getCounter();
-    Observable<Counter> observeCounter();
+    Flowable<Counter> observeCounter();
 }
 
 /**
@@ -131,8 +132,8 @@ public class ClearCountAction implements Action {}
 // and it should register a reducer instance and an initial state.
 // 
 // Its APIs in this example are following:
-// - rx.Observable<Action> dispatch(Action action)
-// - rx.Observable<Counter> observeCounter()
+// - Flowable<Action> dispatch(Action action)
+// - Flowable<Counter> observeCounter()
 // - Counter getCounter()
 CounterStore store = DroiduxCounterStore.builder()
         .setReducer(new CounterReducer(), new Counter(0))
@@ -195,9 +196,9 @@ Layout file is following:
 @Store({CounterReducer.class, TodoListReducer.class})
 class RootStore extends BaseStore {
     Counter getCounter();
-    Observable<Counter> observeCounter();
+    Flowable<Counter> observeCounter();
     TodoList getTodoList();
-    Observable<TodoList> observeTodoList();
+    Flowable<TodoList> observeTodoList();
 }
 
 
@@ -216,16 +217,16 @@ store.dispatch(new AddTodoAction("new task")).subscribe();  // Counter: 1, Todo:
 ```java
 class Logger extends Middleware<CounterStore> {
     @Override
-    public Observable<Action> beforeDispatch(Action action) {
+    public Flowable<Action> beforeDispatch(Action action) {
         Log.d("[prev counter]", String.valueOf(getStore().count()));
         Log.d("[action]", action.getClass().getSimpleName());
-        return Observable.just(action);
+        return Flowable.just(action);
     }
 
     @Override
-    public Observable<Action> afterDispatch(Action action) {
+    public Flowable<Action> afterDispatch(Action action) {
         Log.d("[next counter]", String.valueOf(getStore().count()));
-        return Observable.just(action);
+        return Flowable.just(action);
     }
 }
 
@@ -285,7 +286,7 @@ class TodoListReducer {
 @Store(TodoListReducer.class)
 public interface TodoListStore {
     TodoList todoList();
-    Observable<TodoList> observeTodoList();
+    Flowable<TodoList> observeTodoList();
 }
 
 class AddTodoAction implements Action {
@@ -329,7 +330,7 @@ class FetchTodoListAction implements AsyncAction {
         this.client = client;
     }
 
-    public Observable<ReceiveTodoListAction> call(Dispatcher dispatcher) {
+    public Flowable<ReceiveTodoListAction> call(Dispatcher dispatcher) {
         return dispatcher.dispatch(new DoingFetchAction())
                 .flatMap(_action -> client.fetch())
                 .map(todoList -> {

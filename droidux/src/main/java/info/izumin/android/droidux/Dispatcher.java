@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
-import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 /**
  * Created by izumin on 11/28/15.
@@ -22,37 +22,36 @@ public class Dispatcher {
         this.storeImpls = Arrays.asList(storeImpls);
     }
 
-    public Observable<Action> dispatch(Action action) {
-        return Observable.just(action)
-                .flatMap(new Func1<Action, Observable<Action>>() {
+    public Flowable<Action> dispatch(Action action) {
+        return Flowable.just(action)
+                .flatMap(new Function<Action, Flowable<? extends Action>>() {
                     @Override
-                    public Observable<Action> call(Action action) {
+                    public Flowable<? extends Action> apply(Action action) throws Exception {
                         return applyMiddlewaresBeforeDispatch(action);
                     }
-                })
-                .doOnNext(new Action1<Action>() {
+                }).doOnNext(new Consumer<Action>() {
                     @Override
-                    public void call(Action action) {
+                    public void accept(Action action) throws Exception {
                         for (StoreImpl store : storeImpls) {
                             store.dispatch(action);
                         }
                     }
                 })
-                .flatMap(new Func1<Action, Observable<Action>>() {
+                .flatMap(new Function<Action, Flowable<? extends Action>>() {
                     @Override
-                    public Observable<Action> call(Action action) {
+                    public Flowable<? extends Action> apply(Action action) throws Exception {
                         return applyMiddlewaresAfterDispatch(action);
                     }
                 });
     }
 
-    private Observable<Action> applyMiddlewaresBeforeDispatch(Action action) {
-        Observable<Action> o = Observable.just(action);
+    private Flowable<Action> applyMiddlewaresBeforeDispatch(Action action) {
+        Flowable<Action> o = Flowable.just(action);
 
         for (final Middleware<?> mw : middlewares) {
-            o = o.flatMap(new Func1<Action, Observable<Action>>() {
+            o = o.flatMap(new Function<Action, Flowable<? extends Action>>() {
                 @Override
-                public Observable<Action> call(Action a) {
+                public Flowable<Action> apply(Action a) throws Exception {
                     return mw.beforeDispatch(a);
                 }
             });
@@ -60,14 +59,14 @@ public class Dispatcher {
         return o;
     }
 
-    private Observable<Action> applyMiddlewaresAfterDispatch(Action action) {
-        Observable<Action> o = Observable.just(action);
+    private Flowable<Action> applyMiddlewaresAfterDispatch(Action action) {
+        Flowable<Action> o = Flowable.just(action);
         ListIterator<Middleware> iterator = middlewares.listIterator(middlewares.size());
         while(iterator.hasPrevious()) {
             final Middleware<?> mw = iterator.previous();
-            o = o.flatMap(new Func1<Action, Observable<Action>>() {
+            o = o.flatMap(new Function<Action, Flowable<? extends Action>>() {
                 @Override
-                public Observable<Action> call(Action a) {
+                public Flowable<Action> apply(Action a) throws Exception {
                     return mw.afterDispatch(a);
                 }
             });

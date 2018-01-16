@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.izumin.android.droidux.UndoableState;
-import rx.Observable;
+import io.reactivex.Observable;
 
 /**
  * Created by izumin on 11/4/15.
@@ -22,8 +22,8 @@ public class TodoList extends ArrayList<TodoList.Todo> implements UndoableState<
     }
 
     public Todo getTodoById(int id) {
-        return Observable.from(this)
-                .filter(todo -> id == todo.getId()).toBlocking().first();
+        return Observable.fromIterable(this)
+                .filter(todo -> id == todo.getId()).blockingFirst();
     }
 
     @Override

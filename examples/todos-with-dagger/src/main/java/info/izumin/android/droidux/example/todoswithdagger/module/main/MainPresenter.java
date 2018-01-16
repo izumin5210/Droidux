@@ -7,9 +7,9 @@ import info.izumin.android.droidux.example.todoswithdagger.action.ClearCompleted
 import info.izumin.android.droidux.example.todoswithdagger.action.ClearNewTodoTextAction;
 import info.izumin.android.droidux.example.todoswithdagger.action.DeleteTodoAction;
 import info.izumin.android.droidux.example.todoswithdagger.action.ToggleCompletedTodoAction;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.subjects.PublishSubject;
 
 /**
  * Created by izumin on 11/5/15.
@@ -24,7 +24,7 @@ public class MainPresenter {
     private final PublishSubject<Long> clickItemSubject = PublishSubject.create();
     private final PublishSubject<Long> longClickItemSubject = PublishSubject.create();
 
-    private CompositeSubscription subscriptions;
+    private CompositeDisposable compositeDisposable;
 
     public MainPresenter(MainView view, RootStore store) {
         this.view = view;
@@ -32,32 +32,30 @@ public class MainPresenter {
     }
 
     void onStart() {
-        subscriptions = new CompositeSubscription();
+        compositeDisposable = new CompositeDisposable();
 
-        subscriptions.add(clickAddTodoSubject
+        compositeDisposable.add(clickAddTodoSubject
                 .filter(s -> !s.isEmpty())
-                .flatMap(s -> store.dispatch(new AddTodoAction(s)))
+                .flatMap(s -> store.dispatch(new AddTodoAction(s)).toObservable())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .flatMap(_a -> store.dispatch(new ClearNewTodoTextAction()))
+                .flatMap(_a -> store.dispatch(new ClearNewTodoTextAction()).toObservable())
                 .subscribe(_a -> {
                     view.clearNewTodoText();
                     view.showToast(R.string.toast_add_todo);
                 }));
 
-        subscriptions.add(clickItemSubject
-                .flatMap(id -> store.dispatch(new ToggleCompletedTodoAction(id.intValue())))
+        compositeDisposable.add(clickItemSubject
+                .flatMap(id -> store.dispatch(new ToggleCompletedTodoAction(id.intValue())).toObservable())
                 .subscribe());
 
-        subscriptions.add(longClickItemSubject
-                .flatMap(id -> store.dispatch(new DeleteTodoAction(id)))
+        compositeDisposable.add(longClickItemSubject
+                .flatMap(id -> store.dispatch(new DeleteTodoAction(id)).toObservable())
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(action -> {
-                    view.showToast(R.string.toast_delete_todo);
-                }));
+                .subscribe(action -> view.showToast(R.string.toast_delete_todo)));
     }
 
     void onStop() {
-        subscriptions.unsubscribe();
+        compositeDisposable.clear();
     }
 
     void onClickBtnAddTodo(String text) {

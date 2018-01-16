@@ -14,9 +14,13 @@ import info.izumin.android.droidux.example.todoswithundo.action.ClearCompletedTo
 import info.izumin.android.droidux.example.todoswithundo.action.DeleteTodoAction;
 import info.izumin.android.droidux.example.todoswithundo.action.ToggleCompletedTodoAction;
 import info.izumin.android.droidux.example.todoswithundo.reducer.TodoListReducer;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.subjects.PublishSubject;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Flowable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.SingleSubject;
 
 /**
  * Created by izumin on 11/5/15.
@@ -81,19 +85,19 @@ public class MainActivityHelper {
         }
     }
 
-    private Observable<String> observeOnClickBtnAddTodo() {
-        PublishSubject<String>  subject= PublishSubject.create();
+    private Flowable<String> observeOnClickBtnAddTodo() {
+        PublishSubject<String> subject = PublishSubject.create();
         btnAddTodo.setOnClickListener(v -> subject.onNext(editNewTodo.getText().toString()));
-        return subject;
+        return subject.toFlowable(BackpressureStrategy.DROP);
     }
 
-    private Observable<Long> observeOnClickListItem() {
+    private Flowable<Long> observeOnClickListItem() {
         PublishSubject<Long> subject = PublishSubject.create();
         listTodo.setOnItemClickListener((parent, view, position, id) -> subject.onNext(id));
-        return subject;
+        return subject.toFlowable(BackpressureStrategy.DROP);
     }
 
-    private Observable<Long> observeOnLongClickListItem() {
+    private Flowable<Long> observeOnLongClickListItem() {
         PublishSubject<Long> subject = PublishSubject.create();
         listTodo.setOnItemLongClickListener((parent, view, position, id) -> {
             new AlertDialog.Builder(activity)
@@ -109,6 +113,6 @@ public class MainActivityHelper {
                     .show();
             return true;
         });
-        return subject;
+        return subject.toFlowable(BackpressureStrategy.DROP);
     }
 }
